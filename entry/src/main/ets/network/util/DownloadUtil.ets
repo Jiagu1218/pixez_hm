@@ -104,6 +104,7 @@ export class DownloadUtil {
       session.cancel();
       session.close();
     });
+    PixelCache.clear();
     DownloadUtil.sessionPool = [];
     DownloadUtil.inUseConnections = 0;
   }

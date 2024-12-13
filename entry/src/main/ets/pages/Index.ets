@@ -55,6 +55,13 @@ struct Index {
           console.error('22222', e)
         })
       })
+      Button("测试getIllustRecommend").onClick(() => {
+        ApiClient.getIllustRecommend().then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
       Button("测试getSearchIllust").onClick(() => {
         ApiClient.getSearchIllust({
           word:'原神'
