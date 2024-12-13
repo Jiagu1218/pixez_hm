@@ -1,8 +1,9 @@
 import { rcp } from "@kit.RemoteCommunicationKit";
-import { AppConfig } from "../network/AppConfig";
-import { TokenInterceptor } from "../network/interceptor/TokenInterceptor";
+import { AppConfig } from "../AppConfig";
+import { TokenInterceptor } from "../interceptor/TokenInterceptor";
 import { Queue } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
+import { PixelCache } from "../cache/PixelMapCache";
 
 /**
  * 定义下载任务接口
@@ -112,14 +113,22 @@ export class DownloadUtil {
    * @param {ImageTask} task 图片下载任务
    */
   public static async downloadImage(task: ImageTask): Promise<void> {
+    let cache = PixelCache.getCache(task.url);
+    if (cache) {
+      task.callback(cache)
+      return
+    }
+
     const session = DownloadUtil.getSession();
     if (session) {
       try {
         // 发起GET请求下载图片
         const response = await session.get(task.url);
         // 创建PixelMap并调用回调函数
-        const pixelMap = image.createImageSource(response.body);
-        task.callback(pixelMap.createPixelMapSync());
+        const imageSource = image.createImageSource(response.body)
+        const pixelMap = imageSource.createPixelMapSync()
+        PixelCache.setCache(task.url, pixelMap)
+        task.callback(pixelMap);
       } catch (e) {
         console.error(`err: err code is ${e.code}, err message is ${JSON.stringify(e)}`);
       } finally {

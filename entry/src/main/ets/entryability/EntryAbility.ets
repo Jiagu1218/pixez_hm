@@ -1,10 +1,10 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { ApiUtil } from '../util/ApiUtil';
+import { ApiUtil } from '../network/util/ApiUtil';
 import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
-import { DownloadUtil } from '../util/DownloadUtil';
+import { DownloadUtil } from '../network/util/DownloadUtil';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {

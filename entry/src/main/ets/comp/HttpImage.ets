@@ -1,5 +1,5 @@
 import { image } from "@kit.ImageKit"
-import { DownloadUtil } from "../util/DownloadUtil"
+import { DownloadUtil } from "../network/util/DownloadUtil"
 
 @ComponentV2
 export struct HttpImage{

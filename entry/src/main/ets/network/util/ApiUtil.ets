@@ -1,8 +1,8 @@
 import { buffer } from "@kit.ArkTS"
 import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
-import { AppConfig } from "../network/AppConfig"
-import { TokenInterceptor } from "../network/interceptor/TokenInterceptor"
+import { AppConfig } from "../AppConfig"
+import { TokenInterceptor } from "../interceptor/TokenInterceptor"
 
 export class ApiUtil {
   private static session: rcp.Session;

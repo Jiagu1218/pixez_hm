@@ -1,5 +1,5 @@
 import { rcp } from '@kit.RemoteCommunicationKit'
-import { ApiUtil } from '../../util/ApiUtil'
+import { ApiUtil } from '../util/ApiUtil'
 import { AppConfig } from '../AppConfig'
 
 /**

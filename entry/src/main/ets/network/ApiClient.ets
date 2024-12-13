@@ -1,4 +1,4 @@
-import { ApiUtil } from "../util/ApiUtil";
+import { ApiUtil } from "./util/ApiUtil";
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { url } from "@kit.ArkTS";
 import { AppConfig } from "./AppConfig";
