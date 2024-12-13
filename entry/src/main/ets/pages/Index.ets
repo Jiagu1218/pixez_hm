@@ -62,6 +62,45 @@ struct Index {
           console.error('22222', e)
         })
       })
+      Button("测试getUser").onClick(() => {
+        let userId:string = '6074768'
+        ApiClient.getUser(userId).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试postUser").onClick(() => {
+        ApiClient.postUser().then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试getUserNovels").onClick(() => {
+        let userId:number = 6634929
+        ApiClient.getUserNovels(userId).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试postFollowUser").onClick(() => {
+        let userId:number = 6634929
+        ApiClient.postFollowUser(userId,'public').then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试postUnFollowUser").onClick(() => {
+        let userId:number = 6634929
+        ApiClient.postUnFollowUser(userId).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
       Button("测试getSearchIllust").onClick(() => {
         ApiClient.getSearchIllust({
           word:'原神'
