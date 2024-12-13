@@ -1,0 +1,165 @@
+import { OauthClient } from '../network/OauthClient';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { ApiClient } from '../network/ApiClient';
+import { TokenResponse } from '../network/response/TokenResponse';
+import { webview } from '@kit.ArkWeb';
+import { url } from '@kit.ArkTS';
+import { connection } from '@kit.NetworkKit';
+import { Novel } from '../entity/Novel';
+import { HttpImage } from '../comp/HttpImage';
+import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
+
+@Entry
+@ComponentV2
+struct Index {
+  @Param message: string = 'Hello World';
+  @Local url: string = '';
+  @Local code: string = '';
+  @Local controller: webview.WebviewController = new webview.WebviewController();
+  @Local novels:Array<Novel> = new Array<Novel>();
+
+  aboutToAppear(): void {
+    //TODO 删除该token
+    AppStorage.setOrCreate<string>('token', 'hY-dfQLMGtJWHB3SYFx_JeAS1agIyn9VlIqUEEtxc34')
+    connection.getAddressesByName('www.baidu.com')
+    connection.getDefaultHttpProxy().then(proxy => {
+      console.info('proxy', proxy)
+    }).catch((e: BusinessError) => {
+      console.error('proxy', e)
+    })
+  }
+
+  build() {
+    Column() {
+      TextInput().onChange(v => {
+        this.code = v
+      })
+      Button("测试code2Token").onClick(() => {
+        OauthClient.code2Token(this.code).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试walkthroughIllusts").onClick(() => {
+        ApiClient.walkthroughIllusts().then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试getMangaRecommend").onClick(() => {
+        ApiClient.getMangaRecommend().then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试getSearchIllust").onClick(() => {
+        ApiClient.getSearchIllust({
+          word:'原神'
+        }).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试NovelRecommended").onClick(() => {
+        ApiClient.getNovelRecommended().then(res => {
+          console.info('11111', res)
+          if (res) {
+            const resp = res.toJSON() as NovelRecommendedResponse
+            this.novels.push(...resp.novels)
+            this.novels.push(...resp.ranking_novels)
+          }
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("测试getNext").onClick(() => {
+        ApiClient.getNext('https://app-api.pixiv.net/v1/novel/recommended?include_ranking_novels=false&include_privacy_policy=false&offset=15&already_recommended=22291583%2C17926293%2C18913289%2C22438378%2C17896532%2C22302763%2C23425714%2C18311794%2C23071218%2C13033079%2C23508714%2C17818353%2C17037801%2C23411262%2C22335392%2C13258882%2C18445500%2C17778560%2C21241060%2C23571787%2C23432939%2C22226712%2C22376729%2C13214719%2C22131414%2C22831890%2C22226144%2C23508040%2C22387489%2C21274507%2C22974989%2C19902538%2C20576645&max_bookmark_id_for_recommend=5842399607')
+          .then(res => {
+            console.info('1111', res)
+          })
+          .catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+      })
+      Button("测试getUserBookmarkNovel").onClick(() => {
+        ApiClient.getUserBookmarkNovel('40369071', 'remark').then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("刷新token").onClick(() => {
+        //TODO 删除该token
+        OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '').then(res => {
+          if (res && res.statusCode == 200) {
+            let result = res.toJSON() as TokenResponse
+            AppStorage.setOrCreate<string>('token', result.access_token)
+            console.info('11111', res)
+          }
+
+        }).catch((e: BusinessError) => {
+          console.error('22222', e)
+        })
+      })
+      Button("获取验证信息").onClick(() => {
+        let codeVerifier = OauthClient.generateCodeVerify()
+        let challenge = OauthClient.getCodeChallenge(codeVerifier)
+        console.info('获取验证信息', codeVerifier, challenge)
+      })
+      Button("获取验证地址").onClick(() => {
+        this.url = OauthClient.generateWebviewUrl()
+        try {
+          this.controller.clearMatches()
+          this.controller.clearHistory()
+          this.controller.clearSslCache()
+          this.controller.clearClientAuthenticationCache()
+          const temp = url.URL.parseURL(this.url)
+          this.controller.loadUrl(temp.toString())
+        } catch (e) {
+          console.error('加载webview失败', e)
+        }
+        console.info('获取验证地址', this.url)
+      })
+      List(){
+        ForEach(this.novels, (novel:Novel) => {
+          ListItem(){
+            HttpImage({url: novel.image_urls.large})
+          }
+        })
+      }.layoutWeight(1)
+      .width('100%')
+      .lanes(2)
+      // Web({ src: 'https://baidu.com', controller: this.controller })
+      //   .onErrorReceive(e => {
+      //     let errorInfo = e.error.getErrorInfo()
+      //     console.error('加载webview失败', errorInfo, e.error.getErrorCode())
+      //   })
+      //   .onHttpErrorReceive(e => {
+      //     console.error('加载webview失败', e)
+      //   })
+      //   .onSslErrorEvent(e => {
+      //     console.error('加载webview失败', e)
+      //   })
+      //   .onSslErrorEventReceive(e => {
+      //     console.error('加载webview失败', e)
+      //   })
+      //   .javaScriptAccess(true)
+      //   .domStorageAccess(true)
+      //   .fileAccess(true)
+      //   .onlineImageAccess(true)
+      //   .imageAccess(true)
+      //   .mixedMode(MixedMode.All)
+      //   .zoomAccess(true)
+      //   .databaseAccess(true)
+      //   .layoutWeight(1)
+      //   .width('100%')
+      //   .backgroundColor(Color.Gray)
+    }
+    .height('100%')
+    .width('100%')
+  }
+}
