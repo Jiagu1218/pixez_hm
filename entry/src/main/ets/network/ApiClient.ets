@@ -141,7 +141,7 @@ export class ApiClient {
    *
    * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
    */
-  public static getRecommend(): Promise<rcp.Response | null> {
+  public static getIllustRecommend(): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_ios',
       'include_ranking_label': 'true'
