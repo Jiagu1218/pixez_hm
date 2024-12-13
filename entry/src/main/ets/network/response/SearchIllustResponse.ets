@@ -1,4 +1,4 @@
-import { Illust } from "../../entity/Illust"
+import { Illust } from "../model/Illust"
 
 export interface SearchIllustResponse{
   illusts: Illust[]

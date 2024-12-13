@@ -1,5 +1,5 @@
-import { Illust } from "../../entity/Illust"
-import { PrivacyPolicy } from "../../entity/PrivacyPolicy"
+import { Illust } from "../model/Illust"
+import { PrivacyPolicy } from "../model/PrivacyPolicy"
 /**
  * 漫画推荐response
  * */

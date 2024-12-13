@@ -1,5 +1,5 @@
-import { Novel } from "../../entity/Novel"
-import { PrivacyPolicy } from "../../entity/PrivacyPolicy"
+import { Novel } from "../model/Novel"
+import { PrivacyPolicy } from "../model/PrivacyPolicy"
 /**
  * 推荐
  * */

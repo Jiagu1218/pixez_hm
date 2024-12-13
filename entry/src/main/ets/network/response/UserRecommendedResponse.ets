@@ -1,5 +1,5 @@
-import { Illust } from "../../entity/Illust"
-import { Novel } from "../../entity/Novel"
+import { Illust } from "../model/Illust"
+import { Novel } from "../model/Novel"
 
 /**
  * 用户推荐响应接口

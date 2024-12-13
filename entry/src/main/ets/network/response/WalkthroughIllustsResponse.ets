@@ -1,4 +1,4 @@
-import { Illust } from "../../entity/Illust"
+import { Illust } from "../model/Illust"
 
 /**
  * 引导插图response

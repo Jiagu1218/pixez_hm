@@ -5,7 +5,7 @@ import { TokenResponse } from '../network/response/TokenResponse';
 import { webview } from '@kit.ArkWeb';
 import { url } from '@kit.ArkTS';
 import { connection } from '@kit.NetworkKit';
-import { Novel } from '../entity/Novel';
+import { Novel } from '../network/model/Novel';
 import { HttpImage } from '../comp/HttpImage';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
 
