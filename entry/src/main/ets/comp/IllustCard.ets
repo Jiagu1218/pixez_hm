@@ -1,8 +1,7 @@
 import { ApiClient } from "../network/ApiClient"
 import { Illust } from "../network/model/Illust"
 import { HttpImage } from "./HttpImage"
-import { router, UIUtils } from "@kit.ArkUI"
-import utils from "@arkts.utils"
+import { router } from "@kit.ArkUI"
 
 @ComponentV2
 export struct IllustCard{
