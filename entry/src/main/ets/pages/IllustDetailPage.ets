@@ -1,6 +1,6 @@
 import { ApiClient } from '../network/ApiClient'
-import { Illust, MetaPage } from '../network/model/Illust'
-import { router } from '@kit.ArkUI'
+import { Illust, MetaPage, Tag } from '../network/model/Illust'
+import { LengthUnit, router } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 
@@ -85,6 +85,23 @@ struct IllustDetailPage {
           }
         }.width('100%')
         .alignItems(HorizontalAlign.Start)
+        if (this.illust?.tags){
+          Row(){
+            Flex({wrap:FlexWrap.Wrap,space:{main:{value: 16,unit:LengthUnit.VP},cross:{value: 8,unit:LengthUnit.VP}}}){
+              ForEach(this.illust.tags,(item:Tag)=>{
+                Text(){
+                  Span(`#${item.name}`).fontColor(Color.Blue)
+                  if (item.translated_name){
+                    Span(`  (${item.translated_name})`)
+                  }
+                }.fontSize(14)
+                  .padding(8)
+                  .backgroundColor(Color.Gray)
+                  .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
+              },(item:Tag,index)=>index.toString())
+            }
+          }
+        }
         if (this.illust?.caption){
           Row(){
             //TODO 格式化富文本
@@ -93,10 +110,7 @@ struct IllustDetailPage {
           .padding(8)
           .width('90%')
           .backgroundColor(Color.Gray)
-          .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
-        }
-        Row(){
-
+          .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
         }
       }.justifyContent(FlexAlign.Start)
     }

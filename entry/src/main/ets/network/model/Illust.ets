@@ -136,7 +136,7 @@ interface ProfileImageUrls {
 /**
  * 标签接口定义了插画标签的信息，包括标签名和可选的翻译名
  */
-interface Tag {
+export interface Tag {
   name: string
   translated_name?: string
 }
