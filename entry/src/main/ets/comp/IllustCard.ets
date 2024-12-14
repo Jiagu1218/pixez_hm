@@ -1,6 +1,8 @@
 import { ApiClient } from "../network/ApiClient"
 import { Illust } from "../network/model/Illust"
 import { HttpImage } from "./HttpImage"
+import { router, UIUtils } from "@kit.ArkUI"
+import utils from "@arkts.utils"
 
 @ComponentV2
 export struct IllustCard{
@@ -41,5 +43,13 @@ export struct IllustCard{
       }.borderRadius({bottomLeft:$r('sys.float.ohos_id_card_border_radius'),bottomRight:$r('sys.float.ohos_id_card_border_radius')})
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .backgroundColor(Color.Orange)
+    .onClick(()=>{
+      router.pushUrl({
+        url: 'pages/IllustDetailPage',
+        params: {
+          illustId: this.illust.id
+        }
+      })
+    })
   }
 }

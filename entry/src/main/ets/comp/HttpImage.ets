@@ -4,7 +4,7 @@ import { DownloadUtil } from "../network/util/DownloadUtil"
 @ComponentV2
 export struct HttpImage{
   @Require @Param url:string
-  @Param aRatio:number = 16/9
+  @Param aRatio:number|null = null
   @Param br:Length | BorderRadiuses | LocalizedBorderRadiuses|null = null
   @Local pic:image.PixelMap|null = null
 
