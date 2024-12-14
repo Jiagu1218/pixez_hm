@@ -1,4 +1,4 @@
-import { HttpImage } from '../comp/HttpImage'
+import { IllustCard } from '../comp/IllustCard'
 import { LazyDataSource } from '../entity/LazyDataSource'
 import { ApiClient } from '../network/ApiClient'
 import { Illust } from '../network/model/Illust'
@@ -28,19 +28,7 @@ struct HomePage {
         WaterFlow(){
           LazyForEach(this.recommendIllusts, (item: Illust, index)=>{
             FlowItem(){
-              Column(){
-                HttpImage({url: item.image_urls.large,aRatio:9/16})
-                Row(){
-                  Button('SAVE').onClick(()=>{
-
-                  })
-                  SymbolGlyph(item.is_bookmarked?$r('sys.symbol.heart_fill'):$r('sys.symbol.heart')).onClick(()=>{
-                    ApiClient.postLikeIllust(item.id, 'public').then(res=>{
-                      console.info('点赞成功', res)
-                    })
-                  })
-                }
-              }
+              IllustCard({illust:item})
             }
           },(item: Illust)=>item.id.toString())
         }.onReachEnd(()=>{

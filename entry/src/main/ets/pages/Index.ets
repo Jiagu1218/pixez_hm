@@ -206,7 +206,7 @@ struct Index {
       List(){
         ForEach(this.novels, (novel:Novel) => {
           ListItem(){
-            HttpImage({url: novel.image_urls.large})
+            // HttpImage({url: novel.image_urls.large})
           }
         })
       }.layoutWeight(1)

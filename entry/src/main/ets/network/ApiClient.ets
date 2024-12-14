@@ -239,11 +239,11 @@ export class ApiClient {
    *
    * 该方法用于从用户喜欢的列表中移除某插图
    *
-   * @param illust_id {number} 插图ID
+   * @param illustId {number} 插图ID
    * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
    */
-  public static postUnLikeIllust(illust_id: number): Promise<rcp.Response | null> {
-    return ApiUtil.post('/v1/illust/bookmark/delete', new rcp.Form({ 'novel_id': illust_id }))
+  public static postUnLikeIllust(illustId: number): Promise<rcp.Response | null> {
+    return ApiUtil.post('/v1/illust/bookmark/delete', new rcp.Form({ 'illust_id': illustId }))
   }
 
   /**
