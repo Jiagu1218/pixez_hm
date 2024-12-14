@@ -22,13 +22,30 @@ struct Index {
   @Local novels:Array<Novel> = new Array<Novel>();
 
   aboutToAppear(): void {
-    //TODO 删除该token
-    AppStorage.setOrCreate<string>('token', 'hY-dfQLMGtJWHB3SYFx_JeAS1agIyn9VlIqUEEtxc34')
-    connection.getAddressesByName('www.baidu.com')
-    connection.getDefaultHttpProxy().then(proxy => {
-      console.info('proxy', proxy)
-    }).catch((e: BusinessError) => {
-      console.error('proxy', e)
+    this.login()
+  }
+
+  login(){
+    AccountManager.getInstance().getAccounts().then(accounts=>{
+      const account = accounts.shift()
+      if (account) {
+        const refreshToken = this.accountManager.getRefreshToken(account.name)
+        refreshToken.then(refreshToken => {
+          if (refreshToken) {
+            OauthClient.postRefreshAutoToken(refreshToken, account.name).then(res => {
+              if (res && res.statusCode == 200) {
+                let result = res.toJSON() as TokenResponse
+                this.accountManager.saveAccount(account.name, result.refresh_token,ApiUtil.noNullRecord(result.user))
+                AppStorage.setOrCreate('token',result.access_token)
+              }
+            }).catch((e: BusinessError) => {
+              console.error('refreshToken', e)
+            })
+          }
+        }).catch((e: BusinessError) => {
+          console.error('refreshToken', e)
+        })
+      }
     })
   }
 
@@ -146,13 +163,8 @@ struct Index {
         OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '').then(res => {
           if (res && res.statusCode == 200) {
             let result = res.toJSON() as TokenResponse
-            this.accountManager.getAccounts().then(accounts=>{
-              console.info('accounts', accounts)
-            }).catch((e:BusinessError)=>{
-              console.error('获取账号失败', e)
-            })
             // const acc = result.user.account
-            // this.accountManager.saveAccount(result.user.account, result.refresh_token,ApiUtil.noNullRecord(result.user))
+            this.accountManager.saveAccount(result.user.account, result.refresh_token,ApiUtil.noNullRecord(result.user))
             // this.accountManager.getRefreshToken(acc).then(token=>{
             //   console.info('获取token', token)
             // }).catch((e:BusinessError)=>{

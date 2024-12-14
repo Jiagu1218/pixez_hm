@@ -38,13 +38,15 @@ export class AccountManager {
   public saveAccount(account:string,refreshToken:string,opt?:appAccount.CreateAccountOptions): void {
     // 先移除已存在的账号，再创建新账号，以确保账号信息的唯一性
     this.accountManager.removeAccount(account)
-    this.accountManager.createAccount(account,opt).catch((e:BusinessError)=>{
-      console.error('保存账号失败', e)
-    })
-    // 保存刷新令牌
-    this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken).catch((e:BusinessError)=>{
-      console.error('保存token失败', e)
-    })
+    setTimeout(()=>{
+      this.accountManager.createAccount(account,opt).catch((e:BusinessError)=>{
+        console.error('保存账号失败', e)
+      })
+      // 保存刷新令牌
+      this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken).catch((e:BusinessError)=>{
+        console.error('保存token失败', e)
+      })
+    },300)
   }
 
   /**
