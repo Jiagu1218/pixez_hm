@@ -15,6 +15,10 @@ export struct HttpImage{
     })
   }
   build() {
-    Image(this.pic).aspectRatio(this.aRatio).width('100%')
+    Image(this.pic)
+      // .aspectRatio(this.aRatio)
+      .width('100%')
+      .alt($r('app.media.picture_damage'))
+      .objectFit(ImageFit.Contain)
   }
 }

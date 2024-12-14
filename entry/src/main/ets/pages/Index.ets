@@ -10,6 +10,7 @@ import { HttpImage } from '../comp/HttpImage';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
 import { AccountManager } from '../util/AccountManager';
 import { ApiUtil } from '../network/util/ApiUtil';
+import { router } from '@kit.ArkUI';
 
 @Entry
 @ComponentV2
@@ -182,6 +183,11 @@ struct Index {
         let codeVerifier = OauthClient.generateCodeVerify()
         let challenge = OauthClient.getCodeChallenge(codeVerifier)
         console.info('获取验证信息', codeVerifier, challenge)
+      })
+      Button("首页").onClick(() => {
+        router.pushUrl({
+          url: 'pages/HomePage'
+        })
       })
       Button("获取验证地址").onClick(() => {
         this.url = OauthClient.generateWebviewUrl()

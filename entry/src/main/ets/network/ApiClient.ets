@@ -223,7 +223,7 @@ export class ApiClient {
    * @param tags {Array<string>} 插图标签数组
    * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
    */
-  public static postLikeIllust(illustId: number, restrict: string, tags: Array<string>): Promise<rcp.Response | null> {
+  public static postLikeIllust(illustId: number, restrict: string, tags?: Array<string>): Promise<rcp.Response | null> {
     let form = new rcp.Form({
       'illust_id': illustId,
       'restrict': restrict
