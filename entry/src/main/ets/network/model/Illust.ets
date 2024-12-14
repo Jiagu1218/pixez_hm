@@ -151,7 +151,7 @@ interface MetaSinglePage {
 /**
  * 元数据页面接口定义了多页插画中每页的图片URLs
  */
-interface MetaPage {
+export interface MetaPage {
   image_urls: ImageUrls2
 }
 

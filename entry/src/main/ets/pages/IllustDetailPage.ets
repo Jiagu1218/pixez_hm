@@ -1,5 +1,5 @@
 import { ApiClient } from '../network/ApiClient'
-import { Illust } from '../network/model/Illust'
+import { Illust, MetaPage } from '../network/model/Illust'
 import { router } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
@@ -13,6 +13,7 @@ interface Params {
 struct IllustDetailPage {
   @Local illustId: number = 0
   @Local illust: Illust|null = null
+  @Local followed: boolean = false
   aboutToAppear(): void {
     const params = router.getParams() as Params
     this.illustId = params.illustId
@@ -21,26 +22,83 @@ struct IllustDetailPage {
       const resp = res?.toJSON() as IllustDetailResponse
       this.illustId = resp.illust.id
       this.illust = resp.illust
+      this.followed = resp.illust.user.is_followed
     })
   }
 
   build() {
     Scroll(){
-      Column(){
-        if (this.illust) {
-          HttpImage({url: this.illust.image_urls.large})
+      Column({space:16}){
+        Column(){
+          if (this.illust) {
+            if (this.illust.meta_pages?.length>0) {
+              ForEach(this.illust.meta_pages,(item:MetaPage)=>{
+                HttpImage({url: item.image_urls.large})
+              },(item:MetaPage,index)=>index.toString())
+            }else {
+              HttpImage({url: this.illust.image_urls.large})
+            }
+          }
+        }.width('100%')
+        Column({space:16}){
+          Text(this.illust?.title ?? '').fontSize($r('sys.float.Title_S'))
+          Row({space:16}){
+            Text(){
+              SymbolSpan($r('sys.symbol.eye')).fontColor([Color.Gray])
+              Span(this.illust?.total_view?.toString() ?? '0')
+            }.fontSize(14)
+            Text(){
+              SymbolSpan($r('sys.symbol.heart_fill')).fontColor([Color.Gray])
+              Span(this.illust?.total_bookmarks?.toString() ?? '0')
+            }.fontSize(14)
+            Text(){
+              SymbolSpan($r('sys.symbol.calendar_badge_clock')).fontColor([Color.Gray])
+              Span(this.illust?.create_date ?? '-')
+            }.fontSize(14)
+          }
+          Row({space:16}){
+            Text(`插画ID: ${this.illust?.id ?? '-'}`).fontSize(14)
+            Text(`分辨率: ${this.illust?.width ?? '-'}x${this.illust?.height ?? '-'}`).fontSize(14)
+          }
+          Row(){
+            Row({space:16}){
+              if (this.illust?.user?.profile_image_urls?.medium){
+                HttpImage({url: this.illust?.user?.profile_image_urls?.medium,br:24}).width(48)
+              }
+              Text(this.illust?.user?.name ?? '').fontSize($r('sys.float.Subtitle_S')).fontWeight(FontWeight.Bold)
+            }.layoutWeight(1)
+            Button(this.followed?'已关注':'关注').width(80)
+              .onClick(()=>{
+                if (!this.illust){
+                  return
+                }
+                if (this.followed) {
+                  ApiClient.postUnFollowUser(this.illust.user.id).then(()=>{
+                    this.followed = false
+                  })
+                }else {
+                  ApiClient.postFollowUser(this.illust.user.id,'public').then(()=>{
+                    this.followed = true
+                  })
+                }
+              })
+          }
+        }.width('100%')
+        .alignItems(HorizontalAlign.Start)
+        if (this.illust?.caption){
+          Row(){
+            //TODO 格式化富文本
+            Text(this.illust.caption)
+          }.margin(16)
+          .padding(8)
+          .width('90%')
+          .backgroundColor(Color.Gray)
+          .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
         }
         Row(){
-          Text(this.illust?.title ?? '').fontSize(30)
-        }
-        Row(){
-          Text(this.illust?.caption ?? '').fontSize(20)
-        }
-        Row(){
-          Text(this.illust?.user.name ?? '').fontSize(20)
-        }
 
-      }
+        }
+      }.justifyContent(FlexAlign.Start)
     }
     .height('100%')
     .width('100%')
