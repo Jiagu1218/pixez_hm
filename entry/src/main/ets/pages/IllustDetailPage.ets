@@ -3,6 +3,8 @@ import { Illust, MetaPage, Tag } from '../network/model/Illust'
 import { LengthUnit, router } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
+import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse';
+import { LazyDataSource } from '../entity/LazyDataSource';
 
 interface Params {
   illustId: number;
@@ -13,6 +15,8 @@ interface Params {
 struct IllustDetailPage {
   @Local illustId: number = 0
   @Local illust: Illust|null = null
+  @Local relatedIllusts: LazyDataSource<Illust> = new LazyDataSource()
+  @Local nextUrl:string|undefined = ''
   @Local followed: boolean = false
   aboutToAppear(): void {
     const params = router.getParams() as Params
@@ -23,6 +27,12 @@ struct IllustDetailPage {
       this.illustId = resp.illust.id
       this.illust = resp.illust
       this.followed = resp.illust.user.is_followed
+    })
+    ApiClient.getIllustRelated(params.illustId).then(res=>{
+      console.info('2222',res)
+      const resp = res?.toJSON() as IllustRelatedResponse
+      this.relatedIllusts.push(...resp.illusts)
+      this.nextUrl = resp.next_url
     })
   }
 
@@ -112,9 +122,37 @@ struct IllustDetailPage {
           .backgroundColor(Color.Gray)
           .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
         }
+        if (this.relatedIllusts){
+          Column(){
+            Grid(){
+              LazyForEach(this.relatedIllusts,(item:Illust)=>{
+                GridItem(){
+                  HttpImage({url: item.image_urls.square_medium,aRatio:1})
+                }.onClick(()=>{
+                  router.pushUrl({
+                    url: 'pages/IllustDetailPage',
+                    params: {
+                      illustId: item.id
+                    }
+                  })
+                })
+              })
+            }.columnsTemplate('1fr 1fr 1fr')
+            .cachedCount(9)
+          }
+        }
       }.justifyContent(FlexAlign.Start)
     }
     .height('100%')
     .width('100%')
+    .onReachEnd(()=>{
+      if (this.nextUrl){
+        ApiClient.getNext(this.nextUrl).then(res=>{
+          const resp = res?.toJSON() as IllustRelatedResponse
+          this.relatedIllusts.push(...resp.illusts)
+          this.nextUrl = resp.next_url
+        })
+      }
+    })
   }
 }

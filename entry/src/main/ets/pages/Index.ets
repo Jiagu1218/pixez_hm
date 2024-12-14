@@ -4,9 +4,7 @@ import { ApiClient } from '../network/ApiClient';
 import { TokenResponse } from '../network/response/TokenResponse';
 import { webview } from '@kit.ArkWeb';
 import { url } from '@kit.ArkTS';
-import { connection } from '@kit.NetworkKit';
 import { Novel } from '../network/model/Novel';
-import { HttpImage } from '../comp/HttpImage';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
 import { AccountManager } from '../util/AccountManager';
 import { ApiUtil } from '../network/util/ApiUtil';
@@ -212,31 +210,6 @@ struct Index {
       }.layoutWeight(1)
       .width('100%')
       .lanes(2)
-      // Web({ src: 'https://baidu.com', controller: this.controller })
-      //   .onErrorReceive(e => {
-      //     let errorInfo = e.error.getErrorInfo()
-      //     console.error('加载webview失败', errorInfo, e.error.getErrorCode())
-      //   })
-      //   .onHttpErrorReceive(e => {
-      //     console.error('加载webview失败', e)
-      //   })
-      //   .onSslErrorEvent(e => {
-      //     console.error('加载webview失败', e)
-      //   })
-      //   .onSslErrorEventReceive(e => {
-      //     console.error('加载webview失败', e)
-      //   })
-      //   .javaScriptAccess(true)
-      //   .domStorageAccess(true)
-      //   .fileAccess(true)
-      //   .onlineImageAccess(true)
-      //   .imageAccess(true)
-      //   .mixedMode(MixedMode.All)
-      //   .zoomAccess(true)
-      //   .databaseAccess(true)
-      //   .layoutWeight(1)
-      //   .width('100%')
-      //   .backgroundColor(Color.Gray)
     }
     .height('100%')
     .width('100%')
