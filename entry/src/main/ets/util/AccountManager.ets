@@ -35,18 +35,21 @@ export class AccountManager {
    * @param {string} refreshToken 刷新令牌
    * @param {appAccount.CreateAccountOptions} opt 可选的账号创建选项
    */
-  public saveAccount(account:string,refreshToken:string,opt?:appAccount.CreateAccountOptions): void {
+  public saveAccount(account: string, refreshToken: string, opt?: appAccount.CreateAccountOptions): void {
     // 先移除已存在的账号，再创建新账号，以确保账号信息的唯一性
     this.accountManager.removeAccount(account)
-    setTimeout(()=>{
-      this.accountManager.createAccount(account,opt).catch((e:BusinessError)=>{
+      .catch((e: BusinessError) => {
+        console.error('移除账号失败', e)
+      }).finally(() => {
+      this.accountManager.createAccount(account, opt).catch((e: BusinessError) => {
         console.error('保存账号失败', e)
       })
       // 保存刷新令牌
-      this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken).catch((e:BusinessError)=>{
-        console.error('保存token失败', e)
-      })
-    },300)
+      this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken)
+        .catch((e: BusinessError) => {
+          console.error('保存token失败', e)
+        })
+    })
   }
 
   /**
@@ -55,7 +58,8 @@ export class AccountManager {
    */
   public getAccounts(): Promise<appAccount.AppAccountInfo[]> {
     // 通过bundleManager获取当前应用的包名，以获取对应的账号信息
-    return this.accountManager.getAccountsByOwner(bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).name)
+    return this.accountManager.getAccountsByOwner(bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION)
+      .name)
   }
 
   /**
@@ -63,7 +67,7 @@ export class AccountManager {
    * @param {string} username 账号名称
    * @returns {Promise<string>} 刷新令牌的Promise对象
    */
-  public getRefreshToken(username:string): Promise<string> {
+  public getRefreshToken(username: string): Promise<string> {
     // 获取指定账号的刷新令牌
     return this.accountManager.getAuthToken(username,
       bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).name,
@@ -76,9 +80,9 @@ export class AccountManager {
    * @param {string} key 自定义数据的键名
    * @returns {string} 自定义数据的值
    */
-  public getAccountCustomData(username:string,key:string):string{
+  public getAccountCustomData(username: string, key: string): string {
     // 同步获取指定账号的自定义数据
-    return this.accountManager.getCustomDataSync(username,key)
+    return this.accountManager.getCustomDataSync(username, key)
   }
 
   /**
@@ -88,8 +92,8 @@ export class AccountManager {
    * @param {string} value 自定义数据的值
    * @returns {Promise<void>} 表示异步操作完成的Promise对象
    */
-  public saveAccountCustomData(username:string,key:string,value:string):Promise<void>{
+  public saveAccountCustomData(username: string, key: string, value: string): Promise<void> {
     // 异步保存指定账号的自定义数据
-    return this.accountManager.setCustomData(username,key,value)
+    return this.accountManager.setCustomData(username, key, value)
   }
 }
