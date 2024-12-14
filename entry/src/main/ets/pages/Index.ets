@@ -8,10 +8,13 @@ import { connection } from '@kit.NetworkKit';
 import { Novel } from '../network/model/Novel';
 import { HttpImage } from '../comp/HttpImage';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
+import { AccountManager } from '../util/AccountManager';
+import { ApiUtil } from '../network/util/ApiUtil';
 
 @Entry
 @ComponentV2
 struct Index {
+  private accountManager: AccountManager = AccountManager.getInstance();
   @Param message: string = 'Hello World';
   @Local url: string = '';
   @Local code: string = '';
@@ -143,6 +146,18 @@ struct Index {
         OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '').then(res => {
           if (res && res.statusCode == 200) {
             let result = res.toJSON() as TokenResponse
+            this.accountManager.getAccounts().then(accounts=>{
+              console.info('accounts', accounts)
+            }).catch((e:BusinessError)=>{
+              console.error('获取账号失败', e)
+            })
+            // const acc = result.user.account
+            // this.accountManager.saveAccount(result.user.account, result.refresh_token,ApiUtil.noNullRecord(result.user))
+            // this.accountManager.getRefreshToken(acc).then(token=>{
+            //   console.info('获取token', token)
+            // }).catch((e:BusinessError)=>{
+            //   console.error('获取token失败', e)
+            // })
             AppStorage.setOrCreate<string>('token', result.access_token)
             console.info('11111', res)
           }
