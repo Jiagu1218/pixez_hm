@@ -8,12 +8,16 @@ export struct HttpImage{
   @Param aRatio:number|null = null
   @Param br:Length | BorderRadiuses | LocalizedBorderRadiuses|null = null
   @Local pic:image.PixelMap|null = null
+  @Event callback?:(pixelMap:image.PixelMap)=>void
 
   aboutToAppear(): void {
     DownloadUtil.downloadImage({
       url:this.url,
       callback: (pic:image.PixelMap)=>{
         this.pic = pic
+        if (this.callback) {
+          this.callback(pic)
+        }
       }
     })
   }
