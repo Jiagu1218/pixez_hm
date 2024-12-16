@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "write_image_video_reason",
+      "value": "保存图片"
     }
   ]
 }

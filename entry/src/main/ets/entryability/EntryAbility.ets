@@ -5,6 +5,7 @@ import { ApiUtil } from '../network/util/ApiUtil';
 import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
 import { DownloadUtil } from '../network/util/DownloadUtil';
+import { ImageUtil } from '../network/util/ImageUtli';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -34,6 +35,7 @@ export default class EntryAbility extends UIAbility {
     // 初始化链接
     ApiUtil.init()
     DownloadUtil.init()
+    ImageUtil.init(this.context)
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
