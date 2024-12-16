@@ -28,6 +28,7 @@ export struct SaveImage{
               }})
             }.width('100%')
             .height('100%')
+            .justifyContent(FlexAlign.Center)
           },(url:string,index)=>index.toString())
         }.onChange((index:number)=>{
           this.currentUrl = this.urls[index]
