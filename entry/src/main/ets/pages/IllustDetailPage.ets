@@ -51,6 +51,7 @@ struct IllustDetailPage {
           // 插画
           Column(){
             if (this.illust) {
+              // TODO type = ugoira 时使用 ImageAnimator
               if (this.illust.meta_pages?.length>0) {
                 ForEach(this.illust.meta_pages,(item:MetaPage,index)=>{
                   HttpImage({url: item.image_urls.large})

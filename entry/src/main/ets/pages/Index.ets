@@ -112,7 +112,7 @@ struct Index {
         })
       })
       Button("测试getUgoiraMetadata").onClick(() => {
-        ApiClient.getUgoiraMetadata(81804379).then(res => {
+        ApiClient.getUgoiraMetadata(118216766).then(res => {
           console.info('11111', res)
           if (res) {
             const resp = res.toJSON()
