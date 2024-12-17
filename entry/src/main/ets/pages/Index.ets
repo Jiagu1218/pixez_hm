@@ -9,6 +9,8 @@ import { NovelRecommendedResponse } from '../network/response/NovelRecommendedRe
 import { AccountManager } from '../util/AccountManager';
 import { ApiUtil } from '../network/util/ApiUtil';
 import { router } from '@kit.ArkUI';
+import { HtmlUtil } from '../network/util/HtmlUtil';
+import { WebViewNovel } from '../network/model/WebViewNovel';
 
 @Entry
 @ComponentV2
@@ -149,10 +151,15 @@ struct Index {
         })
       })
       Button("测试webviewNovel").onClick(() => {
-        ApiClient.webviewNovel(15832696).then(res => {
+        ApiClient.webviewNovel(this.novels[5].id).then(res => {
           if (res?.headers['content-type']?.match('text/html')) {
             const body = res.toString()
-            console.info('11111', body)
+            const jsonStr = HtmlUtil.getNovelJson(body!)
+            console.info('11111', body,jsonStr)
+            if (jsonStr) {
+              const json = JSON.parse(jsonStr) as WebViewNovel
+              console.info('webviewNovel',json)
+            }
           }
         }).catch((e: BusinessError)=>{
           console.error('22222', e)
