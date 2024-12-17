@@ -6,6 +6,7 @@ import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse';
 import { LazyDataSource } from '../entity/LazyDataSource';
 import { SaveImage } from '../comp/SaveImage';
+import { DateTimeUtil } from '../network/util/DateTimeUtil';
 
 interface Params {
   illustId: number;
@@ -81,7 +82,7 @@ struct IllustDetailPage {
                 }.fontSize(14)
                 Text(){
                   SymbolSpan($r('sys.symbol.calendar_badge_clock')).fontColor([Color.Gray])
-                  Span(this.illust?.create_date ?? '-')
+                  Span(this.illust?DateTimeUtil.parseIsoTimeToLocalFormatTime(this.illust.create_date) : '-')
                 }.fontSize(14)
               }
               Row({space:16}){

@@ -3,6 +3,7 @@ import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
 import { AppConfig } from "../AppConfig"
 import { TokenInterceptor } from "../interceptor/TokenInterceptor"
+import { DateTimeUtil } from "./DateTimeUtil"
 
 export class ApiUtil {
   private static session: rcp.Session;
@@ -11,7 +12,7 @@ export class ApiUtil {
    * */
   public static async init() {
     if (!ApiUtil.session) {
-      const time = ApiUtil.getIsoTime()
+      const time = DateTimeUtil.getIsoTime()
       ApiUtil.session = rcp.createSession({
         baseAddress: AppConfig.BASE_API_URL,
         headers: {
@@ -147,32 +148,6 @@ export class ApiUtil {
 
     // 返回转换后的记录对象
     return record
-  }
-
-  /**
-   * 获取当前时间的ISO格式表示，带有时区偏移
-   *
-   * 此函数旨在提供一个标准化的时间表示方法，用于在不同时间区的用户之间进行时间通信和记录
-   * 它生成的时间字符串格式符合ISO 8601标准，确保了时间和日期数据的全球互操作性和理解性
-   *
-   * @returns {string} 当前时间的ISO格式字符串，形如"YYYY-MM-DDTHH:mm:ss±HH:mm"
-   */
-  public static getIsoTime(): string {
-    // 获取当前日期和时间
-    let now = new Date()
-    // 计算本地时间与UTC时间之间的时差，单位为分钟
-    let offsetMinutes = now.getTimezoneOffset();
-    // 确定时区偏移的正负号，本地时间早于UTC则为'+', 晚于UTC则为'-'
-    let offsetSign = offsetMinutes < 0 ? '+' : '-';
-    // 计算时区偏移的小时部分
-    let offsetHours = Math.abs(Math.floor(offsetMinutes / 60));
-    // 计算时区偏移的分钟部分
-    let offsetMinutesRemaining = Math.abs(offsetMinutes % 60);
-    // 构造时区偏移字符串，格式为±HH:mm
-    let timezoneOffset =
-      `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutesRemaining).padStart(2, '0')}`;
-    // 返回当前时间的ISO格式字符串，并拼接上时区偏移
-    return now.toISOString().split('.')[0] + timezoneOffset
   }
 
   /**

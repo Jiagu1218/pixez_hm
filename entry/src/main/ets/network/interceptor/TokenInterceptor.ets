@@ -1,6 +1,7 @@
 import { rcp } from '@kit.RemoteCommunicationKit'
 import { ApiUtil } from '../util/ApiUtil'
 import { AppConfig } from '../AppConfig'
+import { DateTimeUtil } from '../util/DateTimeUtil'
 
 /**
  * token拦截器
@@ -14,7 +15,7 @@ export class TokenInterceptor implements rcp.Interceptor{
       if (token && !context.request.headers['authorization']) {
         context.request.headers['authorization'] = 'Bearer '+ token
       }
-      const time = ApiUtil.getIsoTime()
+      const time = DateTimeUtil.getIsoTime()
       context.request.headers['X-Client-Time'] = time
       context.request.headers['X-Client-Hash'] = ApiUtil.getHash(time + AppConfig.HASH_SALT)
     }
