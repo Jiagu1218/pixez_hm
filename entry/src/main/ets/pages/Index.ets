@@ -3,7 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { ApiClient } from '../network/ApiClient';
 import { TokenResponse } from '../network/response/TokenResponse';
 import { webview } from '@kit.ArkWeb';
-import { url } from '@kit.ArkTS';
+import { url, util } from '@kit.ArkTS';
 import { Novel } from '../network/model/Novel';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
 import { AccountManager } from '../util/AccountManager';
@@ -74,13 +74,6 @@ struct Index {
           console.error('22222', e)
         })
       })
-      Button("测试getIllustRecommend").onClick(() => {
-        ApiClient.getIllustRecommend().then(res => {
-          console.info('11111', res)
-        }).catch((e: BusinessError) => {
-          console.error('22222', e)
-        })
-      })
       Button("测试getUser").onClick(() => {
         let userId:string = '6074768'
         ApiClient.getUser(userId).then(res => {
@@ -141,6 +134,30 @@ struct Index {
           console.error('22222', e)
         })
       })
+      Button('getNovelDetail').onClick(() => {
+        ApiClient.getNovelDetail(15832696).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError)=>{
+          console.error('22222', e)
+        })
+      })
+      Button("测试getNovelText").onClick(() => {
+        ApiClient.getNovelText(15832696).then(res => {
+          console.info('11111', res)
+        }).catch((e: BusinessError)=>{
+          console.error('22222', e)
+        })
+      })
+      Button("测试webviewNovel").onClick(() => {
+        ApiClient.webviewNovel(15832696).then(res => {
+          if (res?.headers['content-type']?.match('text/html')) {
+            const body = res.toString()
+            console.info('11111', body)
+          }
+        }).catch((e: BusinessError)=>{
+          console.error('22222', e)
+        })
+      })
       Button("测试getNext").onClick(() => {
         ApiClient.getNext('https://app-api.pixiv.net/v1/novel/recommended?include_ranking_novels=false&include_privacy_policy=false&offset=15&already_recommended=22291583%2C17926293%2C18913289%2C22438378%2C17896532%2C22302763%2C23425714%2C18311794%2C23071218%2C13033079%2C23508714%2C17818353%2C17037801%2C23411262%2C22335392%2C13258882%2C18445500%2C17778560%2C21241060%2C23571787%2C23432939%2C22226712%2C22376729%2C13214719%2C22131414%2C22831890%2C22226144%2C23508040%2C22387489%2C21274507%2C22974989%2C19902538%2C20576645&max_bookmark_id_for_recommend=5842399607')
           .then(res => {
@@ -177,15 +194,15 @@ struct Index {
           console.error('22222', e)
         })
       })
-      Button("获取验证信息").onClick(() => {
-        let codeVerifier = OauthClient.generateCodeVerify()
-        let challenge = OauthClient.getCodeChallenge(codeVerifier)
-        console.info('获取验证信息', codeVerifier, challenge)
-      })
       Button("首页").onClick(() => {
         router.pushUrl({
           url: 'pages/HomePage'
         })
+      })
+      Button("获取验证信息").onClick(() => {
+        let codeVerifier = OauthClient.generateCodeVerify()
+        let challenge = OauthClient.getCodeChallenge(codeVerifier)
+        console.info('获取验证信息', codeVerifier, challenge)
       })
       Button("获取验证地址").onClick(() => {
         this.url = OauthClient.generateWebviewUrl()

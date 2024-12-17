@@ -71,6 +71,8 @@ export class ApiClient {
    *
    * @param novelId 小说ID
    * @returns 返回包含小说文本信息的Promise对象
+   * @deprecated 该接口已无法访问
+   * @useinstead ApiClient.webviewNovel
    */
   public static getNovelText(novelId: number): Promise<rcp.Response | null> {
     const params = new url.URLParams({
@@ -81,13 +83,13 @@ export class ApiClient {
 
   /**
    * 获取小说Web视图
-   *
-   * @param novelId 小说ID
+   * （判断headers 觉得调用toString 或 toJSON ）
+   * @param id 小说ID
    * @returns 返回包含小说Web视图信息的Promise对象
    */
-  public static webviewNovel(novelId: number): Promise<rcp.Response | null> {
+  public static webviewNovel(id: number): Promise<rcp.Response | null> {
     const params = new url.URLParams({
-      'novel_id': novelId.toString()
+      'id': id.toString()
     })
     return ApiUtil.get(`/webview/v2/novel?${params}`)
   }
