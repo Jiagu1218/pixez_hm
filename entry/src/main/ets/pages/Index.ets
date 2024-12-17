@@ -11,6 +11,7 @@ import { ApiUtil } from '../network/util/ApiUtil';
 import { router } from '@kit.ArkUI';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 import { WebViewNovel } from '../network/model/WebViewNovel';
+import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 
 @Entry
 @ComponentV2
@@ -99,18 +100,24 @@ struct Index {
           console.error('22222', e)
         })
       })
-      Button("测试postFollowUser").onClick(() => {
-        let userId:number = 6634929
-        ApiClient.postFollowUser(userId,'public').then(res => {
+      Button('测试getIllustDetail').onClick(() => {
+        ApiClient.getIllustDetail(81804379).then(res => {
           console.info('11111', res)
+          if(res){
+            const resp = res.toJSON() as IllustDetailResponse
+            console.info('getIllustDetail',resp)
+          }
         }).catch((e: BusinessError) => {
           console.error('22222', e)
         })
       })
-      Button("测试postUnFollowUser").onClick(() => {
-        let userId:number = 6634929
-        ApiClient.postUnFollowUser(userId).then(res => {
+      Button("测试getUgoiraMetadata").onClick(() => {
+        ApiClient.getUgoiraMetadata(81804379).then(res => {
           console.info('11111', res)
+          if (res) {
+            const resp = res.toJSON()
+            console.info('getUgoiraMetadata', resp)
+          }
         }).catch((e: BusinessError) => {
           console.error('22222', e)
         })

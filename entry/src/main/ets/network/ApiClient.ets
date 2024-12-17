@@ -679,6 +679,7 @@ export class ApiClient {
 
   /**
    * 获取动图元数据
+   * 插画类型为 ugoira 的插图调用获取动图元数据的接口
    * @param illustId 插图ID
    * @returns 返回Promise，解析为rcp.Response对象或null
    */
