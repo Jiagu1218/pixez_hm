@@ -1,0 +1,30 @@
+import { ImageViewTouch, DisplayType} from "@ohos/imageviewzoom"
+import { DownloadUtil } from "../network/util/DownloadUtil"
+import { image } from "@kit.ImageKit"
+
+@ComponentV2
+export struct SwiperImageItem{
+  @Require @Param url:string
+  @Provider('ImageViewTouchModel') private touchModel:ImageViewTouch.Model = new ImageViewTouch.Model()
+  @Event callback?:(pixelMap:image.PixelMap)=>void
+  aboutToAppear(): void {
+    // this.touchModel.setDisplayType(DisplayType.FIT_TO_SCREEN)
+    this.loadAllPixelMap()
+  }
+
+  loadAllPixelMap(){
+    DownloadUtil.downloadImage({
+      url:this.url,
+      callback: (pic:image.PixelMap)=>{
+        this.touchModel.setImageSrc(pic)
+        this.callback?.(pic)
+      }
+    })
+  }
+  build() {
+    Column(){
+      ImageViewTouch({})
+    }.width('100%')
+    .height('100%')
+  }
+}

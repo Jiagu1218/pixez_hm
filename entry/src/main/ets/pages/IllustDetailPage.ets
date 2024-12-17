@@ -22,7 +22,8 @@ struct IllustDetailPage {
   @Local followed: boolean = false
   @Local illustsRawUrl:Array<string> = []
   @Local showRaw:boolean = false
-  currentRawUrl:string = ''
+  @Local initIndex:number = 0
+  @Local currentRawUrl:string = ''
   aboutToAppear(): void {
     const params = router.getParams() as Params
     this.illustId = params.illustId
@@ -51,9 +52,10 @@ struct IllustDetailPage {
           Column(){
             if (this.illust) {
               if (this.illust.meta_pages?.length>0) {
-                ForEach(this.illust.meta_pages,(item:MetaPage)=>{
+                ForEach(this.illust.meta_pages,(item:MetaPage,index)=>{
                   HttpImage({url: item.image_urls.large})
                     .onClick(()=>{
+                      this.initIndex = index
                       this.currentRawUrl = item.image_urls.original
                       this.showRaw = true
                     })
@@ -175,7 +177,7 @@ struct IllustDetailPage {
         }
       })
       if (this.showRaw){
-        SaveImage({urls: this.illustsRawUrl})
+        SaveImage({urls: this.illustsRawUrl,initIndex: this.initIndex})
       }
     }.height('100%')
     .width('100%')
