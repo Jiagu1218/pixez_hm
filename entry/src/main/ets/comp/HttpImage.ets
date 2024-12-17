@@ -6,6 +6,7 @@ import { ImageUtil } from "../network/util/ImageUtli"
 export struct HttpImage{
   @Require @Param url:string
   @Param aRatio:number|null = null
+  @Local defaultRatio:number = 16/9
   @Param br:Length | BorderRadiuses | LocalizedBorderRadiuses|null = null
   @Local pic:image.PixelMap|null = null
   @Event callback?:(pixelMap:image.PixelMap)=>void
@@ -15,13 +16,15 @@ export struct HttpImage{
       url:this.url,
       callback: (pic:image.PixelMap)=>{
         this.pic = pic
+        const info = pic.getImageInfoSync()
+        this.defaultRatio = info.size.width/info.size.height
         this.callback?.(pic)
       }
     })
   }
   build() {
     Image(this.pic)
-      .aspectRatio(this.aRatio)
+      .aspectRatio(this.aRatio??this.defaultRatio)
       .width('100%')
       .alt($r('app.media.picture_damage'))
       .objectFit(ImageFit.Contain)

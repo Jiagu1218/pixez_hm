@@ -26,12 +26,9 @@ export struct SaveImage{
       Column(){
         Swiper(this.controller){
           ForEach(this.urls,(url:string)=>{
-            Column(){
-              HttpImage({url: url,callback: (pixelMap:image.PixelMap)=>{
-                this.pixelMap.set(url,pixelMap)
-              }})
-            }.width('100%')
-            .height('100%')
+            SwiperImageItem({url: url,callback: (pixelMap:image.PixelMap)=>{
+              this.pixelMap.set(url,pixelMap)
+            }})
           },(url:string,index)=>index.toString())
         }.onChange((index:number)=>{
           this.currentUrl = this.urls[index]

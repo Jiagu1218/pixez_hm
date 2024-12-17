@@ -15,7 +15,7 @@ export struct NovelCard {
   build() {
     Row(){
       Column(){
-        HttpImage({url: this.novel.image_urls.medium,aRatio:this.aRatio})
+        HttpImage({url: this.novel.image_urls.medium})
       }.width('30%')
       Column(){
         Text(this.novel.title).maxLines(1).fontSize(16).fontWeight(500)
