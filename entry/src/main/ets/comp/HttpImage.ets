@@ -15,9 +15,7 @@ export struct HttpImage{
       url:this.url,
       callback: (pic:image.PixelMap)=>{
         this.pic = pic
-        if (this.callback) {
-          this.callback(pic)
-        }
+        this.callback?.(pic)
       }
     })
   }

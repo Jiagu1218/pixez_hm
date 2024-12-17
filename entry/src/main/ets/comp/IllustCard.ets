@@ -2,20 +2,29 @@ import { ApiClient } from "../network/ApiClient"
 import { Illust } from "../network/model/Illust"
 import { HttpImage } from "./HttpImage"
 import { router } from "@kit.ArkUI"
+import { uiEffect } from "@kit.ArkGraphics2D"
 
 @ComponentV2
 export struct IllustCard{
   @Require @Param illust:Illust
+  @Param limitLevel:number = 6
   @Local aRatio:number = 16/9
   @Local like:boolean = false
+  @Local filter:Filter = uiEffect.createFilter()
   aboutToAppear(): void {
     this.aRatio = this.illust.width/this.illust.height
     this.like = this.illust.is_bookmarked
+    if (this.illust.sanity_level>=this.limitLevel) {
+      this.filter.blur(20)
+    }
   }
 
   build() {
     Column(){
-      HttpImage({url: this.illust.image_urls.large,aRatio:this.aRatio,br:{topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')}})
+      Row(){
+        HttpImage({url: this.illust.image_urls.large,aRatio:this.aRatio,br:{topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')}})
+      }.compositingFilter(this.filter)
+      .borderRadius({topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')})
       Row(){
         Column({space:6}){
           Text(this.illust.title).maxLines(1).fontSize(16).fontWeight(500)

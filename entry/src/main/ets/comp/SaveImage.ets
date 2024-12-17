@@ -1,22 +1,26 @@
 import { ImageUtil } from "../network/util/ImageUtli"
 import { HttpImage } from "./HttpImage"
 import { image } from "@kit.ImageKit"
+import { SwiperImageItem } from "./SwiperImageItem"
 
 @ComponentV2
 export struct SaveImage{
   private controller:SwiperController = new SwiperController()
   @Require @Param urls:Array<string>
-  currentUrl:string = ''
+  @Param initIndex:number = 0
+  @Local currentUrl:string = ''
   @Local currentIndex:number = 0
   @Local pixelMap:Map<string,image.PixelMap> = new Map()
   aboutToAppear(): void {
-    this.controller.changeIndex(this.urls.indexOf(this.currentUrl))
+    this.controller.changeIndex(this.initIndex)
+    this.currentIndex = this.initIndex
     if (this.urls.length==1) {
       this.currentUrl = this.urls[0]
     }else {
       this.currentUrl = this.urls[this.currentIndex]
     }
   }
+
   build() {
     Stack(){
       Column(){
@@ -28,11 +32,11 @@ export struct SaveImage{
               }})
             }.width('100%')
             .height('100%')
-            .justifyContent(FlexAlign.Center)
           },(url:string,index)=>index.toString())
         }.onChange((index:number)=>{
           this.currentUrl = this.urls[index]
-        })
+        }).index(this.currentIndex)
+        .cachedCount(3)
       }.height('100%')
       .width('100%')
       Row(){

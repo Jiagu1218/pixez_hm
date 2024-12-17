@@ -6,6 +6,7 @@ import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse';
 import { LazyDataSource } from '../entity/LazyDataSource';
 import { SaveImage } from '../comp/SaveImage';
+import { DateTimeUtil } from '../network/util/DateTimeUtil';
 
 interface Params {
   illustId: number;
@@ -21,7 +22,8 @@ struct IllustDetailPage {
   @Local followed: boolean = false
   @Local illustsRawUrl:Array<string> = []
   @Local showRaw:boolean = false
-  currentRawUrl:string = ''
+  @Local initIndex:number = 0
+  @Local currentRawUrl:string = ''
   aboutToAppear(): void {
     const params = router.getParams() as Params
     this.illustId = params.illustId
@@ -50,9 +52,10 @@ struct IllustDetailPage {
           Column(){
             if (this.illust) {
               if (this.illust.meta_pages?.length>0) {
-                ForEach(this.illust.meta_pages,(item:MetaPage)=>{
+                ForEach(this.illust.meta_pages,(item:MetaPage,index)=>{
                   HttpImage({url: item.image_urls.large})
                     .onClick(()=>{
+                      this.initIndex = index
                       this.currentRawUrl = item.image_urls.original
                       this.showRaw = true
                     })
@@ -81,7 +84,7 @@ struct IllustDetailPage {
                 }.fontSize(14)
                 Text(){
                   SymbolSpan($r('sys.symbol.calendar_badge_clock')).fontColor([Color.Gray])
-                  Span(this.illust?.create_date ?? '-')
+                  Span(this.illust?DateTimeUtil.parseIsoTimeToLocalFormatTime(this.illust.create_date) : '-')
                 }.fontSize(14)
               }
               Row({space:16}){
@@ -174,7 +177,7 @@ struct IllustDetailPage {
         }
       })
       if (this.showRaw){
-        SaveImage({urls: this.illustsRawUrl})
+        SaveImage({urls: this.illustsRawUrl,initIndex: this.initIndex})
       }
     }.height('100%')
     .width('100%')

@@ -27,8 +27,10 @@ struct HomePage {
       TabContent(){
         WaterFlow(){
           LazyForEach(this.recommendIllusts, (item: Illust, index)=>{
-            FlowItem(){
-              IllustCard({illust:item})
+            if (item.visible) {
+              FlowItem(){
+                IllustCard({illust:item})
+              }
             }
           },(item: Illust)=>item.id.toString())
         }.onReachEnd(()=>{
