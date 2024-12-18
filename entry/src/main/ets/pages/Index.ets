@@ -25,6 +25,7 @@ struct Index {
   @Local code: string = '';
   @Local controller: webview.WebviewController = new webview.WebviewController();
   @Local novels:Array<Novel> = new Array<Novel>();
+  @Local aRatio:number = 1;
   @Local ani:Array<ImageFrameInfo> = []
 
   aboutToAppear(): void {
@@ -62,7 +63,7 @@ struct Index {
           .images(this.ani)
           .width('100%')
           .state(AnimationStatus.Running)
-          .aspectRatio(1)
+          .aspectRatio(this.aRatio)
           .iterations(-1)
       }
       Button("测试walkthroughIllusts").onClick(() => {
@@ -107,6 +108,7 @@ struct Index {
           console.info('11111', res)
           if(res){
             const resp = res.toJSON() as IllustDetailResponse
+            this.aRatio = resp.illust.width / resp.illust.height
             console.info('getIllustDetail',resp)
           }
         }).catch((e: BusinessError) => {
@@ -114,7 +116,7 @@ struct Index {
         })
       })
       Button("测试getUgoiraMetadata").onClick(() => {
-        ApiClient.getUgoiraMetadata(118216766).then(res => {
+        ApiClient.getUgoiraMetadata(81804379).then(res => {
           console.info('11111', res)
           if (res) {
             const resp = res.toJSON() as UgoiraMetadataResponse
