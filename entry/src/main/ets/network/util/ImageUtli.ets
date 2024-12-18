@@ -1,7 +1,7 @@
 import { photoAccessHelper } from "@kit.MediaLibraryKit";
 import { common } from "@kit.AbilityKit";
 import { image } from "@kit.ImageKit";
-import { fileIo } from "@kit.CoreFileKit";
+import { fileIo, fileUri } from "@kit.CoreFileKit";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { UgoiraMetadata } from "../model/UgoiraMetadata";
 
@@ -64,8 +64,9 @@ export class ImageUtil{
     const imageFileDir = cacheDir.concat('/ugoira/',imageFilePath!)
     return metadate.frames.map(frame=>{
       const imageFile = imageFileDir.concat('/',frame.file)
+
       return {
-        src:`file://${imageFile}`,
+        src:fileUri.getUriFromPath(imageFile),
         duration:frame.delay
       } as ImageFrameInfo
     })
