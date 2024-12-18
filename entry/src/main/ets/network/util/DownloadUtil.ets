@@ -1,9 +1,11 @@
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { AppConfig } from "../AppConfig";
 import { TokenInterceptor } from "../interceptor/TokenInterceptor";
-import { Queue } from "@kit.ArkTS";
+import { Queue, url } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
+import { BusinessError, zlib } from "@kit.BasicServicesKit";
+import { fileIo } from "@kit.CoreFileKit";
 
 /**
  * 定义下载任务接口
@@ -140,6 +142,69 @@ export class DownloadUtil {
     } else {
       // 如果没有获取到Session，将任务加入等待队列
       DownloadUtil.waitQueue.add(task);
+    }
+  }
+
+  /**
+   * 下载ugoira文件
+   *
+   * 本函数旨在从给定的源URL下载ugoira（动画插图）文件，并将其保存到临时目录中，然后解压缩到缓存目录
+   * 它首先解析URL以获取文件名和目录路径，然后检查并创建必要的目录结构如果文件尚未存在，
+   * 它将下载文件并将其解压缩到指定的缓存目录中
+   *
+   * @param src ugoira文件的URL如果为空或无效，则函数将直接返回
+   */
+  public static downloadUgoiraFile(src:string){
+    // 检查src参数是否为空或无效
+    if (!src || src.length === 0) {
+      return
+    }
+    try {
+      // 解析URL以获取源信息
+      const source = url.URL.parseURL(src)
+      // 提取文件名
+      const fileName = src.split('/').pop()
+      // 提取文件目录名
+      const fileDir = fileName?.split('.').shift()
+      // 定义临时文件目录
+      const tempDir = `${getContext().tempDir}/ugoira`
+      // 检查并创建临时目录
+      if (!fileIo.accessSync(tempDir, fileIo.AccessModeType.EXIST)) {
+        fileIo.mkdirSync(tempDir,true)
+      }
+      // 定义文件路径
+      const filePath = `${tempDir}/${fileName}`
+      // 打开或创建文件
+      const file = fileIo.openSync(filePath,fileIo.OpenMode.CREATE|fileIo.OpenMode.READ_WRITE)
+      // 获取下载会话
+      const session = DownloadUtil.getSession()
+      // 下载文件到本地
+      session?.downloadToFile(source,{
+        kind:'file',
+        file:file.fd,
+        keepLocal:true
+      }).then(response=>{
+        console.log('response',response)
+        // 定义缓存目录
+        const cacheDir = `${getContext().cacheDir}/ugoira/${fileDir}`
+        // 检查并创建缓存目录
+        if (!fileIo.accessSync(cacheDir, fileIo.AccessModeType.EXIST)) {
+          fileIo.mkdirSync(cacheDir,true)
+        }
+        // 解压缩文件到缓存目录
+        zlib.decompressFile(filePath,cacheDir).then(()=>{
+          console.log('decompressFile success')
+        }).catch((e:BusinessError)=>{
+          console.log('err',e)
+        })
+      }).catch((e:BusinessError)=>{
+        console.log('err',e)
+      }).finally(()=>{
+        // 关闭文件并删除临时文件
+        fileIo.close(file.fd).finally(() => fileIo.unlink(filePath))
+      })
+    } catch (e) {
+      console.log('err',e)
     }
   }
 

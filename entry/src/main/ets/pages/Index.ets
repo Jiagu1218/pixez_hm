@@ -12,6 +12,8 @@ import { router } from '@kit.ArkUI';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 import { WebViewNovel } from '../network/model/WebViewNovel';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
+import { UgoiraMetadataResponse } from '../network/response/UgoiraMetadataResponse';
+import { DownloadUtil } from '../network/util/DownloadUtil';
 
 @Entry
 @ComponentV2
@@ -115,7 +117,8 @@ struct Index {
         ApiClient.getUgoiraMetadata(118216766).then(res => {
           console.info('11111', res)
           if (res) {
-            const resp = res.toJSON()
+            const resp = res.toJSON() as UgoiraMetadataResponse
+            DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium)
             console.info('getUgoiraMetadata', resp)
           }
         }).catch((e: BusinessError) => {
