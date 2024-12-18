@@ -14,6 +14,7 @@ import { WebViewNovel } from '../network/model/WebViewNovel';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 import { UgoiraMetadataResponse } from '../network/response/UgoiraMetadataResponse';
 import { DownloadUtil } from '../network/util/DownloadUtil';
+import { ImageUtil } from '../network/util/ImageUtli';
 
 @Entry
 @ComponentV2
@@ -24,6 +25,7 @@ struct Index {
   @Local code: string = '';
   @Local controller: webview.WebviewController = new webview.WebviewController();
   @Local novels:Array<Novel> = new Array<Novel>();
+  @Local ani:Array<ImageFrameInfo> = []
 
   aboutToAppear(): void {
     this.login()
@@ -55,16 +57,14 @@ struct Index {
 
   build() {
     Column() {
-      TextInput().onChange(v => {
-        this.code = v
-      })
-      Button("测试code2Token").onClick(() => {
-        OauthClient.code2Token(this.code).then(res => {
-          console.info('11111', res)
-        }).catch((e: BusinessError) => {
-          console.error('22222', e)
-        })
-      })
+      if (this.ani.length>0){
+        ImageAnimator()
+          .images(this.ani)
+          .width('100%')
+          .state(AnimationStatus.Running)
+          .aspectRatio(1)
+          .iterations(-1)
+      }
       Button("测试walkthroughIllusts").onClick(() => {
         ApiClient.walkthroughIllusts().then(res => {
           console.info('11111', res)
@@ -118,7 +118,11 @@ struct Index {
           console.info('11111', res)
           if (res) {
             const resp = res.toJSON() as UgoiraMetadataResponse
-            DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium)
+            // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600
+            // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600/000001.jpg
+            DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,()=>{
+              this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
+            })
             console.info('getUgoiraMetadata', resp)
           }
         }).catch((e: BusinessError) => {

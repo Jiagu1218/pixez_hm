@@ -3,12 +3,15 @@ import { common } from "@kit.AbilityKit";
 import { image } from "@kit.ImageKit";
 import { fileIo } from "@kit.CoreFileKit";
 import { BusinessError } from "@kit.BasicServicesKit";
+import { UgoiraMetadata } from "../model/UgoiraMetadata";
 
 export class ImageUtil{
   private static photoHelper:photoAccessHelper.PhotoAccessHelper
+  private static context:common.Context
   public static init(context:common.Context){
     try {
       ImageUtil.photoHelper = photoAccessHelper.getPhotoAccessHelper(context)
+      ImageUtil.context = context
     } catch (e) {
       console.log('获取图片保存权限失败',e)
     }
@@ -53,26 +56,19 @@ export class ImageUtil{
       callback?.(false)
       console.log('创建资产失败',e)
     })
-    // ImageUtil.photoHelper.createAssetWithShortTermPermission({
-    //   title: name,
-    //   fileNameExtension:ext,
-    //   photoType: photoAccessHelper.PhotoType.IMAGE,
-    //   subtype:photoAccessHelper.PhotoSubtype.DEFAULT
-    // }).then(asset=>{
-    //   const file = fileIo.openSync(asset,fileIo.OpenMode.CREATE|fileIo.OpenMode.READ_WRITE)
-    //   const packer = image.createImagePacker()
-    //   packer.packToFile(pixel,file.fd,{
-    //     format:mimeType,
-    //     quality:100
-    //   }).catch((e:BusinessError)=>{
-    //     console.log('打包图片失败',e)
-    //   }).finally(()=>{
-    //     fileIo.close(file)
-    //     packer.release()
-    //   })
-    // }).catch((e:BusinessError)=>{
-    //   console.log('创建资产失败',e)
-    // })
+  }
+
+  public static getUgoiraFormCache(metadate:UgoiraMetadata):Array<ImageFrameInfo>{
+    const cacheDir = ImageUtil.context.cacheDir
+    const imageFilePath =metadate.zip_urls.medium.split('/').pop()?.split('.').shift()
+    const imageFileDir = cacheDir.concat('/ugoira/',imageFilePath!)
+    return metadate.frames.map(frame=>{
+      const imageFile = imageFileDir.concat('/',frame.file)
+      return {
+        src:`file://${imageFile}`,
+        duration:frame.delay
+      } as ImageFrameInfo
+    })
   }
 
 }
