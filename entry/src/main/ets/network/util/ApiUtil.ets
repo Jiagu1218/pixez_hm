@@ -114,38 +114,43 @@ export class ApiUtil {
   public static noNullRecord(obj?: object, arraysSplice: string=' '): Record<string, string> {
     // 初始化一个新的记录对象，用于存储转换后的键值对
     const record: Record<string, string> = {}
-    if (obj == undefined || obj == null){
+    if (obj === undefined || obj === null){
       return record
     }
     // 遍历原始对象的所有键
     Object.keys(obj).forEach(key => {
-      // 将小驼峰写法的key转换为下划线写法
-      const lineKey = key.replace(/([A-Z])/g, '_$1').toLowerCase()
       // 只处理值不为null、undefined或空字符串的键值对
-      if (obj[key] != undefined && obj[key] != null && obj[key] != '') {
+      if (obj[key] !== undefined && obj[key] !== null && obj[key] != '') {
+        // 将小驼峰写法的key转换为下划线写法
+        const lineKey = key.replace(/([A-Z])/g, '_$1').toLowerCase()
         // 根据值的类型进行相应的转换
-        if (typeof obj[key] == 'boolean') {
-          // 将布尔值转换为字符串"true"或"false"
-          record[lineKey] = obj[key] ? 'true' : 'false'
-        } else if (typeof obj[key] == 'number' || typeof obj[key] == 'bigint') {
-          // 将数字或大整数类型转换为字符串
-          record[lineKey] = obj[key].toString()
-        } else if (typeof obj[key] == 'string') {
-          // 直接使用字符串类型的值
-          record[lineKey] = obj[key]
-        } else if (typeof obj[key] == 'object') {
-          // 处理对象类型，区分数组和其他对象类型
-          if (Array.isArray(obj[key])) {
-            // 对于数组，将其转换为以分隔符分隔的字符串，并在键名后添加"[]"后缀
-            record[`${key}[]`] = obj[key].join(arraysSplice)
-          } else {
-            // 对于其他对象类型，将其转换为JSON字符串
-            record[lineKey] = JSON.stringify(obj[key])
-          }
+        switch (typeof obj[key]){
+          case 'boolean':
+            // 将布尔值转换为字符串"true"或"false"
+            record[lineKey] = obj[key] ? 'true' : 'false'
+            break
+          case 'number':
+          case 'bigint':
+            // 将数字或大整数类型转换为字符串
+            record[lineKey] = obj[key].toString()
+            break
+          case 'string':
+            // 直接使用字符串类型的值
+            record[lineKey] = obj[key]
+            break
+          case 'object':
+            if (Array.isArray(obj[key])) {
+              // 对于数组，将其转换为以分隔符分隔的字符串，并在键名后添加"[]"后缀
+              record[`${lineKey}[]`] = obj[key].join(arraysSplice)
+            } else {
+              // 对于其他对象类型，将其转换为JSON字符串
+              record[lineKey] = JSON.stringify(obj[key])
+            }
+            break
+          default:
         }
       }
     })
-
     // 返回转换后的记录对象
     return record
   }
