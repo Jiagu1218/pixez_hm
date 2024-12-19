@@ -7,9 +7,9 @@ export struct SaveImage {
   private controller: SwiperController = new SwiperController()
   @Require @Param urls: Array<string>
   @Param initIndex: number = 0
-  @Local currentUrl: string = ''
-  @Local currentIndex: number = 0
-  @Local pixelMap: Map<string, image.PixelMap> = new Map()
+  @Local private currentUrl: string = ''
+  @Local private currentIndex: number = 0
+  @Local private pixelMap: Map<string, image.PixelMap> = new Map()
 
   aboutToAppear(): void {
     this.controller.changeIndex(this.initIndex)

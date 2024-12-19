@@ -5,9 +5,9 @@ import { HttpImage } from "./HttpImage"
 @ComponentV2
 export struct NovelCard {
   @Require @Param novel:Novel
-  @Local aRatio:number = 9/16
-  @Local like:boolean = false
   @Param limitLevel:number = 6
+  @Local private aRatio:number = 9/16
+  @Local private like:boolean = false
   // @Local filter:Filter = uiEffect.createFilter()
   aboutToAppear(): void {
     this.like = this.novel.is_bookmarked

@@ -8,8 +8,8 @@ import { HttpImage } from "./HttpImage"
 @ComponentV2
 export struct UgoiraImage{
   @Require @Param illust:Illust
-  @Local aRatio:number = 1
-  @Local ani:Array<ImageFrameInfo> = []
+  @Local private aRatio:number = 1
+  @Local private ani:Array<ImageFrameInfo> = []
   aboutToAppear(): void {
     this.aRatio = this.illust.width / this.illust.height
   }
