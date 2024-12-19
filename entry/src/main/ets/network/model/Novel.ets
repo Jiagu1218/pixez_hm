@@ -114,7 +114,7 @@ interface ImageUrls {
 /**
  * Tag接口定义了标签的基本属性，包括标签的名称和可选的翻译名称
  * */
-interface Tag {
+export interface Tag {
   /**
    * 标签的名称
    * */
