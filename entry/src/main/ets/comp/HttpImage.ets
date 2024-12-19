@@ -6,9 +6,9 @@ import { ImageUtil } from "../network/util/ImageUtli"
 export struct HttpImage{
   @Require @Param url:string
   @Param aRatio:number|null = null
-  @Local defaultRatio:number = 16/9
   @Param br:Length | BorderRadiuses | LocalizedBorderRadiuses|null = null
-  @Local pic:image.PixelMap|null = null
+  @Local private defaultRatio:number = 16/9
+  @Local private pic:image.PixelMap|null = null
   @Event callback?:(pixelMap:image.PixelMap)=>void
 
   aboutToAppear(): void {

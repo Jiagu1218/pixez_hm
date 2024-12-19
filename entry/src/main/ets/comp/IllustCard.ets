@@ -8,12 +8,20 @@ import { uiEffect } from "@kit.ArkGraphics2D"
 export struct IllustCard{
   @Require @Param illust:Illust
   @Param limitLevel:number = 6
-  @Local aRatio:number = 16/9
-  @Local like:boolean = false
-  @Local filter:Filter = uiEffect.createFilter()
+  @Local private aRatio:number = 16/9
+  @Local private like:boolean = false
+  @Local private filter:Filter = uiEffect.createFilter()
   aboutToAppear(): void {
     this.aRatio = this.illust.width/this.illust.height
     this.like = this.illust.is_bookmarked
+    this.setLimitBlur()
+  }
+  @Monitor('limitLevel')
+  watchLimitLevel(){
+    this.setLimitBlur()
+  }
+
+  setLimitBlur(){
     if (this.illust.sanity_level>=this.limitLevel) {
       this.filter.blur(20)
     }
@@ -23,8 +31,18 @@ export struct IllustCard{
     Column(){
       Stack(){
         Column(){
-          HttpImage({url: this.illust.image_urls.large,aRatio:this.aRatio,br:{topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')}})
+          HttpImage({
+            url: this.illust.image_urls.large,aRatio:this.aRatio,
+            br:{
+              topLeft:$r('sys.float.ohos_id_card_border_radius'),
+              topRight:$r('sys.float.ohos_id_card_border_radius')
+            }
+          })
         }.compositingFilter(this.filter)
+        .borderRadius({
+          topLeft:$r('sys.float.ohos_id_card_border_radius'),
+          topRight:$r('sys.float.ohos_id_card_border_radius')
+        })
         if (this.illust.type !== 'illust'){
           Text(`${this.illust.type}`).borderWidth(1).borderRadius(4).backgroundColor(Color.Gray)
         }
