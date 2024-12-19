@@ -1,6 +1,6 @@
 import { Novel, Tag } from "../network/model/Novel"
 import { HttpImage } from "./HttpImage"
-import { LengthUnit } from "@kit.ArkUI"
+import { LengthUnit, router } from "@kit.ArkUI"
 
 @ComponentV2
 export struct NovelCard {
@@ -46,7 +46,12 @@ export struct NovelCard {
     .aspectRatio(16/9)
     .backgroundColor(Color.Orange)
     .onClick(()=>{
-
+      router.pushUrl({
+        url: 'pages/NovelDetailPage',
+        params: {
+          novelId: this.novel.id
+        }
+      })
     })
   }
 }
