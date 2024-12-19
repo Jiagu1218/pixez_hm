@@ -7,6 +7,7 @@ import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse
 import { LazyDataSource } from '../entity/LazyDataSource';
 import { SaveImage } from '../comp/SaveImage';
 import { DateTimeUtil } from '../network/util/DateTimeUtil';
+import { UgoiraImage } from '../comp/UgoiraImage';
 
 interface Params {
   illustId: number;
@@ -51,7 +52,6 @@ struct IllustDetailPage {
           // 插画
           Column(){
             if (this.illust) {
-              // TODO type = ugoira 时使用 ImageAnimator
               if (this.illust.meta_pages?.length>0) {
                 ForEach(this.illust.meta_pages,(item:MetaPage,index)=>{
                   HttpImage({url: item.image_urls.large})
@@ -62,11 +62,16 @@ struct IllustDetailPage {
                     })
                 },(item:MetaPage,index)=>index.toString())
               }else {
-                HttpImage({url: this.illust.image_urls.large})
-                  .onClick(()=>{
-                    this.currentRawUrl = this.illust!.meta_single_page!.original_image_url!
-                    this.showRaw = true
-                  })
+                if (this.illust.type === 'ugoira'){
+                  UgoiraImage({illust:this.illust})
+                }else {
+                  HttpImage({url: this.illust.image_urls.large})
+                    .onClick(()=>{
+                      this.currentRawUrl = this.illust!.meta_single_page!.original_image_url!
+                      this.showRaw = true
+                    })
+                }
+
               }
             }
           }.width('100%')

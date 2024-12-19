@@ -3,7 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { ApiClient } from '../network/ApiClient';
 import { TokenResponse } from '../network/response/TokenResponse';
 import { webview } from '@kit.ArkWeb';
-import { url, util } from '@kit.ArkTS';
+import { url } from '@kit.ArkTS';
 import { Novel } from '../network/model/Novel';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
 import { AccountManager } from '../util/AccountManager';
@@ -15,6 +15,8 @@ import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 import { UgoiraMetadataResponse } from '../network/response/UgoiraMetadataResponse';
 import { DownloadUtil } from '../network/util/DownloadUtil';
 import { ImageUtil } from '../network/util/ImageUtli';
+import { UgoiraImage } from '../comp/UgoiraImage';
+import { Illust } from '../network/model/Illust';
 
 @Entry
 @ComponentV2
@@ -27,7 +29,7 @@ struct Index {
   @Local novels:Array<Novel> = new Array<Novel>();
   @Local aRatio:number = 1;
   @Local ani:Array<ImageFrameInfo> = []
-
+  @Local illust:Illust|null = null
   aboutToAppear(): void {
     this.login()
   }
@@ -59,13 +61,8 @@ struct Index {
   build() {
     Scroll(){
       Column() {
-        if (this.ani.length>0){
-          ImageAnimator()
-            .images(this.ani)
-            .width('100%')
-            .state(AnimationStatus.Running)
-            .aspectRatio(this.aRatio)
-            .iterations(-1)
+        if (this.illust){
+          UgoiraImage({illust:this.illust})
         }
         Button("测试walkthroughIllusts").onClick(() => {
           ApiClient.walkthroughIllusts().then(res => {
@@ -109,6 +106,7 @@ struct Index {
             console.info('11111', res)
             if(res){
               const resp = res.toJSON() as IllustDetailResponse
+              this.illust = resp.illust
               this.aRatio = resp.illust.width / resp.illust.height
               console.info('getIllustDetail',resp)
             }
@@ -123,8 +121,10 @@ struct Index {
               const resp = res.toJSON() as UgoiraMetadataResponse
               // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600
               // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600/000001.jpg
-              DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,()=>{
-                this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
+              DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,(success)=>{
+                if (success) {
+                  this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
+                }
               })
               console.info('getUgoiraMetadata', resp)
             }

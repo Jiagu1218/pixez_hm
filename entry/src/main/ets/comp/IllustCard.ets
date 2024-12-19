@@ -21,9 +21,14 @@ export struct IllustCard{
 
   build() {
     Column(){
-      Row(){
-        HttpImage({url: this.illust.image_urls.large,aRatio:this.aRatio,br:{topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')}})
-      }.compositingFilter(this.filter)
+      Stack(){
+        Column(){
+          HttpImage({url: this.illust.image_urls.large,aRatio:this.aRatio,br:{topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')}})
+        }.compositingFilter(this.filter)
+        if (this.illust.type !== 'illust'){
+          Text(`${this.illust.type}`).borderWidth(1).borderRadius(4).backgroundColor(Color.Gray)
+        }
+      }.alignContent(Alignment.TopEnd)
       .borderRadius({topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')})
       Row(){
         Column({space:6}){
