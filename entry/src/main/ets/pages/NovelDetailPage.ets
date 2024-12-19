@@ -35,6 +35,7 @@ struct NovelDetailPage {
             const json = JSON.parse(jsonStr) as WebViewNovel
             console.info('webviewNovel', json)
             this.webViewNovel = json
+            this.scroller.scrollTo({ yOffset:0,xOffset:0})
           }
         }
       }
