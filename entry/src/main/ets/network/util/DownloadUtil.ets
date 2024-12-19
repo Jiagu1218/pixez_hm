@@ -153,11 +153,12 @@ export class DownloadUtil {
    * 它将下载文件并将其解压缩到指定的缓存目录中
    *
    * @param src ugoira文件的URL如果为空或无效，则函数将直接返回
-   * @param callback 下载完成后的回调函数，默认为空
+   * @param callback 下载完成后的回调函数，参数为true表示下载成功，false表示下载失败
    */
-  public static downloadUgoiraFile(src:string,callback?:()=>void){
+  public static downloadUgoiraFile(src:string,callback?:(success:boolean)=>void){
     // 检查src参数是否为空或无效
     if (!src || src.length === 0) {
+      callback?.(false)
       return
     }
     try {
@@ -167,6 +168,12 @@ export class DownloadUtil {
       const fileName = src.split('/').pop()
       // 提取文件目录名
       const fileDir = fileName?.split('.').shift()
+      // 定义缓存目录
+      const cacheDir = `${getContext().cacheDir}/ugoira/${fileDir}`
+      if (fileIo.accessSync(cacheDir, fileIo.AccessModeType.EXIST)){
+        callback?.(true)
+        return
+      }
       // 定义临时文件目录
       const tempDir = `${getContext().tempDir}/ugoira`
       // 检查并创建临时目录
@@ -179,8 +186,6 @@ export class DownloadUtil {
       const file = fileIo.openSync(filePath,fileIo.OpenMode.CREATE|fileIo.OpenMode.READ_WRITE)
       // 获取下载会话
       const session = DownloadUtil.getSession()
-      // 定义缓存目录
-      const cacheDir = `${getContext().cacheDir}/ugoira/${fileDir}`
       // 下载文件到本地
       session?.downloadToFile(source,{
         kind:'file',
@@ -194,18 +199,21 @@ export class DownloadUtil {
         }
         // 解压缩文件到缓存目录
         zlib.decompressFile(filePath,cacheDir).then(()=>{
-          callback?.()
+          callback?.(true)
           console.log('decompressFile success')
         }).catch((e:BusinessError)=>{
           console.log('err',e)
+          callback?.(false)
         }).finally(()=>{
           // 关闭文件并删除临时文件
           fileIo.close(file.fd).finally(() => fileIo.unlink(filePath))
         })
       }).catch((e:BusinessError)=>{
+        callback?.(false)
         console.log('err',e)
       })
     } catch (e) {
+      callback?.(false)
       console.log('err',e)
     }
   }
