@@ -118,7 +118,7 @@ export class DownloadUtil {
   public static async downloadImage(task: ImageTask): Promise<void> {
     let cache = PixelCache.getCache(task.url);
     if (cache) {
-      task.callback(cache)
+      task.callback?.(cache)
       return
     }
 
@@ -131,7 +131,7 @@ export class DownloadUtil {
         const imageSource = image.createImageSource(response.body)
         const pixelMap = imageSource.createPixelMapSync()
         PixelCache.setCache(task.url, pixelMap)
-        task.callback(pixelMap);
+        task.callback?.(pixelMap);
       } catch (e) {
         console.error(`err: err code is ${e.code}, err message is ${JSON.stringify(e)}`);
       } finally {
