@@ -1,9 +1,7 @@
 import { LengthUnit, router } from '@kit.ArkUI';
 import { HttpImage } from '../comp/HttpImage';
 import { ApiClient } from '../network/ApiClient';
-import { Novel } from '../network/model/Novel';
 import { WebViewNovel } from '../network/model/WebViewNovel';
-import { NovelDetailResponse } from '../network/response/NovelDetailResponse';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 
 interface Params {
@@ -14,7 +12,6 @@ interface Params {
 @ComponentV2
 struct NovelDetailPage {
   @Local private novelId: number = 0
-  @Local private novel: Novel | null = null
   @Local private webViewNovel: WebViewNovel | null = null
   private scroller: Scroller = new Scroller()
 
@@ -49,21 +46,30 @@ struct NovelDetailPage {
 
   build() {
     Scroll(this.scroller) {
-      Column() {
+      Column({space:16}) {
         if (this.webViewNovel) {
           Column() {
             HttpImage({ url: this.webViewNovel.coverUrl })
-            Text(this.webViewNovel.title)
-              .fontSize(36)
-              .fontWeight(FontWeight.Bold)
-              .margin({ top: 10 })
+            Row(){
+              Text(this.webViewNovel.title)
+                .fontSize(36)
+                .fontWeight(FontWeight.Bold)
+                .margin({ top: 10 })
+            }.width('100%')
+            Row(){
+              Text(this.webViewNovel.cdate).fontSize(14)
+            }.width('100%')
             Flex({ wrap: FlexWrap.Wrap, space: { main: { value: 8, unit: LengthUnit.VP } } }) {
               ForEach(this.webViewNovel.tags, (item: string, index) => {
                 Text(item).fontSize(14).borderColor(Color.Gray).borderWidth(1).borderRadius(4)
               })
             }
           }
-
+          Divider()
+          Column(){
+            //TODO 处理富文本信息
+            Text(this.webViewNovel.caption).fontSize(16).fontWeight(FontWeight.Bold).backgroundColor(Color.Gray).borderRadius(4)
+          }.width('80%')
           Divider()
           Text(this.webViewNovel.text)
           Divider()
@@ -71,25 +77,25 @@ struct NovelDetailPage {
             Text() {
               SymbolSpan($r('sys.symbol.arrow_left'))
               Span(' ')
-              Span(this.webViewNovel.seriesNavigation.prevNovel?.title ?? '')
+              Span(this.webViewNovel.seriesNavigation?.prevNovel?.title ?? '')
             }.maxLines(2)
             .width('40%')
-            .visibility(this.webViewNovel.seriesNavigation.prevNovel ? Visibility.Visible : Visibility.Hidden)
+            .visibility(this.webViewNovel.seriesNavigation?.prevNovel ? Visibility.Visible : Visibility.Hidden)
             .onClick(() => {
-              if (this.webViewNovel!.seriesNavigation.prevNovel) {
+              if (this.webViewNovel?.seriesNavigation?.prevNovel) {
                 this.novelId = this.webViewNovel!.seriesNavigation.prevNovel.id
               }
             })
 
             Text() {
-              Span(this.webViewNovel.seriesNavigation.nextNovel?.title ?? '')
+              Span(this.webViewNovel.seriesNavigation?.nextNovel?.title ?? '')
               Span(' ')
               SymbolSpan($r('sys.symbol.arrow_right'))
             }.maxLines(2)
             .width('40%')
-            .visibility(this.webViewNovel.seriesNavigation.nextNovel ? Visibility.Visible : Visibility.Hidden)
+            .visibility(this.webViewNovel.seriesNavigation?.nextNovel ? Visibility.Visible : Visibility.Hidden)
             .onClick(() => {
-              if (this.webViewNovel!.seriesNavigation.nextNovel) {
+              if (this.webViewNovel?.seriesNavigation?.nextNovel) {
                 this.novelId = this.webViewNovel!.seriesNavigation.nextNovel.id
               }
             })

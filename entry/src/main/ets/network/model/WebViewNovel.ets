@@ -65,7 +65,7 @@ export interface WebViewNovel{
   /**
    * 小说系列的导航信息，包括上下篇小说的信息
    */
-  seriesNavigation: SeriesNavigation
+  seriesNavigation?: SeriesNavigation
   /**
    * 小说的词汇表项数组
    */
