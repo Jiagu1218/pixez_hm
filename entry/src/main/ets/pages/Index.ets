@@ -46,15 +46,21 @@ struct Index {
                 let result = res.toJSON() as TokenResponse
                 this.accountManager.saveAccount(account.name, result.refresh_token,ApiUtil.noNullRecord(result.user))
                 AppStorage.setOrCreate('token',result.access_token)
+              }else {
+                console.info('refreshToken', 'null')
               }
             }).catch((e: BusinessError) => {
               console.error('refreshToken', e)
             })
+          }else {
+            console.info('refreshToken', 'null')
           }
         }).catch((e: BusinessError) => {
           console.error('refreshToken', e)
         })
       }
+    }).catch((e:BusinessError)=>{
+      console.error('account', e)
     })
   }
 
@@ -119,8 +125,6 @@ struct Index {
             console.info('11111', res)
             if (res) {
               const resp = res.toJSON() as UgoiraMetadataResponse
-              // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600
-              // /data/storage/el2/base/haps/entry/cache/ugoira/118216766_ugoira600x600/000001.jpg
               DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,(success)=>{
                 if (success) {
                   this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
@@ -155,13 +159,6 @@ struct Index {
         })
         Button('getNovelDetail').onClick(() => {
           ApiClient.getNovelDetail(15832696).then(res => {
-            console.info('11111', res)
-          }).catch((e: BusinessError)=>{
-            console.error('22222', e)
-          })
-        })
-        Button("测试getNovelText").onClick(() => {
-          ApiClient.getNovelText(15832696).then(res => {
             console.info('11111', res)
           }).catch((e: BusinessError)=>{
             console.error('22222', e)
@@ -203,13 +200,7 @@ struct Index {
           OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '').then(res => {
             if (res && res.statusCode == 200) {
               let result = res.toJSON() as TokenResponse
-              // const acc = result.user.account
               this.accountManager.saveAccount(result.user.account, result.refresh_token,ApiUtil.noNullRecord(result.user))
-              // this.accountManager.getRefreshToken(acc).then(token=>{
-              //   console.info('获取token', token)
-              // }).catch((e:BusinessError)=>{
-              //   console.error('获取token失败', e)
-              // })
               AppStorage.setOrCreate<string>('token', result.access_token)
               console.info('11111', res)
             }
