@@ -42,7 +42,7 @@ struct HomePage {
     Tabs(){
       TabContent(){
         WaterFlow(){
-          LazyForEach(this.recommendIllusts, (item: Illust, index)=>{
+          LazyForEach(this.recommendIllusts, (item: Illust)=>{
             if (item.visible) {
               FlowItem(){
                 IllustCard({illust:item})
@@ -68,11 +68,11 @@ struct HomePage {
       }.tabBar('推荐插图')
       TabContent(){
         List(){
-          LazyForEach(this.recommendNovels, (item: Novel, index)=>{
+          LazyForEach(this.recommendNovels, (item: Novel)=>{
             ListItem(){
               NovelCard({novel:item})
             }
-          })
+          },(item: Novel)=>item.id.toString())
         }.onReachEnd(()=>{
           if (this.nextNovelUrl?.length>0) {
             ApiClient.getNext(this.nextNovelUrl).then(res=>{
