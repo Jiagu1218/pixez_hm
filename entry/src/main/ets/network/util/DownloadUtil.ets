@@ -1,7 +1,7 @@
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { AppConfig } from "../AppConfig";
 import { TokenInterceptor } from "../interceptor/TokenInterceptor";
-import { Queue, url } from "@kit.ArkTS";
+import { LinkedList, List, Queue, url } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
 import { BusinessError, zlib } from "@kit.BasicServicesKit";
@@ -29,7 +29,7 @@ export class DownloadUtil {
   // 会话池
   private static sessionPool: Array<rcp.Session> = [];
   // 等待队列
-  private static waitQueue: Queue<ImageTask> = new Queue();
+  private static waitList: LinkedList<ImageTask> = new LinkedList();
 
   /**
    * 初始化请求
@@ -141,7 +141,7 @@ export class DownloadUtil {
       }
     } else {
       // 如果没有获取到Session，将任务加入等待队列
-      DownloadUtil.waitQueue.add(task);
+      DownloadUtil.waitList.add(task);
     }
   }
 
@@ -238,9 +238,14 @@ export class DownloadUtil {
    */
   private static processNextTask(): void {
     // 从等待队列中获取下一个任务并下载图片
-    const nextTask = DownloadUtil.waitQueue.pop();
+    const nextTask = DownloadUtil.waitList.removeFirst();
     if (nextTask) {
       DownloadUtil.downloadImage(nextTask);
     }
+  }
+
+  public static removeTask(task:ImageTask){
+    const success = DownloadUtil.waitList.remove(task);
+    console.log('removeTask',success)
   }
 }
