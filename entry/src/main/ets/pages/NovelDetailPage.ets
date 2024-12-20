@@ -72,35 +72,37 @@ struct NovelDetailPage {
           }.width('80%')
           Divider()
           Text(this.webViewNovel.text)
-          Divider()
-          Row() {
-            Text() {
-              SymbolSpan($r('sys.symbol.arrow_left'))
-              Span(' ')
-              Span(this.webViewNovel.seriesNavigation?.prevNovel?.title ?? '')
-            }.maxLines(2)
-            .width('40%')
-            .visibility(this.webViewNovel.seriesNavigation?.prevNovel ? Visibility.Visible : Visibility.Hidden)
-            .onClick(() => {
-              if (this.webViewNovel?.seriesNavigation?.prevNovel) {
-                this.novelId = this.webViewNovel!.seriesNavigation.prevNovel.id
-              }
-            })
+          if (this.webViewNovel.seriesNavigation){
+            Divider()
+            Row() {
+              Text() {
+                SymbolSpan($r('sys.symbol.arrow_left'))
+                Span(' ')
+                Span(this.webViewNovel.seriesNavigation.prevNovel?.title ?? '')
+              }.maxLines(2)
+              .width('40%')
+              .visibility(this.webViewNovel.seriesNavigation.prevNovel ? Visibility.Visible : Visibility.Hidden)
+              .onClick(() => {
+                if (this.webViewNovel!.seriesNavigation?.prevNovel) {
+                  this.novelId = this.webViewNovel!.seriesNavigation.prevNovel.id
+                }
+              })
 
-            Text() {
-              Span(this.webViewNovel.seriesNavigation?.nextNovel?.title ?? '')
-              Span(' ')
-              SymbolSpan($r('sys.symbol.arrow_right'))
-            }.maxLines(2)
-            .width('40%')
-            .visibility(this.webViewNovel.seriesNavigation?.nextNovel ? Visibility.Visible : Visibility.Hidden)
-            .onClick(() => {
-              if (this.webViewNovel?.seriesNavigation?.nextNovel) {
-                this.novelId = this.webViewNovel!.seriesNavigation.nextNovel.id
-              }
-            })
-          }.width('100%')
-          .justifyContent(FlexAlign.SpaceBetween)
+              Text() {
+                Span(this.webViewNovel.seriesNavigation.nextNovel?.title ?? '')
+                Span(' ')
+                SymbolSpan($r('sys.symbol.arrow_right'))
+              }.maxLines(2)
+              .width('40%')
+              .visibility(this.webViewNovel.seriesNavigation.nextNovel ? Visibility.Visible : Visibility.Hidden)
+              .onClick(() => {
+                if (this.webViewNovel!.seriesNavigation?.nextNovel) {
+                  this.novelId = this.webViewNovel!.seriesNavigation.nextNovel.id
+                }
+              })
+            }.width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
+          }
         }
       }.width('100%')
     }
