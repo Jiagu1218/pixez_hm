@@ -18,18 +18,22 @@ struct NovelDetailPage {
 
   aboutToAppear(): void {
     const params = router.getParams() as Params
-    // this.novelId = params.novelId
-    this.novelId = 22354955
+    //uploadedimage 案例id：23617228 pixivimage 案例id：22354955
+    this.novelId = params.novelId
     this.getWebViewNovel()
   }
   @Monitor('webViewNovel')
   dealWithText(){
-    const regex = /\[(pixivimage:\d+(?:-\d+)?)\]/g
-    if (this.webViewNovel?.illusts) {
-      this.content = this.webViewNovel.text.split(regex)
+    const illusts:Array<string> = []
+    if (!(this.webViewNovel!.illusts instanceof Array) ||!(this.webViewNovel!.images instanceof Array)) {
+      illusts.push(...this.webViewNovel!.text
+        .split(/\[(uploadedimage:\d+(?:-\d+)?)\]|\[(pixivimage:\d+(?:-\d+)?)\]/g)
+        .filter(item=>item != undefined && item!= '')
+      )
     }else {
-      this.content = [this.webViewNovel!.text??'']
+      illusts.push(this.webViewNovel!.text??'')
     }
+    this.content = illusts
   }
 
   getWebViewNovel() {
@@ -43,7 +47,7 @@ struct NovelDetailPage {
             const json = JSON.parse(jsonStr) as WebViewNovel
             console.info('webviewNovel', json)
             this.webViewNovel = json
-            this.scroller.scrollTo({ yOffset:0,xOffset:0})
+            this.scroller.scrollTo({ yOffset:0,xOffset:0,animation:true})
           }
         }
       }
@@ -79,7 +83,7 @@ struct NovelDetailPage {
           Divider()
           Column(){
             //TODO 处理富文本信息
-            Text(this.webViewNovel.caption).fontSize(16).fontWeight(FontWeight.Bold).backgroundColor(Color.Gray).borderRadius(4)
+            Text(this.webViewNovel.caption.replaceAll('<br />', '\n')).fontSize(16).fontWeight(FontWeight.Bold).backgroundColor(Color.Gray).borderRadius(4)
           }.width('80%')
           Divider()
           Column(){
@@ -88,6 +92,11 @@ struct NovelDetailPage {
                 HttpImage({
                   url: this!.webViewNovel!.illusts![item.replace(/pixivimage:(\d+(?:-\d+)?)/,
                     '$1').toString()].illust.images.medium
+                })
+              } else if(item.match(/uploadedimage:(\d+(?:-\d+)?)/)) {
+                HttpImage({
+                  url: this!.webViewNovel!.images![item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
+                    '$1').toString()].urls.original
                 })
               }else {
                 Text(item)

@@ -57,11 +57,11 @@ export interface WebViewNovel{
   /**
    * 小说的插图数组
    */
-  illusts?: Map<string, NovelIllust>
+  illusts: []|Record<string, NovelIllust>
   /**
    * 小说的图片数组
    */
-  images: NovelImage[]
+  images: []|Record<string, NovelImage>
   /**
    * 小说系列的导航信息，包括上下篇小说的信息
    */
@@ -319,19 +319,19 @@ interface NovelUrls {
   /**
    * 小尺寸图片URL
    * */
-  the240Mw?:string
+  '240mw'?:string
   /**
    * 中等尺寸图片URL
    * */
-  the480Mw?:string
+  '480mw'?:string
   /**
    * 大尺寸图片URL
    * */
-  the1200X1200?:string
+  '1200x1200'?:string
   /**
    * 微缩图片URL
    * */
-  the128X128?:string
+  '128x128'?:string
   /**
    * 原始尺寸图片URL
    * */
