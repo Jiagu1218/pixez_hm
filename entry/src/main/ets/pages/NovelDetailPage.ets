@@ -24,14 +24,16 @@ struct NovelDetailPage {
   }
   @Monitor('webViewNovel')
   dealWithText(){
+    if (!this.webViewNovel) {
+      this.content = [];
+      return;
+    }
     const illusts:Array<string> = []
-    if (!(this.webViewNovel!.illusts instanceof Array) ||!(this.webViewNovel!.images instanceof Array)) {
-      illusts.push(...this.webViewNovel!.text
-        .split(/\[(uploadedimage:\d+(?:-\d+)?)\]|\[(pixivimage:\d+(?:-\d+)?)\]/g)
-        .filter(item=>item != undefined && item!= '')
-      )
-    }else {
-      illusts.push(this.webViewNovel!.text??'')
+    if (Array.isArray(this.webViewNovel.illusts) && Array.isArray(this.webViewNovel.images)) {
+      illusts.push(this.webViewNovel.text);
+    } else {
+      const textParts = this.webViewNovel.text.split(/\[(uploadedimage:\d+(?:-\d+)?)\]|\[(pixivimage:\d+(?:-\d+)?)\]/g);
+      illusts.push(...textParts.filter(Boolean));
     }
     this.content = illusts
   }
@@ -88,16 +90,22 @@ struct NovelDetailPage {
           Divider()
           Column(){
             ForEach(this.content, (item: string, index) => {
-              if (item.match(/pixivimage:(\d+(?:-\d+)?)/)) {
-                HttpImage({
-                  url: this!.webViewNovel!.illusts![item.replace(/pixivimage:(\d+(?:-\d+)?)/,
-                    '$1').toString()].illust.images.medium
-                })
-              } else if(item.match(/uploadedimage:(\d+(?:-\d+)?)/)) {
-                HttpImage({
-                  url: this!.webViewNovel!.images![item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
-                    '$1').toString()].urls.original
-                })
+              if (/pixivimage:(\d+(?:-\d+)?)/.test(item)) {
+                if (this.webViewNovel?.illusts[item.replace(/pixivimage:(\d+(?:-\d+)?)/,
+                  '$1').toString()]?.illust?.images?.medium) {
+                  HttpImage({
+                    url: this.webViewNovel.illusts[item.replace(/pixivimage:(\d+(?:-\d+)?)/,
+                      '$1').toString()].illust.images.medium
+                  })
+                }
+              } else if(/uploadedimage:(\d+(?:-\d+)?)/.test(item)) {
+                if (this.webViewNovel?.images[item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
+                  '$1').toString()]?.urls?.original) {
+                  HttpImage({
+                    url: this.webViewNovel.images[item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
+                      '$1').toString()].urls.original
+                  })
+                }
               }else {
                 Text(item)
               }
