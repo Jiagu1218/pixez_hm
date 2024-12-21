@@ -28,6 +28,7 @@ struct NovelDetailPage {
       this.content = [];
       return;
     }
+    // TODO 处理富文本信息 [chapter:本章标题] [pixlvimage:作品1] [jump:链接目标的页面編号] [[jumpuri:标题 ＞ 链接目标的URL]]  [[rb:汉宇＞假名]]
     const illusts:Array<string> = []
     if (Array.isArray(this.webViewNovel.illusts) && Array.isArray(this.webViewNovel.images)) {
       illusts.push(this.webViewNovel.text);
