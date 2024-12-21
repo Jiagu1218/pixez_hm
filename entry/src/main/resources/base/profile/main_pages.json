@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/HomePage",
     "pages/IllustDetailPage",
-    "pages/NovelDetailPage"
+    "pages/NovelDetailPage",
+    "pages/UserDetailPage"
   ]
 }

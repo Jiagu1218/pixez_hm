@@ -188,13 +188,13 @@ export class ApiClient {
    *
    * 该方法用于获取指定用户的详细信息
    *
-   * @param userId {string} 用户ID
+   * @param userId {number} 用户ID
    * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
    */
-  public static getUser(userId: string): Promise<rcp.Response | null> {
+  public static getUser(userId: number): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
-      'user_id': userId
+      'user_id': userId.toString()
     })
     return ApiUtil.get(`/v1/user/detail?${params}`)
   }
@@ -289,10 +289,10 @@ export class ApiClient {
   /**
    * 获取用户插画列表
    * @param userId 用户ID
-   * @param type 插画类型
+   * @param type 插画类型，可以是'illust'（插图）或'manga'（漫画）默认为'illust'
    * @returns 返回用户插画列表的响应结果，如果用户不存在或类型不支持则返回null
    */
-  public static getUserIllusts(userId: number, type: string): Promise<rcp.Response | null> {
+  public static getUserIllusts(userId: number, type:'illust'|'manga'='illust'): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
       'user_id': userId.toString(),

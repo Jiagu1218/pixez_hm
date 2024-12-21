@@ -103,6 +103,16 @@ struct IllustDetailPage {
                     HttpImage({url: this.illust?.user?.profile_image_urls?.medium,br:24}).width(48)
                   }
                   Text(this.illust?.user?.name ?? '').fontSize($r('sys.float.Subtitle_S')).fontWeight(FontWeight.Bold)
+                    .onClick(()=>{
+                      if(this.illust?.user.id){
+                        router.pushUrl({
+                          url: `pages/UserDetailPage`,
+                          params:{
+                            userId: this.illust.user.id
+                          }
+                        })
+                      }
+                    })
                 }.layoutWeight(1)
                 Button(this.followed?'已关注':'关注').width(80)
                   .onClick(()=>{

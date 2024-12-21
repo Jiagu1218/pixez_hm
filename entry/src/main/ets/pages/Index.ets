@@ -85,7 +85,7 @@ struct Index {
           })
         })
         Button("测试getUser").onClick(() => {
-          let userId:string = '6074768'
+          let userId:number = 6074768
           ApiClient.getUser(userId).then(res => {
             console.info('11111', res)
           }).catch((e: BusinessError) => {
@@ -212,6 +212,11 @@ struct Index {
         Button("首页").onClick(() => {
           router.pushUrl({
             url: 'pages/HomePage'
+          })
+        })
+        Button("用户信息").onClick(() => {
+          router.pushUrl({
+            url: 'pages/UserDetailPage'
           })
         })
         Button("获取验证信息").onClick(() => {
