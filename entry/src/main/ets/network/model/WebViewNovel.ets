@@ -57,7 +57,7 @@ export interface WebViewNovel{
   /**
    * 小说的插图数组
    */
-  illusts: NovelIllust[]
+  illusts?: Map<string, NovelIllust>
   /**
    * 小说的图片数组
    */
@@ -183,7 +183,96 @@ interface PreNovel {
  * NovelIllust接口定义了小说插图的结构
  */
 interface NovelIllust{
-  images:NovelIllustImages
+  /**
+   * 插图是否可见
+   * */
+  visible: boolean
+  /**
+   * 可用性信息，如果插图不可见，可能包含原因
+   * */
+  availableMessage?: string
+  /**
+   * 插图的详细信息
+   * */
+  illust: Illust
+  /**
+   * 插图上传者的用户信息
+   * */
+  user: User
+  /**
+   * 插图的唯一标识符
+   * */
+  id: string
+  /**
+   * 插图的页码，用于多页小说插图
+   * */
+  page: number
+}
+
+/**
+ * Illust接口定义了插图的详细信息结构
+ */
+interface Illust {
+  /**
+   * 标题
+   * */
+  title: string
+  /**
+   * 插图的描述信息
+   * */
+  description: string
+  /**
+   * 内容的限制级别
+   * */
+  restrict: number
+  /**
+   * 扩展的限制级别
+   * */
+  xRestrict: number
+  /**
+   * 安全等级
+   * */
+  sl: number
+  /**
+   * 插图的标签数组
+   * */
+  tags: Tag[]
+  /**
+   * 插图的图片信息
+   * */
+  images: NovelIllustImages
+}
+
+/**
+ * User接口定义了用户的结构
+ */
+interface User {
+  /**
+   * 用户的唯一标识符
+   * */
+  id: string
+  /**
+   * 用户名
+   * */
+  name: string
+  /**
+   * 用户的头像图片链接
+   * */
+  image: string
+}
+
+/**
+ * Tag接口定义了标签的结构
+ */
+interface Tag {
+  /**
+   * 标签名称
+   * */
+  tag: string
+  /**
+   * 标签所属的用户标识符
+   * */
+  userId: string
 }
 
 /**
