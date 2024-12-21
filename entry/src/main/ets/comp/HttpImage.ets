@@ -1,6 +1,5 @@
 import { image } from "@kit.ImageKit"
 import { DownloadUtil, ImageTask } from "../network/util/DownloadUtil"
-import { ImageUtil } from "../network/util/ImageUtli"
 
 @ComponentV2
 export struct HttpImage{
@@ -33,12 +32,5 @@ export struct HttpImage{
       .alt($r('app.media.picture_damage'))
       .objectFit(ImageFit.Contain)
       .borderRadius(this.br)
-      .draggable(false)
-      .gesture(
-        LongPressGesture({duration:1000})
-          .onActionEnd(event=>{
-            ImageUtil.saveImage(this.pic!,this.url.split('/').pop() ?? '')
-          })
-      )
   }
 }
