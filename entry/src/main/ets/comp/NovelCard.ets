@@ -1,6 +1,7 @@
 import { Novel, Tag } from "../network/model/Novel"
 import { HttpImage } from "./HttpImage"
 import { LengthUnit, router } from "@kit.ArkUI"
+import { ApiClient } from "../network/ApiClient"
 
 @ComponentV2
 export struct NovelCard {
@@ -41,6 +42,19 @@ export struct NovelCard {
         SymbolGlyph(this.like?$r('sys.symbol.bookmark_fill'):$r('sys.symbol.bookmark')).fontSize(24)
         Text(this.novel.total_bookmarks.toString()).fontSize(14)
       }.width('10%')
+      .onClick(()=>{
+        if (this.like) {
+          ApiClient.postNovelBookmarkDelete(this.novel.id).then(res=>{
+            this.like = false
+            console.info('取消收藏成功', res)
+          })
+        }else {
+          ApiClient.postNovelBookmarkAdd(this.novel.id,'public').then(res=>{
+            this.like = true
+            console.info('收藏成功', res)
+          })
+        }
+      })
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .width('100%')
     .aspectRatio(16/9)

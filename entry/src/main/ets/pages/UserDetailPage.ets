@@ -170,7 +170,7 @@ struct UserDetailPage {
                       const json = res?.toJSON()
                       if (json) {
                         const data = json as BookmarksIllustResponse
-                        this.illusts.push(...data.illusts)
+                        this.bookmarkIllusts.push(...data.illusts)
                         this.nextBookmarkUrl= data.next_url
                       }
                     })
