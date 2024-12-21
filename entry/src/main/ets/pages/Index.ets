@@ -70,11 +70,14 @@ struct Index {
         if (this.illust){
           UgoiraImage({illust:this.illust})
         }
-        Button("测试walkthroughIllusts").onClick(() => {
-          ApiClient.walkthroughIllusts().then(res => {
+        Button("测试getSpotlightArticles").onClick(()=>{
+          ApiClient.getSpotlightArticles('all').then(res => {
             console.info('11111', res)
-          }).catch((e: BusinessError) => {
-            console.error('22222', e)
+          })
+        })
+        Button("测试getUserRecommended").onClick(() => {
+          ApiClient.getUserRecommended().then(res => {
+            console.info('11111', res)
           })
         })
         Button("测试getMangaRecommend").onClick(() => {

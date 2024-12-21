@@ -415,19 +415,6 @@ export class ApiClient {
   }
 
   /**
-   * 获取搜索自动完成关键词
-   * @param word 输入的搜索关键词
-   * @returns 返回搜索自动完成关键词列表的Promise对象，可能为null
-   */
-  public static getSearchAutoCompleteKeywords(word: string): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'merge_plain_keyword_results': 'true',
-      'word': word
-    })
-    return ApiUtil.get(`/v2/search/autocomplete?${params}`)
-  }
-
-  /**
    * 获取插画趋势标签
    * @param force 是否强制刷新数据，默认为false
    * @returns 返回插画趋势标签列表的Promise对象，可能为null
@@ -705,7 +692,7 @@ export class ApiClient {
   }
 
   /**
-   * 获取引导插图
+   * 获取引导插图(无需登录)
    *
    * 该方法用于获取应用程序引导页面展示的插图资源
    * 它通过API请求来获取数据，并返回相应的响应结果

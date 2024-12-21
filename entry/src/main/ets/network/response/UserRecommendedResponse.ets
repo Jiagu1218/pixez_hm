@@ -80,7 +80,7 @@ interface User {
  * 用户头像URLs接口
  * 用于表示用户头像的中等尺寸图片URL
  */
-export interface ProfileImageUrls {
+interface ProfileImageUrls {
   /**
    * 中等尺寸图片URL
    * */
