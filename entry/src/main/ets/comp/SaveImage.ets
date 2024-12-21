@@ -45,17 +45,19 @@ export struct SaveImage {
           text: SaveDescription.SAVE_IMAGE
         })
         .onClick((event, result) => {
-          if (result == SaveButtonOnClickResult.SUCCESS) {
-            ImageUtil.init(getContext(this))
-            ImageUtil.saveImage(this.pixelMap.get(this.currentUrl)!, this.currentUrl.split('/').pop()!,
+          const pixelMap = this.pixelMap.get(this.currentUrl)
+          const filename = this.currentUrl.split('/').pop()
+          if (result == SaveButtonOnClickResult.SUCCESS && pixelMap && filename) {
+            ImageUtil.saveImage(pixelMap, filename,
               (success)=>{
                 promptAction.showToast({
-                  message: success ? $r('app.string.save_success') : $r('app.string.save_fail')
+                  message: success ? $r('app.string.save_success') : $r('app.string.save_fail'),
+                  duration:3000
                 })
               })
           }
         })
-      }.width('100%')
+      }
     }.width('100%')
     .height('100%')
     .alignContent(Alignment.Bottom)
