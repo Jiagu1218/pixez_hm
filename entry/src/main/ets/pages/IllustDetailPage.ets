@@ -136,6 +136,7 @@ struct IllustDetailPage {
                   }
                 })
             }.justifyContent(FlexAlign.SpaceBetween)
+            .width('100%')
           }.width('100%')
           .alignItems(HorizontalAlign.Start)
           if (this.illust?.tags){
@@ -189,7 +190,8 @@ struct IllustDetailPage {
       .bindContentCover(this.showRaw,this.showRowImage(),{
         onWillDismiss:()=>{
           this.showRaw = false
-        }
+        },
+        modalTransition: ModalTransition.ALPHA
       })
     }
     .height('100%')

@@ -7,6 +7,7 @@ export struct SwiperImageItem{
   @Require @Param url:string
   @Provider('ImageViewTouchModel') private touchModel:ImageViewTouch.Model = new ImageViewTouch.Model()
   @Event callback?:(pixelMap:image.PixelMap)=>void
+  @Local private loading:boolean = true
   aboutToAppear(): void {
     // this.touchModel.setDisplayType(DisplayType.FIT_TO_SCREEN)
     this.loadAllPixelMap()
@@ -17,13 +18,17 @@ export struct SwiperImageItem{
       url:this.url,
       callback: (pic:image.PixelMap)=>{
         this.touchModel.setImageSrc(pic)
+        this.loading = false
         this.callback?.(pic)
       }
     })
   }
   build() {
-    Column(){
+    Stack(){
       ImageViewTouch({})
+      if (this.loading){
+        LoadingProgress().width(80)
+      }
     }.width('100%')
     .height('100%')
   }
