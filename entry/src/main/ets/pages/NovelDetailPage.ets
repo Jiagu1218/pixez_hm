@@ -13,12 +13,23 @@ interface Params {
 struct NovelDetailPage {
   @Local private novelId: number = 0
   @Local private webViewNovel: WebViewNovel | null = null
+  @Local private content:Array<string> = []
   private scroller: Scroller = new Scroller()
 
   aboutToAppear(): void {
     const params = router.getParams() as Params
-    this.novelId = params.novelId
+    // this.novelId = params.novelId
+    this.novelId = 22354955
     this.getWebViewNovel()
+  }
+  @Monitor('webViewNovel')
+  dealWithText(){
+    const regex = /\[(pixivimage:\d+(?:-\d+)?)\]/g
+    if (this.webViewNovel?.illusts) {
+      this.content = this.webViewNovel.text.split(regex)
+    }else {
+      this.content = [this.webViewNovel!.text??'']
+    }
   }
 
   getWebViewNovel() {
@@ -71,7 +82,18 @@ struct NovelDetailPage {
             Text(this.webViewNovel.caption).fontSize(16).fontWeight(FontWeight.Bold).backgroundColor(Color.Gray).borderRadius(4)
           }.width('80%')
           Divider()
-          Text(this.webViewNovel.text)
+          Column(){
+            ForEach(this.content, (item: string, index) => {
+              if (item.match(/pixivimage:(\d+(?:-\d+)?)/)) {
+                HttpImage({
+                  url: this!.webViewNovel!.illusts![item.replace(/pixivimage:(\d+(?:-\d+)?)/,
+                    '$1').toString()].illust.images.medium
+                })
+              }else {
+                Text(item)
+              }
+            })
+          }
           if (this.webViewNovel.seriesNavigation){
             Divider()
             Row() {
