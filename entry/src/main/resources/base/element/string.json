@@ -15,6 +15,14 @@
     {
       "name": "write_image_video_reason",
       "value": "保存图片"
+    },
+    {
+      "name": "save_success",
+      "value": "保存成功"
+    },
+    {
+      "name": "save_fail",
+      "value": "保存失败"
     }
   ]
 }

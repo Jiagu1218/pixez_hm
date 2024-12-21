@@ -7,6 +7,7 @@ import { Illust } from '../network/model/Illust'
 import { UserIllustResponse } from '../network/response/UserIllustResponse'
 import { IllustCard } from '../comp/IllustCard'
 import { BookmarksIllustResponse } from '../network/response/BookmarksIllustResponse'
+import { UserBookmarkTagsIllustResponse } from '../network/response/UserBookmarkTagsIllustResponse'
 
 interface Params {
   userId: number
@@ -51,7 +52,7 @@ struct UserDetailPage {
       })
       ApiClient.getUserBookmarkTagsIllust(params.userId).then(res => {
         if (res) {
-          console.info('bookmark',res)
+          const resp = res.toJSON() as UserBookmarkTagsIllustResponse
         }
       })
       ApiClient.getBookmarksIllust(params.userId,'public').then(res => {

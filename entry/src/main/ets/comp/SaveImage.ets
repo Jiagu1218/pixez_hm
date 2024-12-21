@@ -1,6 +1,7 @@
 import { ImageUtil } from "../network/util/ImageUtli"
 import { image } from "@kit.ImageKit"
 import { SwiperImageItem } from "./SwiperImageItem"
+import { promptAction } from "@kit.ArkUI"
 
 @ComponentV2
 export struct SaveImage {
@@ -46,7 +47,12 @@ export struct SaveImage {
         .onClick((event, result) => {
           if (result == SaveButtonOnClickResult.SUCCESS) {
             ImageUtil.init(getContext(this))
-            ImageUtil.saveImage(this.pixelMap.get(this.currentUrl)!, this.currentUrl.split('/').pop()!)
+            ImageUtil.saveImage(this.pixelMap.get(this.currentUrl)!, this.currentUrl.split('/').pop()!,
+              (success)=>{
+                promptAction.showToast({
+                  message: success ? $r('app.string.save_success') : $r('app.string.save_fail')
+                })
+              })
           }
         })
       }.width('100%')
