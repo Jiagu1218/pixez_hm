@@ -2,8 +2,6 @@ import { ApiUtil } from "./util/ApiUtil";
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { url } from "@kit.ArkTS";
 import { AppConfig } from "./AppConfig";
-import { NovelRankingModeEnum } from "./enums/NovelRankingModeEnum";
-import { IllustRankingModeEnum } from "./enums/IllustRankingModeEnum";
 
 /**
  * api
@@ -59,7 +57,7 @@ export class ApiClient {
    * @param date 日期
    * @returns 返回包含排行榜信息的Promise对象
    */
-  public static getNovelRanking(mode: NovelRankingModeEnum, date?: string): Promise<rcp.Response | null> {
+  public static getNovelRanking(mode: string, date?: string): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
       'mode': mode
@@ -255,7 +253,7 @@ export class ApiClient {
    * @param force 是否强制刷新缓存
    * @returns 返回插画排名的响应结果，如果日期无效或模式不支持则返回null
    */
-  public static getIllustRanking(mode: IllustRankingModeEnum, date?: string, force: boolean = false): Promise<rcp.Response | null> {
+  public static getIllustRanking(mode: string, date?: string, force: boolean = false): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
       'mode': mode
