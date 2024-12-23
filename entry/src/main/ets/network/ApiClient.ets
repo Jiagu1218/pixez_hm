@@ -67,21 +67,6 @@ export class ApiClient {
   }
 
   /**
-   * 获取小说文本
-   *
-   * @param novelId 小说ID
-   * @returns 返回包含小说文本信息的Promise对象
-   * @deprecated 该接口已无法访问
-   * @useinstead ApiClient.webviewNovel
-   */
-  public static getNovelText(novelId: number): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'novel_id': novelId.toString()
-    })
-    return ApiUtil.get(`/v1/novel/text?${params}`)
-  }
-
-  /**
    * 获取小说Web视图
    * （判断headers 觉得调用toString 或 toJSON ）
    * @param id 小说ID
@@ -249,18 +234,6 @@ export class ApiClient {
   }
 
   /**
-   * 取消收藏插画
-   * @param illustId 插画ID
-   * @returns 返回取消收藏的响应结果，如果没有登录或插画不存在，则返回null
-   */
-  public static getUnlikeIllust(illustId: number): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'illust_id': illustId.toString()
-    })
-    return ApiUtil.get(`/v1/illust/bookmark/delete?${params}`)
-  }
-
-  /**
    * 获取下一页数据
    * @param url 下一页的URL
    * @returns 返回下一页数据的响应结果，如果没有更多数据则返回null
@@ -292,23 +265,7 @@ export class ApiClient {
    * @param type 插画类型，可以是'illust'（插图）或'manga'（漫画）默认为'illust'
    * @returns 返回用户插画列表的响应结果，如果用户不存在或类型不支持则返回null
    */
-  public static getUserIllusts(userId: number, type:'illust'|'manga'='illust'): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'filter': 'for_android',
-      'user_id': userId.toString(),
-      'type': type
-    })
-    return ApiUtil.get(`/v1/user/illusts?${params}`)
-  }
-
-  /**
-   * 根据偏移量获取用户插画列表
-   * @param userId 用户ID
-   * @param type 插画类型
-   * @param offset 偏移量
-   * @returns 返回根据偏移量获取的用户插画列表的响应结果，如果用户不存在或类型不支持则返回null
-   */
-  public static getUserIllustsOffset(userId: number, type: string, offset?: number): Promise<rcp.Response | null> {
+  public static getUserIllusts(userId: number, type:'illust'|'manga'='illust', offset?: number): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
       'user_id': userId.toString(),
@@ -321,11 +278,11 @@ export class ApiClient {
   }
 
   /**
-   * 根据偏移量获取用户收藏的插画列表
-   * @param param {BookmarksIllustsOffsetParam}
-   * @returns 返回根据偏移量获取的用户收藏的插画列表的响应结果，如果用户不存在或收藏设置不支持则返回null
+   * 获取用户收藏的插画
+   * @param param {BookmarksIllustsOffsetParam} 参数对象
+   * @returns 返回用户收藏插画列表的Promise对象，可能为null
    */
-  public static getBookmarksIllustsOffset(param: BookmarksIllustsOffsetParam): Promise<rcp.Response | null> {
+  public static getBookmarksIllust(param: BookmarksIllustsOffsetParam): Promise<rcp.Response | null> {
     const record = ApiUtil.noNullRecord(param)
     const params = new url.URLParams(record)
     return ApiUtil.get(`/v1/user/bookmarks/illust?${params}`)
@@ -342,24 +299,6 @@ export class ApiClient {
       'user_id': userId.toString()
     })
     return ApiUtil.get(`/v1/user/novels?${params}`)
-  }
-
-  /**
-   * 获取用户收藏的插画
-   * @param userId 用户ID
-   * @param restrict 内容限制级别
-   * @param tag 可选参数，指定标签
-   * @returns 返回用户收藏插画列表的Promise对象，可能为null
-   */
-  public static getBookmarksIllust(userId: number, restrict: string, tag?: string): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'user_id': userId.toString(),
-      'restrict': restrict
-    })
-    if (tag) {
-      params.set('tag', tag)
-    }
-    return ApiUtil.get(`/v1/user/bookmarks/illust?${params}`)
   }
 
   /**
@@ -528,15 +467,6 @@ export class ApiClient {
       'illust_id': illustId.toString()
     })
     return ApiUtil.get(`/v2/illust/bookmark/detail?${params}`)
-  }
-
-  /**
-   * 取消关注用户
-   * @param userId 用户ID
-   * @returns 返回取消关注用户的响应结果，如果没有结果则返回null
-   */
-  public static postUnfollowUser(userId: number): Promise<rcp.Response | null> {
-    return ApiUtil.post('/v1/user/follow/delete', new rcp.Form({ 'user_id': userId }))
   }
 
   /**
@@ -764,22 +694,6 @@ export class ApiClient {
   }
 
   /**
-   * 获取下一个小说系列信息
-   *
-   * 该方法与`novelSeries`类似，用于获取下一个小说系列的详细信息
-   * 它同样构造了带有系列ID的URL参数，并通过API请求来获取数据
-   *
-   * @param {string} seriesId 小说系列的唯一标识符
-   * @returns {Promise<rcp.Response | null>} 返回获取到的下一个小说系列信息响应结果，如果没有数据则返回null
-   */
-  public static nextNovelSeries(seriesId: string): Promise<rcp.Response | null> {
-    const params = new url.URLParams({
-      'series_id': seriesId
-    })
-    return ApiUtil.get(`/v2/novel/series?${params}`)
-  }
-
-  /**
    * 将小说系列添加到观看列表
    *
    * 该方法用于将指定的小说系列添加到用户的观看列表中
@@ -803,6 +717,37 @@ export class ApiClient {
    */
   public static watchListNovelDelete(seriesId: string): Promise<rcp.Response | null> {
     return ApiUtil.post('/v1/watchlist/novel/delete', new rcp.Form({ 'series_id': seriesId }))
+  }
+
+  /**
+   * 获取插图新作
+   */
+  public static getIllustNew(): Promise<rcp.Response | null>{
+    const params = new url.URLParams({
+      'filter': 'for_android',
+    })
+    return ApiUtil.get(`/v1/illust/new?${params}`)
+  }
+
+  /**
+   * 获取黑名单用户
+   */
+  public static getUserList(userId: number): Promise<rcp.Response | null>{
+    const params = new url.URLParams({
+      'filter': 'for_android',
+      'user_id': userId.toString()
+    })
+    return ApiUtil.get(`/v2/user/list?${params}`)
+  }
+
+  /**
+   * 好P友
+   */
+  public static getUserMyPixiv(user_id: number): Promise<rcp.Response | null>{
+    const params = new url.URLParams({
+      'user_id': user_id.toString()
+    })
+    return ApiUtil.get(`/v1/user/mypixiv?${params}`)
   }
 
 }

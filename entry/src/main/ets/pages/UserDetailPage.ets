@@ -55,7 +55,10 @@ struct UserDetailPage {
           const resp = res.toJSON() as UserBookmarkTagsIllustResponse
         }
       })
-      ApiClient.getBookmarksIllust(params.userId,'public').then(res => {
+      ApiClient.getBookmarksIllust({
+        userId:params.userId,
+        restrict:'public'
+      }).then(res => {
         if (res) {
           const resp = res.toJSON() as BookmarksIllustResponse
           this.bookmarkIllusts.push(...resp.illusts)
