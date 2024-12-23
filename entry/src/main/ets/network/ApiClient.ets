@@ -846,7 +846,7 @@ export interface SearchIllustParam {
    * */
   bookmarkNum?: Array<number>;
   /**
-   * AI搜索类型，可选
+   * AI生成类型，可选
    * */
   searchAiType?: number;
 }
