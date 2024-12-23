@@ -6,6 +6,8 @@ import { Illust } from '../network/model/Illust'
 import { Novel } from '../network/model/Novel'
 import { IllustRecommendedResponse } from '../network/response/IllustRecommendedResponse'
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
+import { IllustRouterParam } from '../param/IllustRouterParam'
+import { NovelRouterParam } from '../param/NovelRouterParam'
 
 @Entry
 @ComponentV2
@@ -49,6 +51,12 @@ struct HomePage {
                 FlowItem(){
                   IllustCard({illust:item})
                 }
+                .onClick(()=>{
+                  this.pathStack?.pushPath({
+                    name: 'illustDetailPage',
+                    param: {illustId: item.id} as IllustRouterParam
+                  })
+                })
               }
             },(item: Illust)=>item.id.toString())
           }.onReachEnd(()=>{
@@ -73,7 +81,12 @@ struct HomePage {
             LazyForEach(this.recommendNovels, (item: Novel)=>{
               ListItem(){
                 NovelCard({novel:item})
-              }
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'novelDetailPage',
+                  param: {novelId: item.id} as NovelRouterParam
+                })
+              })
             },(item: Novel)=>item.id.toString())
           }.onReachEnd(()=>{
             if (this.nextNovelUrl?.length>0) {
@@ -92,6 +105,5 @@ struct HomePage {
       }.width('100%')
       .height('100%')
     }
-    .mode(NavigationMode.Stack)
   }
 }

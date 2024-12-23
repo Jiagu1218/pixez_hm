@@ -5,9 +5,6 @@ import { WebViewNovel } from '../network/model/WebViewNovel';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 import { NovelRouterParam } from '../param/NovelRouterParam';
 
-@Builder export function NovelDetailPageBuilder(){
-  NovelDetailPage()
-}
 @Entry
 @ComponentV2
 export struct NovelDetailPage {
@@ -158,5 +155,10 @@ export struct NovelDetailPage {
       .height('100%')
       .width('100%')
     }
+    .hideTitleBar(true)
   }
+}
+
+@Builder export function NovelDetailPageBuilder(){
+  NovelDetailPage()
 }

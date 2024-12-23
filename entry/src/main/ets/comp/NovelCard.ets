@@ -62,17 +62,17 @@ export struct NovelCard {
     .width('100%')
     .aspectRatio(16/9)
     .backgroundColor(Color.Orange)
-    .onClick(()=>{
-      this.pathStack?.pushPath({
-        name: 'novelDetailPage',
-        param: {novelId: this.novel.id} as NovelRouterParam
-      })
-      // router.pushUrl({
-      //   url: 'pages/NovelDetailPage',
-      //   params: {
-      //     novelId: this.novel.id
-      //   }
-      // })
-    })
+    // .onClick(()=>{
+    //   this.pathStack?.pushPath({
+    //     name: 'novelDetailPage',
+    //     param: {novelId: this.novel.id} as NovelRouterParam
+    //   })
+    //   // router.pushUrl({
+    //   //   url: 'pages/NovelDetailPage',
+    //   //   params: {
+    //   //     novelId: this.novel.id
+    //   //   }
+    //   // })
+    // })
   }
 }

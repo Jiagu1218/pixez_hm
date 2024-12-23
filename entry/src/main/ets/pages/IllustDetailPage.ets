@@ -9,6 +9,7 @@ import { SaveImage } from '../comp/SaveImage';
 import { DateTimeUtil } from '../network/util/DateTimeUtil';
 import { UgoiraImage } from '../comp/UgoiraImage';
 import { IllustRouterParam } from '../param/IllustRouterParam';
+import { UserRouterParam } from '../param/UserRouterParam';
 
 
 @Entry
@@ -120,12 +121,18 @@ struct IllustDetailPage {
                   Text(this.illust?.user?.name ?? '').fontSize($r('sys.float.Subtitle_S')).fontWeight(FontWeight.Bold)
                 }.onClick(()=>{
                   if(this.illust?.user.id){
-                    router.pushUrl({
-                      url: `pages/UserDetailPage`,
-                      params:{
+                    this.pathStack?.pushPath({
+                      name: 'userDetailPage',
+                      param:{
                         userId: this.illust.user.id
-                      }
+                      } as UserRouterParam
                     })
+                    // router.pushUrl({
+                    //   url: `pages/UserDetailPage`,
+                    //   params:{
+                    //     userId: this.illust.user.id
+                    //   }
+                    // })
                   }
                 })
                 Button(this.followed?'已关注':'关注').width(80)
@@ -167,7 +174,7 @@ struct IllustDetailPage {
             if (this.illust?.caption){
               Row(){
                 //TODO 格式化富文本
-                Text(this.illust.caption)
+                Text(this.illust.caption.replaceAll('<br />', '\n'))
               }.margin(16)
               .padding(8)
               .width('90%')
@@ -218,6 +225,7 @@ struct IllustDetailPage {
         }
       })
     }
+    .hideTitleBar(true)
   }
 }
 

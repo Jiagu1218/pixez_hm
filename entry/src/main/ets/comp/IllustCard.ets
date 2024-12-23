@@ -128,17 +128,17 @@ export struct IllustCard{
       }.borderRadius({bottomLeft:$r('sys.float.ohos_id_card_border_radius'),bottomRight:$r('sys.float.ohos_id_card_border_radius')})
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .backgroundColor(Color.Orange)
-    .onClick(()=>{
-      this.pathStack?.pushPath({
-        name: 'illustDetailPage',
-        param: {illustId: this.illust.id} as IllustRouterParam
-      })
-      // router.pushUrl({
-      //   url: 'pages/IllustDetailPage',
-      //   params: {
-      //     illustId: this.illust.id
-      //   }
-      // })
-    })
+    // .onClick(()=>{
+    //   this.pathStack?.pushPath({
+    //     name: 'illustDetailPage',
+    //     param: {illustId: this.illust.id} as IllustRouterParam
+    //   })
+    //   // router.pushUrl({
+    //   //   url: 'pages/IllustDetailPage',
+    //   //   params: {
+    //   //     illustId: this.illust.id
+    //   //   }
+    //   // })
+    // })
   }
 }
