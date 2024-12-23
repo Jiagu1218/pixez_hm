@@ -1,0 +1,28 @@
+{
+  "routerMap": [
+    {
+      "name": "illustDetailPage",
+      "pageSourceFile": "src/main/ets/pages/IllustDetailPage.ets",
+      "buildFunction": "IllustDetailPageBuilder",
+      "data": {
+        "description": "插画详情页"
+      }
+    },
+    {
+      "name": "novelDetailPage",
+      "pageSourceFile": "src/main/ets/pages/NovelDetailPage.ets",
+      "buildFunction": "NovelDetailPageBuilder",
+      "data": {
+        "description": "小说详情页"
+      }
+    },
+    {
+      "name": "userDetailPage",
+      "pageSourceFile": "src/main/ets/pages/UserDetailPage.ets",
+      "buildFunction": "UserDetailPageBuilder",
+      "data": {
+        "description": "用户详情页"
+      }
+    }
+  ]
+}

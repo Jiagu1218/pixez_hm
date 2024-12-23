@@ -19,12 +19,14 @@ struct UserDetailPage {
   private nextIllustUrl:string|null = null
   private nextMangaUrl:string|null = null
   private nextBookmarkUrl:string|null = null
+  private pathStack:NavPathStack|undefined = undefined
   @Local private userDetail:UserDetailResponse|null = null
   @Local private illusts:LazyDataSource<Illust> = new LazyDataSource()
   @Local private mangas:LazyDataSource<Illust> = new LazyDataSource()
   @Local private bookmarkIllusts:LazyDataSource<Illust> = new LazyDataSource()
 
   aboutToAppear(): void {
+    this.pathStack = this.queryNavigationInfo()?.pathStack
     const params = router.getParams() as Params
     if (params) {
       this.userId = params.userId
@@ -192,4 +194,7 @@ struct UserDetailPage {
     .height('100%')
     .width('100%')
   }
+}
+@Builder export function UserDetailPageBuilder(){
+  UserDetailPage()
 }

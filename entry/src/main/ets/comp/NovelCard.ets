@@ -2,6 +2,7 @@ import { Novel, Tag } from "../network/model/Novel"
 import { HttpImage } from "./HttpImage"
 import { LengthUnit, router } from "@kit.ArkUI"
 import { ApiClient } from "../network/ApiClient"
+import { NovelRouterParam } from "../param/NovelRouterParam"
 
 @ComponentV2
 export struct NovelCard {
@@ -9,7 +10,9 @@ export struct NovelCard {
   @Param limitLevel:number = 6
   @Local private aRatio:number = 9/16
   @Local private like:boolean = false
+  private pathStack:NavPathStack|undefined = undefined
   aboutToAppear(): void {
+    this.pathStack = this.queryNavigationInfo()?.pathStack
     this.like = this.novel.is_bookmarked
   }
   build() {
@@ -60,12 +63,16 @@ export struct NovelCard {
     .aspectRatio(16/9)
     .backgroundColor(Color.Orange)
     .onClick(()=>{
-      router.pushUrl({
-        url: 'pages/NovelDetailPage',
-        params: {
-          novelId: this.novel.id
-        }
+      this.pathStack?.pushPath({
+        name: 'novelDetailPage',
+        param: {novelId: this.novel.id} as NovelRouterParam
       })
+      // router.pushUrl({
+      //   url: 'pages/NovelDetailPage',
+      //   params: {
+      //     novelId: this.novel.id
+      //   }
+      // })
     })
   }
 }

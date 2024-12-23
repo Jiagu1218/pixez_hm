@@ -4,6 +4,7 @@ import { HttpImage } from "./HttpImage"
 import { router } from "@kit.ArkUI"
 import { uiEffect } from "@kit.ArkGraphics2D"
 import { BookmarkDetail, IllustBookmarkDetailResponse, Tag } from "../network/response/IllustBookmarkDetailResponse"
+import { IllustRouterParam } from "../param/IllustRouterParam"
 
 @ComponentV2
 export struct IllustCard{
@@ -14,7 +15,9 @@ export struct IllustCard{
   @Local private filter:Filter = uiEffect.createFilter()
   @Local private showSheet:boolean = false
   @Local private bookmarkDetail:BookmarkDetail|null = null
+  private pathStack:NavPathStack|undefined = undefined
   aboutToAppear(): void {
+    this.pathStack = this.queryNavigationInfo()?.pathStack
     this.aRatio = this.illust.width/this.illust.height
     this.like = this.illust.is_bookmarked
     this.setLimitBlur()
@@ -126,12 +129,16 @@ export struct IllustCard{
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .backgroundColor(Color.Orange)
     .onClick(()=>{
-      router.pushUrl({
-        url: 'pages/IllustDetailPage',
-        params: {
-          illustId: this.illust.id
-        }
+      this.pathStack?.pushPath({
+        name: 'illustDetailPage',
+        param: {illustId: this.illust.id} as IllustRouterParam
       })
+      // router.pushUrl({
+      //   url: 'pages/IllustDetailPage',
+      //   params: {
+      //     illustId: this.illust.id
+      //   }
+      // })
     })
   }
 }
