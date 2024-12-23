@@ -28,7 +28,7 @@ struct UserDetailPage {
     const params = router.getParams() as Params
     if (params) {
       this.userId = params.userId
-      ApiClient.getUser(params.userId).then(res => {
+      ApiClient.getUserDetail(params.userId).then(res => {
         console.info('1111',res)
         if (res) {
           const resp = res.toJSON() as UserDetailResponse

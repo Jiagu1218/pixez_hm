@@ -17,6 +17,7 @@ import { DownloadUtil } from '../network/util/DownloadUtil';
 import { ImageUtil } from '../network/util/ImageUtli';
 import { UgoiraImage } from '../comp/UgoiraImage';
 import { Illust } from '../network/model/Illust';
+import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum';
 
 @Entry
 @ComponentV2
@@ -30,39 +31,6 @@ struct Index {
   @Local aRatio:number = 1;
   @Local ani:Array<ImageFrameInfo> = []
   @Local illust:Illust|null = null
-  aboutToAppear(): void {
-    this.login()
-  }
-
-  login(){
-    AccountManager.getInstance().getAccounts().then(accounts=>{
-      const account = accounts.shift()
-      if (account) {
-        const refreshToken = this.accountManager.getRefreshToken(account.name)
-        refreshToken.then(refreshToken => {
-          if (refreshToken) {
-            OauthClient.postRefreshAutoToken(refreshToken, account.name).then(res => {
-              if (res && res.statusCode == 200) {
-                let result = res.toJSON() as TokenResponse
-                this.accountManager.saveAccount(account.name, result.refresh_token,ApiUtil.noNullRecord(result.user))
-                AppStorage.setOrCreate('token',result.access_token)
-              }else {
-                console.info('refreshToken', 'null')
-              }
-            }).catch((e: BusinessError) => {
-              console.error('refreshToken', e)
-            })
-          }else {
-            console.info('refreshToken', 'null')
-          }
-        }).catch((e: BusinessError) => {
-          console.error('refreshToken', e)
-        })
-      }
-    }).catch((e:BusinessError)=>{
-      console.error('account', e)
-    })
-  }
 
   build() {
     Scroll(){
@@ -80,6 +48,41 @@ struct Index {
             console.info('11111', res)
           })
         })
+        Button("测试getIllustBookmarkUsers").onClick(() => {
+          ApiClient.getIllustBookmarkUsers(81804379,50).then(res => {
+            console.info('11111', res)
+          }).catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+        })
+        Button("测试getIllustNew").onClick(() => {
+          ApiClient.getIllustNew().then(res => {
+            console.info('11111', res)
+          }).catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+        })
+        Button("测试NovelRanking").onClick(() => {
+          ApiClient.getNovelRanking(NovelRankingModeEnum.DAY).then(res => {
+            console.info('11111', res)
+          }).catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+        })
+        Button("测试getUserList").onClick(() => {
+          ApiClient.getUserList(40369071).then(res => {
+            console.info('11111', res)
+          }).catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+        })
+        Button("测试getgetUserMyPixiv").onClick(() => {
+          ApiClient.getUserMyPixiv(40369071).then(res => {
+            console.info('11111', res)
+          }).catch((e: BusinessError) => {
+            console.error('22222', e)
+          })
+        })
         Button("测试getMangaRecommend").onClick(() => {
           ApiClient.getMangaRecommend().then(res => {
             console.info('11111', res)
@@ -87,16 +90,9 @@ struct Index {
             console.error('22222', e)
           })
         })
-        Button("测试getUser").onClick(() => {
+        Button("测试getUserDetail").onClick(() => {
           let userId:number = 6074768
-          ApiClient.getUser(userId).then(res => {
-            console.info('11111', res)
-          }).catch((e: BusinessError) => {
-            console.error('22222', e)
-          })
-        })
-        Button("测试postUser").onClick(() => {
-          ApiClient.postUser().then(res => {
+          ApiClient.getUserDetail(userId).then(res => {
             console.info('11111', res)
           }).catch((e: BusinessError) => {
             console.error('22222', e)

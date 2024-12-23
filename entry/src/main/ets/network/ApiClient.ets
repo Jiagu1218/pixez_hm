@@ -2,6 +2,8 @@ import { ApiUtil } from "./util/ApiUtil";
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { url } from "@kit.ArkTS";
 import { AppConfig } from "./AppConfig";
+import { NovelRankingModeEnum } from "./enums/NovelRankingModeEnum";
+import { IllustRankingModeEnum } from "./enums/IllustRankingModeEnum";
 
 /**
  * api
@@ -57,12 +59,14 @@ export class ApiClient {
    * @param date 日期
    * @returns 返回包含排行榜信息的Promise对象
    */
-  public static getNovelRanking(mode: string, date: string): Promise<rcp.Response | null> {
+  public static getNovelRanking(mode: NovelRankingModeEnum, date?: string): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
-      'mode': mode,
-      'date': date
+      'mode': mode
     })
+    if (date) {
+      params.set('date', date)
+    }
     return ApiUtil.get(`/v1/novel/ranking?${params}`)
   }
 
@@ -176,28 +180,12 @@ export class ApiClient {
    * @param userId {number} 用户ID
    * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
    */
-  public static getUser(userId: number): Promise<rcp.Response | null> {
+  public static getUserDetail(userId: number): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
       'user_id': userId.toString()
     })
     return ApiUtil.get(`/v1/user/detail?${params}`)
-  }
-
-  /**
-   * 更新用户详情?
-   *
-   * 该方法用于更新用户详情，可选参数a和b用于定制化更新内容
-   *
-   * @param param {PostUserParam} 可选参数，默认为undefined
-   * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
-   *
-   */
-  public static postUser(param?: PostUserParam): Promise<rcp.Response | null> {
-
-    const record = ApiUtil.noNullRecord(param)
-    const form = new rcp.Form(record)
-    return ApiUtil.post('/v1/user/detail', form)
   }
 
   /**
@@ -234,6 +222,23 @@ export class ApiClient {
   }
 
   /**
+   * 获取插图收藏用户列表
+   *
+   * @param illustId {number} 插图ID
+   * @param offset {number} 偏移量
+   * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
+   */
+  public static getIllustBookmarkUsers(illustId: number,offset?: number){
+    const params = new url.URLParams({
+      'illust_id': illustId.toString()
+    })
+    if(offset){
+      params.set('offset',offset.toString())
+    }
+    return ApiUtil.get(`/v1/illust/bookmark/users?${params}`)
+  }
+
+  /**
    * 获取下一页数据
    * @param url 下一页的URL
    * @returns 返回下一页数据的响应结果，如果没有更多数据则返回null
@@ -250,12 +255,14 @@ export class ApiClient {
    * @param force 是否强制刷新缓存
    * @returns 返回插画排名的响应结果，如果日期无效或模式不支持则返回null
    */
-  public static getIllustRanking(mode: string, date: string, force: boolean = false): Promise<rcp.Response | null> {
+  public static getIllustRanking(mode: IllustRankingModeEnum, date?: string, force: boolean = false): Promise<rcp.Response | null> {
     const params = new url.URLParams({
       'filter': 'for_android',
-      'mode': mode,
-      'date': date
+      'mode': mode
     })
+    if (date) {
+      params.set('date', date)
+    }
     return ApiUtil.get(`/v1/illust/ranking?${params}`)
   }
 
