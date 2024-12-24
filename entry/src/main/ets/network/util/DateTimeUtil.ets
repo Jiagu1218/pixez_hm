@@ -20,6 +20,17 @@ export class DateTimeUtil {
   }
 
   /**
+   * 将Date对象转换为本地格式的时间字符串
+   *
+   * @param date Date对象，接受null或undefined，在这种情况下返回空字符串
+   * @param format 可选参数，指定输出时间的格式，默认为'YYYY-MM-DD HH:mm:ss'
+   * @returns 根据指定格式返回本地时间字符串，如果输入无效则返回空字符串
+   */
+  public static parseDateToLocalFormatTime(date: Date,format: string = 'YYYY-MM-DD HH:mm:ss'){
+    return DateTimeUtil.parseIsoTimeToLocalFormatTime(date.toISOString(),format)
+  }
+
+  /**
    * 将ISO格式的时间字符串解析为本地格式的时间字符串
    *
    * @param isoTime ISO格式的时间字符串，接受null或undefined，在这种情况下返回空字符串
@@ -92,6 +103,7 @@ export class DateTimeUtil {
     // 构造时区偏移字符串，格式为±HH:mm
     return `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutesRemaining).padStart(2, '0')}`
   }
+
 
   /**
    * 获取当前时间的ISO格式表示，带有时区偏移
