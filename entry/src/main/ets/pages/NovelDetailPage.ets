@@ -1,9 +1,11 @@
 import { LengthUnit, router } from '@kit.ArkUI';
 import { HttpImage } from '../comp/HttpImage';
 import { ApiClient } from '../network/ApiClient';
+import { NovelSearchTargetEnum } from '../network/enums/NovelSearchTargetEnum';
 import { WebViewNovel } from '../network/model/WebViewNovel';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 import { NovelRouterParam } from '../param/NovelRouterParam';
+import { SearchRouterParam } from '../param/SearchRouterParam';
 
 @Entry
 @ComponentV2
@@ -86,6 +88,16 @@ export struct NovelDetailPage {
               Flex({ wrap: FlexWrap.Wrap, space: { main: { value: 8, unit: LengthUnit.VP } } }) {
                 ForEach(this.webViewNovel.tags, (item: string, index) => {
                   Text(item).fontSize(14).borderColor(Color.Gray).borderWidth(1).borderRadius(4)
+                    .onClick(()=>{
+                      this.pathStack?.pushPath({
+                        name: 'searchPage',
+                        param: {
+                          word: item,
+                          type: 'novel',
+                          target: NovelSearchTargetEnum.EXACT_MATCH_FOR_TAGS
+                        } as SearchRouterParam
+                      })
+                    })
                 })
               }
             }

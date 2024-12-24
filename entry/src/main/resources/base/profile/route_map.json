@@ -23,6 +23,14 @@
       "data": {
         "description": "用户详情页"
       }
+    },
+    {
+      "name": "searchPage",
+      "pageSourceFile": "src/main/ets/pages/SearchPage.ets",
+      "buildFunction": "SearchPageBuilder",
+      "data": {
+        "description": "搜索页"
+      }
     }
   ]
 }

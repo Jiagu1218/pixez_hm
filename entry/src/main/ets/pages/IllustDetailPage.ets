@@ -10,6 +10,8 @@ import { DateTimeUtil } from '../network/util/DateTimeUtil';
 import { UgoiraImage } from '../comp/UgoiraImage';
 import { IllustRouterParam } from '../param/IllustRouterParam';
 import { UserRouterParam } from '../param/UserRouterParam';
+import { SearchRouterParam } from '../param/SearchRouterParam';
+import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum';
 
 
 @Entry
@@ -167,6 +169,16 @@ struct IllustDetailPage {
                     .padding(8)
                     .backgroundColor(Color.Gray)
                     .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
+                    .onClick(()=>{
+                      this.pathStack?.pushPath({
+                        name: 'searchPage',
+                        param: {
+                          word: item.name,
+                          type: 'illust',
+                          target: IllustSearchTargetEnum.EXACT_MATCH_FOR_TAGS
+                        } as SearchRouterParam
+                      })
+                    })
                   },(item:Tag,index)=>index.toString())
                 }
               }
