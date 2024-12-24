@@ -11,23 +11,37 @@ import { SearchIllustResponse } from "../network/response/SearchIllustResponse"
 import { IllustRouterParam } from "../param/IllustRouterParam"
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { SearchRouterParam } from "../param/SearchRouterParam"
+import { SegmentButton, SymbolGlyphModifier } from "@kit.ArkUI"
+import { DateTimeUtil } from "../network/util/DateTimeUtil"
 
 @ComponentV2
 export struct SearchPage{
   private pathStack:NavPathStack|undefined = undefined
   private searchController:SearchController = new SearchController()
   private novelSearchTargets:Array<string> = Object.values(NovelSearchTargetEnum)
+  private novelSearchTargetOpt:Array<SelectOption> = Object.values(NovelSearchTargetEnum).map(e=>{return {value:e} as SelectOption})
   private illustSearchTargets:Array<string> = Object.values(IllustSearchTargetEnum)
+  private illustSearchTargetOpt:Array<SelectOption> = Object.values(IllustSearchTargetEnum).map(e=>{return {value:e} as SelectOption})
   private searchTypes: Array<string> = ['illust', 'novel']
+  private searchTypeOpts:Array<SelectOption> = this.searchTypes.map(e=>{return {value:e} as SelectOption})
+  // private shortOpt:SegmentButtonOptions
   private nextUrl:string|null = null
+
+
+  private illusts:LazyDataSource<Illust> = new LazyDataSource()
+  private novels:LazyDataSource<Novel> = new LazyDataSource()
+  @Local private startDate:Date|null = null
+  @Local private endDate:Date|null = null
+  @Local private targetSelectOpt:Array<SelectOption> = []
+  @Local private showSheet:boolean = false
+  @Local private showAI:boolean = true
   @Local private historyWord: Array<string> = []
   @Local private word: string = ''
   @Local private autoComplete: Array<string> = []
   @Local private searchType: string = 'illust'
   @Local private searchTarget:string = IllustSearchTargetEnum.TITLE_AND_CAPTION
   @Local private searchTargets:Array<string> = this.illustSearchTargets
-  @Local private illusts:LazyDataSource<Illust> = new LazyDataSource()
-  @Local private novels:LazyDataSource<Novel> = new LazyDataSource()
+
   aboutToAppear(): void {
     this.pathStack = this.queryNavigationInfo()?.pathStack
     if (this.pathStack) {
@@ -38,6 +52,7 @@ export struct SearchPage{
           case 'illust':
             this.searchType = 'illust'
             this.searchTargets = this.illustSearchTargets
+            this.targetSelectOpt = this.illustSearchTargetOpt
             switch (param.target){
               case IllustSearchTargetEnum.TITLE_AND_CAPTION:
                 this.searchTarget = IllustSearchTargetEnum.TITLE_AND_CAPTION
@@ -56,6 +71,7 @@ export struct SearchPage{
           case 'novel':
             this.searchType = 'novel'
             this.searchTargets = this.novelSearchTargets
+            this.targetSelectOpt = this.novelSearchTargetOpt
             switch (param.target){
               case NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS:
                 this.searchTarget = NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS
@@ -88,18 +104,17 @@ export struct SearchPage{
   watch(){
     switch (this.searchType){
       case 'illust':
+        this.targetSelectOpt = this.illustSearchTargetOpt
         this.searchTargets = this.illustSearchTargets
         this.searchTarget = IllustSearchTargetEnum.TITLE_AND_CAPTION
         this.nextUrl = null
-        this.illusts.clean()
-        this.novels.clean()
+
         break
       case 'novel':
+        this.targetSelectOpt = this.novelSearchTargetOpt
         this.searchTargets = this.novelSearchTargets
         this.searchTarget = NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS
         this.nextUrl = null
-        this.illusts.clean()
-        this.novels.clean()
         break
     }
   }
@@ -108,12 +123,13 @@ export struct SearchPage{
     ApiClient.getSearchIllust({
       word: this.word,
       searchTarget:this.searchTarget,
-      sort: 'date_desc'
+      sort: 'date_desc',
+      searchAiType: this.showAI ? 1 : 0,
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchIllustResponse
         this.nextUrl = resp.next_url
-        this.illusts.push(...resp.illusts)
+        this.illusts.setData(resp.illusts)
       }
     })
   }
@@ -130,9 +146,80 @@ export struct SearchPage{
     })
   }
 
+  @Builder searchSetting(){
+    Column(){
+      Row(){
+        Text('AI生成')
+        Blank()
+        Toggle({type:ToggleType.Switch,isOn:this.showAI}).onChange(isOn=>{
+          this.showAI = isOn
+        })
+      }.width('100%')
+      Divider()
+      Row(){
+        Text('搜索类型')
+        Blank()
+        Select(this.searchTypeOpts)
+          .selected(this.searchTypes.indexOf(this.searchType))
+          .value(this.searchType)
+          .onSelect((index,value)=>{
+            this.searchType = value
+          })
+      }.width('100%')
+      Divider()
+      Row(){
+        Text('排序')
+        Blank()
+        //TODO 实现
+        // SegmentButton()
+      }
+      Divider()
+      Row(){
+        Text('搜索条件')
+        Blank()
+        Select(this.targetSelectOpt)
+          .selected(this.searchTargets.indexOf(this.searchTarget))
+          .value(this.searchTarget)
+          .onSelect((index,value)=>{
+            this.searchTarget = value
+          })
+      }.width('100%')
+      Divider()
+      Row(){
+        Text('日期范围')
+        Blank()
+        Row({space:6}){
+          Text(this.startDate? DateTimeUtil.parseDateToLocalFormatTime(this.startDate,'YYYY-MM-DD') : '选择日期')
+            .onClick(()=>{
+              DatePickerDialog.show({
+                selected:this.startDate,
+                end:this.endDate,
+                onDateAccept:(date)=>{
+                  this.startDate = date
+                }
+              })
+            })
+          Text('/')
+          Text(this.endDate? DateTimeUtil.parseDateToLocalFormatTime(this.endDate,'YYYY-MM-DD') : '选择日期')
+            .onClick(()=>{
+              DatePickerDialog.show({
+                selected:this.endDate,
+                start:this.startDate,
+                end:new Date(),
+                onDateAccept:(date)=>{
+                  this.endDate = date
+                }
+              })
+            })
+        }
+      }.width('100%')
+    }
+  }
+
   @Builder searchTitle(){
-    Search({value: this.word!!,controller: this.searchController})
+    Search({value: this.word,controller: this.searchController})
       .onChange((value: string) => {
+        this.word = value
         ApiClient.getSearchAutocomplete(value).then((res) => {
           if (res) {
             const resp = res.toJSON() as SearchAutoCompleteResponse
@@ -166,11 +253,23 @@ export struct SearchPage{
                 param: {illustId: item.id} as IllustRouterParam
               })
             })
-          })
-        }.cachedCount(8)
+          },(item:Illust)=>item.id.toString())
+        }
+        .cachedCount(8)
         .columnsTemplate('1fr 1fr')
         .columnsGap(8)
         .rowsGap(8)
+        .onReachEnd(()=>{
+          if (this.nextUrl){
+            ApiClient.getNext(this.nextUrl).then(res=>{
+              if (res) {
+                const resp = res.toJSON() as SearchIllustResponse
+                this.nextUrl = resp.next_url
+                this.illusts.push(...resp.illusts)
+              }
+            })
+          }
+        })
       }else if (this.searchType === 'novel'){
         List(){
           LazyForEach(this.novels, (item:Novel)=>{
@@ -182,11 +281,26 @@ export struct SearchPage{
                 param: {novelId: item.id} as NovelRouterParam
               })
             })
-          })
+          },(item:Novel)=>item.id.toString())
         }
       }
     }
     .title(this.searchTitle())
+    .menus([{
+      value: '搜索设置',
+      symbolIcon:new SymbolGlyphModifier($r('sys.symbol.more')),
+      action:()=>{
+        this.showSheet = true
+      }
+    }])
+    .bindSheet(this.showSheet,this.searchSetting(),{
+      title: { title:'搜索设置' },
+      height:SheetSize.MEDIUM,
+      blurStyle:BlurStyle.Thin,
+      shouldDismiss:()=>{
+        this.showSheet = false
+      }
+    })
   }
 }
 
