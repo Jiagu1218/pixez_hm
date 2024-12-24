@@ -67,6 +67,20 @@ export struct IllustCard{
     }
   }
 
+  @Builder overlayNode(){
+    Row(){
+      if (this.illust.type !== 'illust'){
+        Text(`${this.illust.type}`).borderWidth(1).borderRadius(4).backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      } else if (this.illust.meta_pages.length>1){
+        Text(){
+          SymbolSpan($r('sys.symbol.picture_2'))
+          Span(`${this.illust.meta_pages.length}`)
+        }.borderWidth(1).borderRadius(4)
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      }
+    }
+  }
+
   build() {
     Column(){
       Stack(){
@@ -83,9 +97,7 @@ export struct IllustCard{
           topLeft:$r('sys.float.ohos_id_card_border_radius'),
           topRight:$r('sys.float.ohos_id_card_border_radius')
         })
-        if (this.illust.type !== 'illust'){
-          Text(`${this.illust.type}`).borderWidth(1).borderRadius(4).backgroundColor(Color.Gray)
-        }
+        this.overlayNode()
       }.alignContent(Alignment.TopEnd)
       .borderRadius({topLeft:$r('sys.float.ohos_id_card_border_radius'),topRight:$r('sys.float.ohos_id_card_border_radius')})
       Row(){

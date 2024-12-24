@@ -309,7 +309,7 @@ export struct SearchPage{
           }
         })
       }else if (this.searchType === 'novel'){
-        List(){
+        List({space:8}){
           LazyForEach(this.novels, (item:Novel)=>{
             ListItem(){
               NovelCard({novel: item})
@@ -320,7 +320,8 @@ export struct SearchPage{
               })
             })
           },(item:Novel)=>item.id.toString())
-        }.onReachEnd(()=>{
+        }.cachedCount(4)
+        .onReachEnd(()=>{
           if (this.nextUrl){
             ApiClient.getNext(this.nextUrl).then(res=>{
               if (res) {

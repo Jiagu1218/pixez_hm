@@ -63,6 +63,20 @@ struct IllustDetailPage {
     .height('100%')
   }
 
+  @Builder overlayNode(illust: Illust){
+    Row(){
+      if (illust.type !== 'illust'){
+        Text(`${illust.type}`).borderWidth(1).borderRadius(4).backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      } else if (illust.meta_pages.length>1){
+        Text(){
+          SymbolSpan($r('sys.symbol.picture_2'))
+          Span(`${illust.meta_pages.length}`)
+        }.borderWidth(1).borderRadius(4)
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      }
+    }
+  }
+
   build() {
     NavDestination(){
       Scroll(){
@@ -198,8 +212,12 @@ struct IllustDetailPage {
                 Grid(){
                   LazyForEach(this.relatedIllusts,(item:Illust)=>{
                     GridItem(){
-                      HttpImage({url: item.image_urls.square_medium,aRatio:1})
-                    }.onClick(()=>{
+                      Stack(){
+                        HttpImage({url: item.image_urls.square_medium,aRatio:1})
+                        this.overlayNode(item)
+                      }.alignContent(Alignment.TopEnd)
+                    }
+                    .onClick(()=>{
                       this.pathStack?.pushPath({
                         name: 'illustDetailPage',
                         param: {illustId:item.id} as IllustRouterParam
