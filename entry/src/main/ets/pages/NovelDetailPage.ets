@@ -9,7 +9,7 @@ import { SearchRouterParam } from '../param/SearchRouterParam';
 
 @Entry
 @ComponentV2
-export struct NovelDetailPage {
+struct NovelDetailPage {
   @Local private novelId: number = 0
   @Local private webViewNovel: WebViewNovel | null = null
   @Local private content:Array<string> = []

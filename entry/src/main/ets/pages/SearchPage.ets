@@ -11,8 +11,11 @@ import { SearchIllustResponse } from "../network/response/SearchIllustResponse"
 import { IllustRouterParam } from "../param/IllustRouterParam"
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { SearchRouterParam } from "../param/SearchRouterParam"
-import { SegmentButton, SymbolGlyphModifier } from "@kit.ArkUI"
+import { SymbolGlyphModifier } from "@kit.ArkUI"
 import { DateTimeUtil } from "../network/util/DateTimeUtil"
+import { SearchSortEnum } from "../network/enums/SearchSortEnum"
+import { SearchNovelResponse } from "../network/response/SearchNovelResponse"
+import { SearchUserResponse } from "../network/response/SearchUserResponse"
 
 @ComponentV2
 export struct SearchPage{
@@ -22,9 +25,10 @@ export struct SearchPage{
   private novelSearchTargetOpt:Array<SelectOption> = Object.values(NovelSearchTargetEnum).map(e=>{return {value:e} as SelectOption})
   private illustSearchTargets:Array<string> = Object.values(IllustSearchTargetEnum)
   private illustSearchTargetOpt:Array<SelectOption> = Object.values(IllustSearchTargetEnum).map(e=>{return {value:e} as SelectOption})
-  private searchTypes: Array<string> = ['illust', 'novel']
-  private searchTypeOpts:Array<SelectOption> = this.searchTypes.map(e=>{return {value:e} as SelectOption})
-  // private shortOpt:SegmentButtonOptions
+  private searchTypes: Array<string> = ['illust', 'novel', 'user']
+  private searchTypeOpts:Array<RadioOptions> = this.searchTypes.map(e=>{return {value:e,group:'searchType'} as RadioOptions})
+  private sortOpts:Array<RadioOptions> = Object.values(SearchSortEnum).map(e=>{return {value:e,group:'sort'} as RadioOptions})
+  private sort:string|undefined = undefined
   private nextUrl:string|null = null
 
 
@@ -107,14 +111,14 @@ export struct SearchPage{
         this.targetSelectOpt = this.illustSearchTargetOpt
         this.searchTargets = this.illustSearchTargets
         this.searchTarget = IllustSearchTargetEnum.TITLE_AND_CAPTION
-        this.nextUrl = null
-
         break
       case 'novel':
         this.targetSelectOpt = this.novelSearchTargetOpt
         this.searchTargets = this.novelSearchTargets
         this.searchTarget = NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS
         this.nextUrl = null
+        break
+      case 'user':
         break
     }
   }
@@ -123,13 +127,16 @@ export struct SearchPage{
     ApiClient.getSearchIllust({
       word: this.word,
       searchTarget:this.searchTarget,
-      sort: 'date_desc',
+      sort: this.sort,
       searchAiType: this.showAI ? 1 : 0,
+      startDate:this.startDate ? DateTimeUtil.parseDateToLocalFormatTime(this.startDate,'YYYY-MM-DD') : undefined,
+      endDate:this.endDate ? DateTimeUtil.parseDateToLocalFormatTime(this.endDate,'YYYY-MM-DD') : undefined,
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchIllustResponse
         this.nextUrl = resp.next_url
         this.illusts.setData(resp.illusts)
+        this.showAI = resp.show_ai
       }
     })
   }
@@ -137,17 +144,30 @@ export struct SearchPage{
     ApiClient.getSearchNovel({
       word: this.word,
       searchTarget:this.searchTarget,
-      sort: 'date_desc'
+      sort: this.sort,
+      startDate:this.startDate ? DateTimeUtil.parseDateToLocalFormatTime(this.startDate,'YYYY-MM-DD') : undefined,
+      endDate:this.endDate ? DateTimeUtil.parseDateToLocalFormatTime(this.endDate,'YYYY-MM-DD') : undefined,
     }).then(res=>{
       if (res) {
-        const resp = res.toJSON()
-        console.info('11111', resp)
+        const resp = res.toJSON() as SearchNovelResponse
+        this.nextUrl = resp.next_url
+        this.novels.setData(resp.novels)
+        this.showAI = resp.show_ai
+      }
+    })
+  }
+
+  searchUser(){
+    ApiClient.getSearchUser(this.word).then(res=>{
+      if (res){
+        const resp = res.toJSON() as SearchUserResponse
+        console.info('1111',resp)
       }
     })
   }
 
   @Builder searchSetting(){
-    Column(){
+    Column({space:16}){
       Row(){
         Text('AI生成')
         Blank()
@@ -159,20 +179,34 @@ export struct SearchPage{
       Row(){
         Text('搜索类型')
         Blank()
-        Select(this.searchTypeOpts)
-          .selected(this.searchTypes.indexOf(this.searchType))
-          .value(this.searchType)
-          .onSelect((index,value)=>{
-            this.searchType = value
-          })
+        Repeat(this.searchTypeOpts).each(item=>{
+          Row(){
+            Text(item.item.value)
+            Radio(item.item).onChange(choose=>{
+              if (choose){
+                this.searchType = item.item.value
+              }
+            }).checked(item.item.value === this.searchType)
+          }
+        }).key(item=>item.value)
       }.width('100%')
       Divider()
       Row(){
         Text('排序')
         Blank()
-        //TODO 实现
-        // SegmentButton()
-      }
+        Row({space:6}){
+          Repeat(this.sortOpts).each(item=>{
+            Row(){
+              Text(item.item.value)
+              Radio(item.item).onChange(choose=>{
+                if (choose){
+                  this.sort = item.item.value
+                }
+              }).checked(item.item.value === this.sort)
+            }
+          }).key(item=>item.value)
+        }
+      }.width('100%')
       Divider()
       Row(){
         Text('搜索条件')
@@ -228,6 +262,7 @@ export struct SearchPage{
         })
       })
       .onSubmit(value=>{
+        this.nextUrl = null
         this.illusts.clean()
         this.novels.clean()
         switch (this.searchType){
@@ -236,6 +271,9 @@ export struct SearchPage{
             break
           case 'novel':
             this.searchNovel()
+            break
+          case 'user':
+            this.searchUser()
             break
         }
       })
@@ -282,7 +320,17 @@ export struct SearchPage{
               })
             })
           },(item:Novel)=>item.id.toString())
-        }
+        }.onReachEnd(()=>{
+          if (this.nextUrl){
+            ApiClient.getNext(this.nextUrl).then(res=>{
+              if (res) {
+                const resp = res.toJSON() as SearchNovelResponse
+                this.nextUrl = resp.next_url
+                this.novels.push(...resp.novels)
+              }
+            })
+          }
+        })
       }
     }
     .title(this.searchTitle())
