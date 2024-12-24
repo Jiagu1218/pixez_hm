@@ -16,6 +16,9 @@ import { DateTimeUtil } from "../network/util/DateTimeUtil"
 import { SearchSortEnum } from "../network/enums/SearchSortEnum"
 import { SearchNovelResponse } from "../network/response/SearchNovelResponse"
 import { SearchUserResponse } from "../network/response/SearchUserResponse"
+import { UserPreview } from "../network/model/UserPreview"
+import { UserPreviewCard } from "../comp/UserPreviewCard"
+import { UserRouterParam } from "../param/UserRouterParam"
 
 @ComponentV2
 export struct SearchPage{
@@ -34,6 +37,7 @@ export struct SearchPage{
 
   private illusts:LazyDataSource<Illust> = new LazyDataSource()
   private novels:LazyDataSource<Novel> = new LazyDataSource()
+  private users:LazyDataSource<UserPreview> = new LazyDataSource()
   @Local private startDate:Date|null = null
   @Local private endDate:Date|null = null
   @Local private targetSelectOpt:Array<SelectOption> = []
@@ -161,6 +165,8 @@ export struct SearchPage{
     ApiClient.getSearchUser(this.word).then(res=>{
       if (res){
         const resp = res.toJSON() as SearchUserResponse
+        this.nextUrl = resp.next_url
+        this.users.setData(resp.user_previews)
         console.info('1111',resp)
       }
     })
@@ -278,6 +284,7 @@ export struct SearchPage{
         }
       })
   }
+
   build() {
     NavDestination(){
       if (this.searchType === 'illust'){
@@ -328,6 +335,30 @@ export struct SearchPage{
                 const resp = res.toJSON() as SearchNovelResponse
                 this.nextUrl = resp.next_url
                 this.novels.push(...resp.novels)
+              }
+            })
+          }
+        })
+      }else if (this.searchType === 'user'){
+        List({space:8}){
+          LazyForEach(this.users, (item:UserPreview)=>{
+            ListItem(){
+              UserPreviewCard({userPreview: item})
+            }.onClick(()=>{
+              this.pathStack?.pushPath({
+                name: 'userDetailPage',
+                param: {userId: item.user.id} as UserRouterParam
+              })
+            })
+          },(item:UserPreview)=>item.user.id.toString())
+        }.cachedCount(4)
+        .onReachEnd(()=>{
+          if (this.nextUrl){
+            ApiClient.getNext(this.nextUrl).then(res=>{
+              if (res) {
+                const resp = res.toJSON() as SearchUserResponse
+                this.nextUrl = resp.next_url
+                this.users.push(...resp.user_previews)
               }
             })
           }
