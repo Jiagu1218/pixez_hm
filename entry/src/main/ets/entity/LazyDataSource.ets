@@ -26,6 +26,13 @@ export class LazyDataSource<T> implements IDataSource {
       this.notifyDatasetChange(dataOperation)
     }
   }
+  /**
+   * 覆盖数据并提醒ui更新
+   * */
+  setData(data: T[]){
+    this.dataSource = data
+    this.notifyDataReloaded()
+  }
 
   /**
    * 清空数据并提醒ui更新
@@ -80,7 +87,7 @@ export class LazyDataSource<T> implements IDataSource {
    * */
   notifyDataReloaded() {
     this.listeners?.forEach(listener => {
-      listener.onDataReloaded()
+      listener.onDatasetChange([{ type: DataOperationType.RELOAD}])
     })
 
   }
