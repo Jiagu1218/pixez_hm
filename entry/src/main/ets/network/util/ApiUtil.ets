@@ -1,12 +1,22 @@
-import { buffer } from "@kit.ArkTS"
+import { buffer, LinkedList } from "@kit.ArkTS"
 import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
 import { AppConfig } from "../AppConfig"
 import { TokenInterceptor } from "../interceptor/TokenInterceptor"
+import { SessionPool } from "../pool/SessionPool"
 import { DateTimeUtil } from "./DateTimeUtil"
+import { BusinessError } from "@kit.BasicServicesKit"
+
+export interface RequestTask{
+  request: rcp.Request,
+  resolve?: (response: rcp.Response) => void
+  reject?: (reason: BusinessError) => void
+}
 
 export class ApiUtil {
   private static session: rcp.Session;
+  // 等待队列
+  private static waitList: LinkedList<RequestTask> = new LinkedList();
   /**
    * 初始化请求
    * */
@@ -175,5 +185,32 @@ export class ApiUtil {
     let hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
     // 返回最终的哈希值。
     return hashHex
+  }
+
+  /**
+   * 处理下一个等待中的任务
+   */
+  private static processNextTask(): void {
+    // 从等待队列中获取下一个任务并下载图片
+    const nextTask = ApiUtil.waitList.removeFirst();
+    if (nextTask) {
+      ApiUtil.fetchRequest(nextTask);
+    }
+  }
+
+  public static fetchRequest(task:RequestTask){
+    const session = SessionPool.getSession()
+    try {
+      if(session){
+        session.fetch(task.request).then(task.resolve)
+      }else {
+        ApiUtil.waitList.add(task)
+      }
+    }catch (e){
+      task.reject?.(e)
+    } finally {
+      SessionPool.releaseSession(session)
+      ApiUtil.processNextTask()
+    }
   }
 }
