@@ -17,6 +17,10 @@ struct HomePage {
   private recommendNovels: LazyDataSource<Novel> = new LazyDataSource<Novel>()
   private nextIllustUrl:string = ''
   private nextNovelUrl:string = ''
+  private illustScroller:Scroller = new Scroller()
+  private novelScroller:Scroller = new Scroller()
+  private tabController:TabsController = new TabsController()
+  @Local private currentIndex:number = 0
 
   aboutToAppear(): void {
     ApiClient.getIllustRecommend().then(res=>{
@@ -41,11 +45,36 @@ struct HomePage {
     },1000)
   }
 
+  @Builder tabBarTitle(param: TabBarTitleParam){
+    Column(){
+      if (param.icon){
+        SymbolGlyph(param.icon).fontColor(this.currentIndex===param.index?[Color.Blue]:[Color.Black])
+      }
+      Text(param.title).fontColor(this.currentIndex===param.index?Color.Blue:Color.Black)
+    }
+    .gesture(
+      GestureGroup(
+        GestureMode.Parallel,
+        TapGesture({count:2}).onAction((event)=>{
+          if (event) {
+            param.doubleClick?.()
+          }
+        }),
+        TapGesture({count:1}).onAction((event)=>{
+          if (event) {
+            this.tabController.changeIndex(param.index)
+            param.click?.()
+          }
+        })
+      )
+    )
+  }
+
   build() {
     Navigation(this.pathStack){
-      Tabs(){
+      Tabs({controller:this.tabController}){
         TabContent(){
-          WaterFlow(){
+          WaterFlow({scroller:this.illustScroller}){
             LazyForEach(this.recommendIllusts, (item: Illust)=>{
               if (item.visible) {
                 FlowItem(){
@@ -75,9 +104,15 @@ struct HomePage {
           .columnsTemplate('1fr 1fr')
           .columnsGap(8)
           .rowsGap(8)
-        }.tabBar('推荐插图')
+        }.tabBar(this.tabBarTitle({
+          index:0,
+          title:'推荐插画',
+          doubleClick:()=>{
+            this.illustScroller.scrollTo({xOffset:0,yOffset:0})
+          }
+        }))
         TabContent(){
-          List(){
+          List({scroller:this.novelScroller}){
             LazyForEach(this.recommendNovels, (item: Novel)=>{
               ListItem(){
                 NovelCard({novel:item})
@@ -101,9 +136,26 @@ struct HomePage {
               })
             }
           })
-        }.tabBar('推荐小说')
+        }.tabBar(this.tabBarTitle({
+          index:1,
+          title:'推荐小说',
+          doubleClick:()=>{
+            this.novelScroller.scrollTo({xOffset:0,yOffset:0})
+          }
+        }))
       }.width('100%')
       .height('100%')
+      .onChange((index)=>{
+        this.currentIndex = index
+      })
     }
   }
+}
+
+interface TabBarTitleParam{
+  index:number
+  title:string
+  icon?:Resource
+  click?:()=>void
+  doubleClick?:()=>void
 }
