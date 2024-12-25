@@ -1,7 +1,7 @@
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { AppConfig } from "../AppConfig";
 import { TokenInterceptor } from "../interceptor/TokenInterceptor";
-import { LinkedList, List, Queue, url } from "@kit.ArkTS";
+import { LinkedList, url } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
 import { BusinessError, zlib } from "@kit.BasicServicesKit";
