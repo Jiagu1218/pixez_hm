@@ -1,5 +1,5 @@
 import { image } from "@kit.ImageKit"
-import { DownloadUtil, ImageTask } from "../network/util/DownloadUtil"
+import { DownloadUtil } from "../network/util/DownloadUtil"
 
 @ComponentV2
 export struct HttpImage{
@@ -9,21 +9,16 @@ export struct HttpImage{
   @Local private defaultRatio:number = 16/9
   @Local private pic:image.PixelMap|null = null
   @Event callback?:(pixelMap:image.PixelMap)=>void
-  private task:ImageTask|null = null
 
   aboutToAppear(): void {
-    this.task = {
-      url:this.url,
-      callback:pixelMap=>{
-        this.pic = pixelMap
-        this.callback?.(pixelMap)
-      }
-    }
-    DownloadUtil.downloadImage(this.task)
+    DownloadUtil.downloadImage(this.url).then(pixelMap=>{
+      this.pic = pixelMap
+      this.callback?.(pixelMap)
+    })
   }
 
   aboutToDisappear(): void {
-    DownloadUtil.removeTask(this.task!)
+
   }
   build() {
     Image(this.pic)

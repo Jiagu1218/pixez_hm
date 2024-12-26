@@ -18,7 +18,7 @@ export struct UgoiraImage{
     ApiClient.getUgoiraMetadata(this.illust.id).then(res => {
       if (res) {
         const resp = res.toJSON() as UgoiraMetadataResponse
-        DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,(success)=>{
+        DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium).then((success)=>{
           if (success) {
             this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
           }

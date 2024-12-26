@@ -3,7 +3,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
-import { DownloadUtil } from '../network/util/DownloadUtil';
 import { ImageUtil } from '../network/util/ImageUtli';
 import { SessionPoolNew } from '../network/pool/SessionPoolNew';
 
@@ -24,8 +23,6 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
-    //销毁链接
-    DownloadUtil.destroy()
     ImageUtil.release()
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
@@ -34,9 +31,7 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     // 初始化链接
-    // SessionPool.init()
     SessionPoolNew.init()
-    // DownloadUtil.init()
     ImageUtil.init(this.context)
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {

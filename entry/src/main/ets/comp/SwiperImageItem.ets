@@ -14,13 +14,10 @@ export struct SwiperImageItem{
   }
 
   loadAllPixelMap(){
-    DownloadUtil.downloadImage({
-      url:this.url,
-      callback: (pic:image.PixelMap)=>{
-        this.touchModel.setImageSrc(pic)
-        this.loading = false
-        this.callback?.(pic)
-      }
+    DownloadUtil.downloadImage(this.url).then((pic:image.PixelMap)=>{
+      this.touchModel.setImageSrc(pic)
+      this.loading = false
+      this.callback?.(pic)
     })
   }
   build() {

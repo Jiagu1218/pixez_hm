@@ -23,7 +23,6 @@ import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum';
 @ComponentV2
 struct Index {
   private accountManager: AccountManager = AccountManager.getInstance();
-  @Param message: string = 'Hello World';
   @Local url: string = '';
   @Local code: string = '';
   @Local controller: webview.WebviewController = new webview.WebviewController();
@@ -124,7 +123,7 @@ struct Index {
             console.info('11111', res)
             if (res) {
               const resp = res.toJSON() as UgoiraMetadataResponse
-              DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium,(success)=>{
+              DownloadUtil.downloadUgoiraFile(resp.ugoira_metadata.zip_urls.medium).then((success)=>{
                 if (success) {
                   this.ani.push(...ImageUtil.getUgoiraFormCache(resp.ugoira_metadata))
                 }
