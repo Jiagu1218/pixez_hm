@@ -5,6 +5,7 @@ import { zlib } from "@kit.BasicServicesKit";
 import { fileIo } from "@kit.CoreFileKit";
 import { SessionPoolNew } from "../pool/SessionPoolNew";
 import { SessionManager } from "../pool/SessionManager";
+import { rcp } from "@kit.RemoteCommunicationKit";
 
 /**
  * 下载工具
@@ -35,6 +36,24 @@ export class DownloadUtil {
     } finally {
       SessionManager.fileSessionPool.release(session)
 
+    }
+  }
+
+  /**
+   * 发送请求
+   * */
+  public static async fetch(request: rcp.Request): Promise<void> {
+    const session: rcp.Session = await SessionManager.fileSessionPool.acquire()
+    try {
+      const response = await session.fetch(request)
+      if (response.statusCode == 200) {
+        // 创建PixelMap并调用回调函数
+        const imageSource = image.createImageSource(response.body)
+        const pixelMap = imageSource.createPixelMapSync()
+        PixelCache.setCache(request.url.toString(), pixelMap)
+      }
+    } finally {
+      SessionManager.commonSessionPool.release(session)
     }
   }
 

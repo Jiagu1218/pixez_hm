@@ -9,13 +9,16 @@ import { NovelRecommendedResponse } from '../network/response/NovelRecommendedRe
 import { IllustRouterParam } from '../param/IllustRouterParam'
 import { NovelRouterParam } from '../param/NovelRouterParam'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching'
+import { BasicPrefetcher } from '@kit.ArkUI'
 
 @Entry
 @ComponentV2
 struct HomePage {
   private pathStack: NavPathStack = new NavPathStack()
-  private recommendIllusts: LazyDataSource<Illust> = new LazyDataSource<Illust>()
+  private recommendIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
   private recommendNovels: LazyDataSource<Novel> = new LazyDataSource<Novel>()
+  private illustPrefetcher = new BasicPrefetcher(this.recommendIllusts)
   private nextIllustUrl:string = ''
   private nextNovelUrl:string = ''
   private illustScroller:Scroller = new Scroller()
@@ -24,6 +27,7 @@ struct HomePage {
   @Local private currentIndex:number = 0
 
   aboutToAppear(): void {
+    this.recommendIllusts.getSession()
     ApiClient.getIllustRecommend().then(res=>{
       const json = res?.toJSON()
       if (json) {
@@ -44,6 +48,10 @@ struct HomePage {
         this.nextNovelUrl = data.next_url
       }
     })
+  }
+
+  aboutToDisappear(): void {
+    this.recommendIllusts.destroy()
   }
 
   @Builder tabBarTitle(param: TabBarTitleParam){
@@ -89,7 +97,11 @@ struct HomePage {
                 })
               }
             },(item: Illust)=>item.id.toString())
-          }.onReachEnd(()=>{
+          }
+          .onScrollIndex((first,last)=>{
+            this.illustPrefetcher.visibleAreaChanged(first,last)
+          })
+          .onReachEnd(()=>{
             if (this.nextIllustUrl?.length>0) {
               ApiClient.getNext(this.nextIllustUrl).then(res=>{
                 const json = res?.toJSON()
@@ -101,7 +113,7 @@ struct HomePage {
                 }
               })
             }
-          }).cachedCount(8)
+          }).cachedCount(4)
           .columnsTemplate('1fr 1fr')
           .columnsGap(8)
           .rowsGap(8)
@@ -124,7 +136,8 @@ struct HomePage {
                 })
               })
             },(item: Novel)=>item.id.toString())
-          }.onReachEnd(()=>{
+          }.cachedCount(4)
+          .onReachEnd(()=>{
             if (this.nextNovelUrl?.length>0) {
               ApiClient.getNext(this.nextNovelUrl).then(res=>{
                 const json = res?.toJSON()
