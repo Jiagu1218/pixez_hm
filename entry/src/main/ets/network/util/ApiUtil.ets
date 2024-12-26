@@ -1,99 +1,32 @@
-import { buffer, LinkedList } from "@kit.ArkTS"
+import { buffer } from "@kit.ArkTS"
 import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
-import { AppConfig } from "../AppConfig"
-import { TokenInterceptor } from "../interceptor/TokenInterceptor"
-import { SessionPool } from "../pool/SessionPool"
-import { DateTimeUtil } from "./DateTimeUtil"
-import { BusinessError } from "@kit.BasicServicesKit"
-
-export interface RequestTask{
-  request: rcp.Request,
-  resolve?: (response: rcp.Response) => void
-  reject?: (reason: BusinessError) => void
-}
+import { SessionPoolNew } from "../pool/SessionPoolNew"
 
 export class ApiUtil {
-  private static session: rcp.Session;
-  // 等待队列
-  private static waitList: LinkedList<RequestTask> = new LinkedList();
-  /**
-   * 初始化请求
-   * */
-  public static async init() {
-    if (!ApiUtil.session) {
-      const time = DateTimeUtil.getIsoTime()
-      ApiUtil.session = rcp.createSession({
-        baseAddress: AppConfig.BASE_API_URL,
-        headers: {
-          'X-Client-Time': time,
-          'X-Client-Hash': ApiUtil.getHash(time + AppConfig.HASH_SALT),
-          'User-Agent': AppConfig.USER_AGENT,
-          "Accept-language": AppConfig.ACCEPT_LANGUAGE,
-          'App-OS': AppConfig.APP_OS,
-          'App-OS-Version': AppConfig.APP_OS_VERSION,
-          'App-Version': AppConfig.APP_VERSION,
-          'Host': AppConfig.HOST,
-          "Content-type": 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        interceptors: [new TokenInterceptor()],
-        requestConfiguration: {
-          processing: {
-            validateResponse: (response): boolean => {
-              if (response.statusCode == 200) {
-                return true
-              }
-              return false
-            }
-          },
-          dns: {
-            dnsOverHttps: {
-              url: AppConfig.DOH
-            }
-          },
-          security: {
-            remoteValidation: (context) => {
-              console.info('context', context)
-              return true
-            }
-          }
-        }
-      })
-    }
-  }
-
-  /**
-   * 销毁链接
-   * */
-  public static destroy():void{
-    if (ApiUtil.session) {
-      ApiUtil.session.close()
-    }
-  }
 
   /**
    * 发送POST请求
    * */
   public static async post(url: string, content?: rcp.RequestContent): Promise<rcp.Response | null> {
-    try {
-      const response = await ApiUtil.session.post(url, content);
-      return response;
-    } catch (err) {
-      console.error(`err: err code is ${err.code}, err message is ${JSON.stringify(err)}`);
-      return null;
-    }
+    const session: rcp.Session = await SessionPoolNew.acquire()
+    const request: rcp.Request = new rcp.Request(url, 'POST')
+    request.content = content
+    return session.fetch(request)
   }
+
 
   /**
    * 发送GET请求
    * */
   public static async get(url: rcp.URLOrString, desc?: rcp.ResponseBodyDestination): Promise<rcp.Response | null> {
+    const session: rcp.Session = await SessionPoolNew.acquire()
+    const request: rcp.Request = new rcp.Request(url,'GET')
+    request.destination = desc;
     try {
-      const response = await ApiUtil.session.get(url, desc);
-      return response;
-    } catch (err) {
-      console.error(`err: err code is ${err.code}, err message is ${JSON.stringify(err)}`);
-      return null;
+      return session.fetch(request)
+    } finally {
+      SessionPoolNew.release(session)
     }
   }
 
@@ -101,12 +34,11 @@ export class ApiUtil {
    * 发送请求
    * */
   public static async fetch(request: rcp.Request): Promise<rcp.Response | null> {
+    const session: rcp.Session = await SessionPoolNew.acquire()
     try {
-      const response = await ApiUtil.session.fetch(request);
-      return response;
-    } catch (err) {
-      console.error(`err: err code is ${err.code}, err message is ${JSON.stringify(err)}`);
-      return null;
+      return session.fetch(request)
+    } finally {
+      SessionPoolNew.release(session)
     }
   }
 
@@ -187,30 +119,4 @@ export class ApiUtil {
     return hashHex
   }
 
-  /**
-   * 处理下一个等待中的任务
-   */
-  private static processNextTask(): void {
-    // 从等待队列中获取下一个任务并下载图片
-    const nextTask = ApiUtil.waitList.removeFirst();
-    if (nextTask) {
-      ApiUtil.fetchRequest(nextTask);
-    }
-  }
-
-  public static fetchRequest(task:RequestTask){
-    const session = SessionPool.getSession()
-    try {
-      if(session){
-        session.fetch(task.request).then(task.resolve)
-      }else {
-        ApiUtil.waitList.add(task)
-      }
-    }catch (e){
-      task.reject?.(e)
-    } finally {
-      SessionPool.releaseSession(session)
-      ApiUtil.processNextTask()
-    }
-  }
 }

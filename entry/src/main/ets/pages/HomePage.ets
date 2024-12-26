@@ -8,6 +8,7 @@ import { IllustRecommendedResponse } from '../network/response/IllustRecommended
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
 import { IllustRouterParam } from '../param/IllustRouterParam'
 import { NovelRouterParam } from '../param/NovelRouterParam'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Entry
 @ComponentV2
@@ -31,18 +32,18 @@ struct HomePage {
         this.recommendIllusts.push(...data.ranking_illusts)
         this.nextIllustUrl = data.next_url
       }
+    }).catch((e:BusinessError)=>{
+      console.error('11111',e)
     })
-    setTimeout(()=>{
-      ApiClient.getNovelRecommended().then(res=>{
-        const json = res?.toJSON()
-        if (json) {
-          const data = json as NovelRecommendedResponse
-          this.recommendNovels.push(...data.novels)
-          this.recommendNovels.push(...data.ranking_novels)
-          this.nextNovelUrl = data.next_url
-        }
-      })
-    },1000)
+    ApiClient.getNovelRecommended().then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        const data = json as NovelRecommendedResponse
+        this.recommendNovels.push(...data.novels)
+        this.recommendNovels.push(...data.ranking_novels)
+        this.nextNovelUrl = data.next_url
+      }
+    })
   }
 
   @Builder tabBarTitle(param: TabBarTitleParam){

@@ -6,6 +6,8 @@ import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
 import { BusinessError, zlib } from "@kit.BasicServicesKit";
 import { fileIo } from "@kit.CoreFileKit";
+import { ApiUtil } from "./ApiUtil";
+import { SessionPoolNew } from "../pool/SessionPoolNew";
 
 /**
  * 定义下载任务接口
