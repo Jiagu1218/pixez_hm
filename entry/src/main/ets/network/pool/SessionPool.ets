@@ -4,41 +4,52 @@ import { rcp } from "@kit.RemoteCommunicationKit";
 export interface SessionPoolConfig {
   maxSessions: number;
   coreSessions: number;
-  sessionConfiguration?: rcp.SessionConfiguration
+  sessionConfiguration?: rcp.SessionConfiguration;
 }
+
 /**
  * SessionPool类用于管理远程通信的会话池
  * 它使用链表来维护会话池和等待队列，并根据需要创建和分配会话
  */
-export class SessionPool{
+export class SessionPool {
   // 会话池，用于存储可用的会话
-  private static sessionPool: LinkedList<rcp.Session> = new LinkedList();
+  private sessionPool: LinkedList<rcp.Session>;
   // 等待队列，用于存储等待会话的请求
-  private static waitingQueue: LinkedList<(session: rcp.Session) => void> = new LinkedList();
+  private waitingQueue: LinkedList<(session: rcp.Session) => void>;
   // 最大会话数，限制会话池的最大大小
-  private static maxSessions: number = 16
+  private maxSessions: number;
   // 核心会话数，保证始终可用的最小会话数
-  private static coreSessions: number = 4
+  private coreSessions: number;
   // 当前活动的会话数
-  private static activeSessions: number = 0
-  private static sessionConfiguration:rcp.SessionConfiguration
+  private activeSessions: number;
+  private sessionConfiguration: rcp.SessionConfiguration;
+
+  constructor(config?: SessionPoolConfig) {
+    this.sessionPool = new LinkedList();
+    this.waitingQueue = new LinkedList();
+    this.maxSessions = 16;
+    this.coreSessions = 4;
+    this.activeSessions = 0;
+    this.sessionConfiguration = config?.sessionConfiguration ?? {};
+    this.init(config);
+  }
 
   /**
    * 初始化会话池，创建核心会话数目的会话
    */
-  public static init(config?:SessionPoolConfig) {
+  private init(config?: SessionPoolConfig): void {
     if (config?.sessionConfiguration) {
-      SessionPool.sessionConfiguration = config.sessionConfiguration
+      this.sessionConfiguration = config.sessionConfiguration;
     }
     if (config?.maxSessions) {
-      SessionPool.maxSessions = config.maxSessions > 16 ? SessionPool.maxSessions:config.maxSessions
+      this.maxSessions = config.maxSessions > 16 ? this.maxSessions : config.maxSessions;
     }
     if (config?.coreSessions) {
-      SessionPool.coreSessions = config.coreSessions
+      this.coreSessions = config.coreSessions;
     }
-    for (let i = 0; i < SessionPool.coreSessions; i++) {
-      const session = SessionPool.createSession();
-      SessionPool.sessionPool.add(session);
+    for (let i = 0; i < this.coreSessions; i++) {
+      const session = this.createSession();
+      this.sessionPool.add(session);
     }
   }
 
@@ -48,27 +59,36 @@ export class SessionPool{
    * @param {number} timeout 获取会话的超时时间，默认为30000毫秒
    * @returns {Promise<rcp.Session>} 返回一个Promise，解析为一个会话
    */
-  public static async acquire(timeout: number = 30000): Promise<rcp.Session> {
+  public async acquire(timeout: number = 30000): Promise<rcp.Session> {
     return new Promise((resolve, reject) => {
       let timer: number = -1;
       if (timeout > 0) {
         timer = setTimeout(() => {
-          SessionPool.waitingQueue.remove(resolve);
+          this.waitingQueue.remove(resolve);
           reject(new Error('获取请求超时'));
         }, timeout);
       }
-      if (SessionPool.sessionPool.length == 0 && SessionPool.activeSessions < SessionPool.maxSessions) {
-        const session = SessionPool.createSession()
-        timer>-1 && clearTimeout(timer)
-        SessionPool.activeSessions++;
-        resolve(session)
-      }else if (SessionPool.sessionPool.length == 0) {
-        SessionPool.waitingQueue.add(resolve)
-      }else {
-        timer>-1 && clearTimeout(timer)
-        resolve(SessionPool.sessionPool.removeFirst());
+      if (this.sessionPool.length == 0 && this.activeSessions < this.maxSessions) {
+
+        try {
+          const session = this.createSession();
+          this.activeSessions++;
+          resolve(session);
+          timer > -1 && clearTimeout(timer);
+        }catch (e){
+          //超出session个数限制16个
+          if (1007900994 == e?.['code']) {
+            this.waitingQueue.add(resolve)
+          }
+        }
+
+      } else if (this.sessionPool.length == 0) {
+        this.waitingQueue.add(resolve);
+      } else {
+        timer > -1 && clearTimeout(timer);
+        resolve(this.sessionPool.removeFirst());
       }
-    })
+    });
   }
 
   /**
@@ -77,16 +97,16 @@ export class SessionPool{
    * 如果等待队列不为空，则从等待队列中取出一个请求并分配会话
    * @param {rcp.Session} session 要释放的会话
    */
-  public static release(session: rcp.Session): void {
-    if (SessionPool.waitingQueue.length == 0) {
-      if (SessionPool.sessionPool.length < SessionPool.coreSessions) {
-        SessionPool.sessionPool.add(session);
+  public release(session: rcp.Session): void {
+    if (this.waitingQueue.length == 0) {
+      if (this.sessionPool.length < this.coreSessions) {
+        this.sessionPool.add(session);
       } else {
         session.close();
-        SessionPool.activeSessions--;
+        this.activeSessions--;
       }
     } else {
-      const nextRequest = SessionPool.waitingQueue.removeFirst();
+      const nextRequest = this.waitingQueue.removeFirst();
       nextRequest(session);
     }
   }
@@ -95,8 +115,17 @@ export class SessionPool{
    * 创建一个新的Session
    * @returns {rcp.Session} 新的Session实例
    */
-  private static createSession(): rcp.Session {
+  private createSession(): rcp.Session {
     // 创建Session并配置基础地址、请求头、拦截器等
-    return rcp.createSession(SessionPool.sessionConfiguration);
+    return rcp.createSession(this.sessionConfiguration);
+  }
+
+  public destroy(){
+    this.sessionPool.forEach((session)=>{
+      session.close()
+    })
+    this.sessionPool.clear()
+    this.waitingQueue.clear()
+    this.activeSessions = 0
   }
 }

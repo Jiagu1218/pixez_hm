@@ -71,6 +71,8 @@ struct UserDetailPage {
         this.bookmarkIllusts.push(...resp.illusts)
         this.nextBookmarkUrl = resp.next_url
       }
+    }).catch((e:BusinessError)=>{
+      console.info('error',e)
     })
   }
 

@@ -4,6 +4,7 @@ import { PixelCache } from "../cache/PixelMapCache";
 import { zlib } from "@kit.BasicServicesKit";
 import { fileIo } from "@kit.CoreFileKit";
 import { SessionPoolNew } from "../pool/SessionPoolNew";
+import { SessionManager } from "../pool/SessionManager";
 
 /**
  * 下载工具
@@ -22,7 +23,7 @@ export class DownloadUtil {
       return cache
     }
 
-    const session = await SessionPoolNew.acquire();
+    const session = await SessionManager.fileSessionPool.acquire()
     try {
       // 发起GET请求下载图片
       const response = await session.get(url);
@@ -32,7 +33,7 @@ export class DownloadUtil {
       PixelCache.setCache(url, pixelMap)
       return pixelMap
     } finally {
-      SessionPoolNew.release(session)
+      SessionManager.fileSessionPool.release(session)
 
     }
   }
@@ -54,7 +55,7 @@ export class DownloadUtil {
       return false
     }
     // 获取下载会话
-    const session = await SessionPoolNew.acquire()
+    const session = await SessionManager.fileSessionPool.acquire()
     try {
       // 解析URL以获取源信息
       const source = url.URL.parseURL(src)
@@ -98,7 +99,7 @@ export class DownloadUtil {
         })
       })
     }finally {
-      SessionPoolNew.release(session)
+      SessionManager.fileSessionPool.release(session)
     }
   }
 

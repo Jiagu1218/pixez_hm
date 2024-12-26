@@ -1,6 +1,7 @@
 import { buffer } from "@kit.ArkTS"
 import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
+import { SessionManager } from "../pool/SessionManager"
 import { SessionPoolNew } from "../pool/SessionPoolNew"
 
 export class ApiUtil {
@@ -9,7 +10,7 @@ export class ApiUtil {
    * 发送POST请求
    * */
   public static async post(url: string, content?: rcp.RequestContent): Promise<rcp.Response | null> {
-    const session: rcp.Session = await SessionPoolNew.acquire()
+    const session: rcp.Session = await SessionManager.commonSessionPool.acquire()
     const request: rcp.Request = new rcp.Request(url, 'POST')
     request.content = content
     return session.fetch(request)
@@ -20,13 +21,13 @@ export class ApiUtil {
    * 发送GET请求
    * */
   public static async get(url: rcp.URLOrString, desc?: rcp.ResponseBodyDestination): Promise<rcp.Response | null> {
-    const session: rcp.Session = await SessionPoolNew.acquire()
+    const session: rcp.Session = await SessionManager.commonSessionPool.acquire()
     const request: rcp.Request = new rcp.Request(url,'GET')
     request.destination = desc;
     try {
       return session.fetch(request)
     } finally {
-      SessionPoolNew.release(session)
+      SessionManager.commonSessionPool.release(session)
     }
   }
 
@@ -34,11 +35,11 @@ export class ApiUtil {
    * 发送请求
    * */
   public static async fetch(request: rcp.Request): Promise<rcp.Response | null> {
-    const session: rcp.Session = await SessionPoolNew.acquire()
+    const session: rcp.Session = await SessionManager.commonSessionPool.acquire()
     try {
       return session.fetch(request)
     } finally {
-      SessionPoolNew.release(session)
+      SessionManager.commonSessionPool.release(session)
     }
   }
 

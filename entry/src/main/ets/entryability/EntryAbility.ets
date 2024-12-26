@@ -5,6 +5,7 @@ import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
 import { ImageUtil } from '../network/util/ImageUtli';
 import { SessionPoolNew } from '../network/pool/SessionPoolNew';
+import { SessionManager } from '../network/pool/SessionManager';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -24,6 +25,7 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     ImageUtil.release()
+    SessionManager.destroy()
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
@@ -31,7 +33,8 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     // 初始化链接
-    SessionPoolNew.init()
+    // SessionPoolNew.init()
+    SessionManager.init()
     ImageUtil.init(this.context)
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {

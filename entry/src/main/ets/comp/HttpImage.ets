@@ -1,5 +1,6 @@
 import { image } from "@kit.ImageKit"
 import { DownloadUtil } from "../network/util/DownloadUtil"
+import { BusinessError } from "@kit.BasicServicesKit"
 
 @ComponentV2
 export struct HttpImage{
@@ -14,6 +15,8 @@ export struct HttpImage{
     DownloadUtil.downloadImage(this.url).then(pixelMap=>{
       this.pic = pixelMap
       this.callback?.(pixelMap)
+    }).catch((e:BusinessError)=>{
+      console.info('error',e)
     })
   }
 
