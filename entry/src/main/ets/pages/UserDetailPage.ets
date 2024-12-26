@@ -10,6 +10,7 @@ import { BookmarksIllustResponse } from '../network/response/BookmarksIllustResp
 import { UserBookmarkTagsIllustResponse } from '../network/response/UserBookmarkTagsIllustResponse'
 import { UserRouterParam } from '../param/UserRouterParam'
 import { IllustRouterParam } from '../param/IllustRouterParam'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Entry
 @ComponentV2
@@ -56,11 +57,11 @@ struct UserDetailPage {
         this.nextMangaUrl = resp.next_url
       }
     })
-    ApiClient.getUserBookmarkTagsIllust(this.userId).then(res => {
-      if (res) {
-        const resp = res.toJSON() as UserBookmarkTagsIllustResponse
-      }
-    })
+    // ApiClient.getUserBookmarkTagsIllust(this.userId).then(res => {
+    //   if (res) {
+    //     const resp = res.toJSON() as UserBookmarkTagsIllustResponse
+    //   }
+    // })
     ApiClient.getBookmarksIllust({
       userId:this.userId,
       restrict:'public'
