@@ -6,11 +6,13 @@ import { OauthClient } from '../OauthClient'
 import { TokenResponse } from '../response/TokenResponse'
 import { AccountManager } from '../../util/AccountManager'
 
+
 /**
  * token拦截器
  * 用于拦截请求并处理token相关逻辑，如刷新token、添加token到请求头等
  */
 export class TokenInterceptor implements rcp.Interceptor {
+  private loginPageName: string = 'loginPage'
   /**
    * 拦截请求的执行方法
    * @param context 请求上下文，包含请求和响应信息
@@ -26,6 +28,10 @@ export class TokenInterceptor implements rcp.Interceptor {
     }
     // 检查响应状态码，如果是400或401，表示可能需要刷新token
     if (response.statusCode == 400 || response.statusCode == 401) {
+      const error = response.toString()
+      if (!error?.indexOf('OAuth')) {
+        return response
+      }
       //TODO 删除token
       // 尝试刷新token
       const res = await OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '')
