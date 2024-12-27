@@ -80,6 +80,7 @@ export class SessionPool {
           if (1007900994 == e?.['code']) {
             this.waitingQueue.add(resolve)
           }else {
+            timer > -1 && clearTimeout(timer)
             reject(e)
           }
         }
