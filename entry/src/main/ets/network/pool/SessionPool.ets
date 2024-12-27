@@ -79,6 +79,8 @@ export class SessionPool {
           //超出session个数限制16个
           if (1007900994 == e?.['code']) {
             this.waitingQueue.add(resolve)
+          }else {
+            reject(e)
           }
         }
 
