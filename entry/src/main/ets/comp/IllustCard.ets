@@ -1,10 +1,8 @@
 import { ApiClient } from "../network/ApiClient"
 import { Illust } from "../network/model/Illust"
 import { HttpImage } from "./HttpImage"
-import { router } from "@kit.ArkUI"
 import { uiEffect } from "@kit.ArkGraphics2D"
 import { BookmarkDetail, IllustBookmarkDetailResponse, Tag } from "../network/response/IllustBookmarkDetailResponse"
-import { IllustRouterParam } from "../param/IllustRouterParam"
 
 @ComponentV2
 export struct IllustCard{
@@ -140,17 +138,5 @@ export struct IllustCard{
       }.borderRadius({bottomLeft:$r('sys.float.ohos_id_card_border_radius'),bottomRight:$r('sys.float.ohos_id_card_border_radius')})
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .backgroundColor(Color.Orange)
-    // .onClick(()=>{
-    //   this.pathStack?.pushPath({
-    //     name: 'illustDetailPage',
-    //     param: {illustId: this.illust.id} as IllustRouterParam
-    //   })
-    //   // router.pushUrl({
-    //   //   url: 'pages/IllustDetailPage',
-    //   //   params: {
-    //   //     illustId: this.illust.id
-    //   //   }
-    //   // })
-    // })
   }
 }

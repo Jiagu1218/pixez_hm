@@ -1,4 +1,3 @@
-import { Illust } from "../model/Illust"
 import { IllustPageResponseBase } from "./IllustPageResponseBase"
 
 /**

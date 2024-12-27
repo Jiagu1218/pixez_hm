@@ -1,8 +1,6 @@
-import { IllustCard } from '../comp/IllustCard'
 import { NovelCard } from '../comp/NovelCard'
 import { LazyDataSource } from '../entity/LazyDataSource'
 import { ApiClient } from '../network/ApiClient'
-import { Illust } from '../network/model/Illust'
 import { Novel } from '../network/model/Novel'
 import { IllustRecommendedResponse } from '../network/response/IllustRecommendedResponse'
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
