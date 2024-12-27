@@ -12,6 +12,8 @@ import { UserRouterParam } from '../param/UserRouterParam';
 import { SearchRouterParam } from '../param/SearchRouterParam';
 import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum';
 import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching';
+import { HtmlUtil, RichTextInfo } from '../network/util/HtmlUtil';
+import { HtmlText } from '../comp/HtmlText';
 
 
 @Entry
@@ -200,9 +202,7 @@ struct IllustDetailPage {
             }
             if (this.illust?.caption){
               Row(){
-                //TODO 格式化富文本
-                Text(this.illust.caption.replaceAll('<br />', '\n'))
-
+                HtmlText({htmlText:this.illust.caption})
               }.margin(16)
               .padding(8)
               .width('90%')

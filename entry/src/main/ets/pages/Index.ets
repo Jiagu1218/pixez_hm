@@ -62,6 +62,11 @@ struct Index {
             session.close()
           })
         })
+        Button("测试getRichTextInfo").onClick(() => {
+          const html = 'おしまいと言ったな！あれは嘘だ！<br />これで今日はおしまいです<br />BOOTHに新作出しました<br />着せ恋　乾 紗寿叶のいろいろAIイラスト集　100枚<br /><a href="https://b-ai-cat.booth.pm/items/6414565" target="_blank">https://b-ai-cat.booth.pm/items/6414565</a><br />ぜひ支援よろしくお願いします。<br />ブックマーク、いいね、ぜひよろしくお願いします<br />タグも作品に合うと思ったら追加してくれたらうれしいです<br />Xもやってます。ぜひフォローよろしくお願いします<br /><a href="https://x.com/b_neko0505" target=\'_blank\' rel=\'noopener noreferrer\'>https://x.com/b_neko0505</a><br />Boothにてまとめた画像を販売してます。<br /><a href="https://b-ai-cat.booth.pm/" target="_blank">https://b-ai-cat.booth.pm/</a> 用正则表达式对该字符串进行处理分段，返回为标签类型，标签内容，标签属性，文本位置おしまいと言ったな！あれは嘘だ！<br />これで今日はおしまいです<br />BOOTHに新作出しました<br />着せ恋　乾 紗寿叶のいろいろAIイラスト集　100枚<br /><a href="https://b-ai-cat.booth.pm/items/6414565" target="_blank">https://b-ai-cat.booth.pm/items/6414565</a><br />ぜひ支援よろしくお願いします。<br />ブックマーク、いいね、ぜひよろしくお願いします<br />タグも作品に合うと思ったら追加してくれたらうれしいです<br />Xもやってます。ぜひフォローよろしくお願いします<br /><a href="https://x.com/b_neko0505" target=\'_blank\' rel=\'noopener noreferrer\'>https://x.com/b_neko0505</a><br />Boothにてまとめた画像を販売してます。<br /><a href="https://b-ai-cat.booth.pm/" target="_blank">https://b-ai-cat.booth.pm/</a>'
+          const richTextInfos = HtmlUtil.getRichTextInfo(html)
+          console.info('11111', richTextInfos)
+        })
         Button("测试getSpotlightArticles").onClick(()=>{
           ApiClient.getSpotlightArticles('all').then(res => {
             console.info('11111', res)
