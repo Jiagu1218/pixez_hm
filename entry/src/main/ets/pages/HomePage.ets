@@ -6,39 +6,21 @@ import { Illust } from '../network/model/Illust'
 import { Novel } from '../network/model/Novel'
 import { IllustRecommendedResponse } from '../network/response/IllustRecommendedResponse'
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
-import { IllustRouterParam } from '../param/IllustRouterParam'
 import { NovelRouterParam } from '../param/NovelRouterParam'
-import { BusinessError } from '@kit.BasicServicesKit'
-import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching'
-import { BasicPrefetcher } from '@kit.ArkUI'
+import { IllustWaterFlow } from '../comp/IllustWaterFlow'
 
 @Entry
 @ComponentV2
 struct HomePage {
   private pathStack: NavPathStack = new NavPathStack()
-  private recommendIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
   private recommendNovels: LazyDataSource<Novel> = new LazyDataSource<Novel>()
-  private illustPrefetcher = new BasicPrefetcher(this.recommendIllusts)
-  private nextIllustUrl:string = ''
-  private nextNovelUrl:string = ''
+  private nextNovelUrl:string|null = null
   private illustScroller:Scroller = new Scroller()
   private novelScroller:Scroller = new Scroller()
   private tabController:TabsController = new TabsController()
   @Local private currentIndex:number = 0
 
   aboutToAppear(): void {
-    this.recommendIllusts.getSession()
-    ApiClient.getIllustRecommend().then(res=>{
-      const json = res?.toJSON()
-      if (json) {
-        const data = json as IllustRecommendedResponse
-        this.recommendIllusts.push(...data.illusts)
-        this.recommendIllusts.push(...data.ranking_illusts)
-        this.nextIllustUrl = data.next_url
-      }
-    }).catch((e:BusinessError)=>{
-      console.error('11111',e)
-    })
     ApiClient.getNovelRecommended().then(res=>{
       const json = res?.toJSON()
       if (json) {
@@ -50,8 +32,18 @@ struct HomePage {
     })
   }
 
+  getIllustRecommend():Promise<IllustRecommendedResponse|null>{
+    return ApiClient.getIllustRecommend().then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        return json as IllustRecommendedResponse
+      }else {
+        return null
+      }
+    })
+  }
+
   aboutToDisappear(): void {
-    this.recommendIllusts.destroy()
   }
 
   @Builder tabBarTitle(param: TabBarTitleParam){
@@ -83,40 +75,7 @@ struct HomePage {
     Navigation(this.pathStack){
       Tabs({controller:this.tabController}){
         TabContent(){
-          WaterFlow({scroller:this.illustScroller}){
-            LazyForEach(this.recommendIllusts, (item: Illust)=>{
-              if (item.visible) {
-                FlowItem(){
-                  IllustCard({illust:item})
-                }
-                .onClick(()=>{
-                  this.pathStack?.pushPath({
-                    name: 'illustDetailPage',
-                    param: {illustId: item.id} as IllustRouterParam
-                  })
-                })
-              }
-            },(item: Illust)=>item.id.toString())
-          }
-          .onScrollIndex((first,last)=>{
-            this.illustPrefetcher.visibleAreaChanged(first,last)
-          })
-          .onReachEnd(()=>{
-            if (this.nextIllustUrl?.length>0) {
-              ApiClient.getNext(this.nextIllustUrl).then(res=>{
-                const json = res?.toJSON()
-                if (json) {
-                  const data = json as IllustRecommendedResponse
-                  this.recommendIllusts.push(...data.illusts)
-                  this.recommendIllusts.push(...data.ranking_illusts)
-                  this.nextIllustUrl = data.next_url
-                }
-              })
-            }
-          }).cachedCount(4)
-          .columnsTemplate('1fr 1fr')
-          .columnsGap(8)
-          .rowsGap(8)
+          IllustWaterFlow({scroller:this.illustScroller,firstPage:()=>this.getIllustRecommend()})
         }.tabBar(this.tabBarTitle({
           index:0,
           title:'推荐插画',
@@ -138,7 +97,7 @@ struct HomePage {
             },(item: Novel)=>item.id.toString())
           }.cachedCount(4)
           .onReachEnd(()=>{
-            if (this.nextNovelUrl?.length>0) {
+            if (this.nextNovelUrl) {
               ApiClient.getNext(this.nextNovelUrl).then(res=>{
                 const json = res?.toJSON()
                 if (json) {

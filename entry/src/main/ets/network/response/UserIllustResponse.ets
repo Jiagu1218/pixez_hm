@@ -1,25 +1,16 @@
 import { Illust } from "../model/Illust"
+import { IllustPageResponseBase } from "./IllustPageResponseBase"
 
 /**
  * 用户插画响应接口
  * 定义了获取用户插画列表的API响应格式
  * */
-export interface UserIllustResponse{
+export interface UserIllustResponse extends IllustPageResponseBase{
   /**
    * 用户信息
    * 包含用户的详细资料，如ID、用户名、账号等
    * */
   user: User
-  /**
-   * 插画列表
-   * 包含用户发布的插画作品数组
-   * */
-  illusts: Illust[]
-  /**
-   * 下一页URL
-   * 如果存在更多数据，则该字段提供获取下一页数据的URL
-   * */
-  next_url: string|null
 }
 
 /**
