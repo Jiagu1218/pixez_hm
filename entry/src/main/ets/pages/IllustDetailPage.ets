@@ -29,6 +29,7 @@ struct IllustDetailPage {
   @Local currentRawUrl:string = ''
   private pathStack:NavPathStack|undefined = undefined
   aboutToAppear(): void {
+    this.relatedIllusts.getSession()
     this.pathStack = this.queryNavigationInfo()?.pathStack
     const params = router.getParams() as IllustRouterParam
     if (params?.illustId){
@@ -54,6 +55,10 @@ struct IllustDetailPage {
       this.relatedIllusts.push(...resp.illusts)
       this.nextUrl = resp.next_url
     })
+  }
+
+  aboutToDisappear(): void {
+    this.relatedIllusts.destroy()
   }
 
   @Builder showRowImage(){
