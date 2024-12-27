@@ -75,17 +75,19 @@ struct UserDetailPage {
             Stack(){
               if (this.userDetail?.profile.background_image_url){
                 HttpImage({url:this.userDetail.profile.background_image_url})
+                  // .blur(20)
               }
               if (this.userDetail){
-                Row(){
-                  Column(){
-                    HttpImage({url:this.userDetail.user.profile_image_urls.medium,aRatio:1,br:40}).width(80)
-                    Text(this.userDetail.user.name).fontSize(30).fontWeight(FontWeight.Bold)
-                  }
-                }
+                Column(){
+                  HttpImage({url:this.userDetail.user.profile_image_urls.medium,aRatio:1,br:30}).width(60)
+                  Text(this.userDetail.user.name).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
+                    .borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
+                    .padding(4)
+                    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+                }.alignItems(HorizontalAlign.Start)
               }
             }.width('100%')
-            .backgroundColor(Color.Orange)
+            .alignContent(Alignment.BottomStart)
           }
           ListItemGroup(){
             ListItem(){

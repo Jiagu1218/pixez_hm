@@ -114,7 +114,7 @@ struct IllustDetailPage {
             }
           }.width('100%')
           // 详细信息
-          Column(){
+          Column({space:16}){
             Column({space:16}){
               Text(this.illust?.title ?? '').fontSize($r('sys.float.Title_S'))
               Row({space:16}){
@@ -181,8 +181,9 @@ struct IllustDetailPage {
                       }
                     }.fontSize(14)
                     .padding(8)
-                    .backgroundColor(Color.Gray)
+                    // .backgroundColor(Color.Gray)
                     .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
+                    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
                     .onClick(()=>{
                       this.pathStack?.pushPath({
                         name: 'searchPage',
@@ -201,10 +202,11 @@ struct IllustDetailPage {
               Row(){
                 //TODO 格式化富文本
                 Text(this.illust.caption.replaceAll('<br />', '\n'))
+
               }.margin(16)
               .padding(8)
               .width('90%')
-              .backgroundColor(Color.Gray)
+              .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
               .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
             }
             if (this.relatedIllusts){
@@ -224,7 +226,7 @@ struct IllustDetailPage {
                       })
                     })
                   })
-                }.columnsTemplate('1fr 1fr 1fr')
+                }.columnsTemplate('repeat(auto-fit, 120)')
                 .height('100%')
                 .cachedCount(6)
                 .onScrollIndex((first,last)=>{

@@ -82,18 +82,12 @@ export struct IllustCard{
   build() {
     Column(){
       Stack(){
-        Column(){
-          HttpImage({
-            url: this.illust.image_urls.large,aRatio:this.aRatio,
-            br:{
-              topLeft:$r('sys.float.ohos_id_card_border_radius'),
-              topRight:$r('sys.float.ohos_id_card_border_radius')
-            }
-          })
-        }.compositingFilter(this.filter)
-        .borderRadius({
-          topLeft:$r('sys.float.ohos_id_card_border_radius'),
-          topRight:$r('sys.float.ohos_id_card_border_radius')
+        HttpImage({
+          url: this.illust.image_urls.large,aRatio:this.aRatio,
+          br:{
+            topLeft:$r('sys.float.ohos_id_card_border_radius'),
+            topRight:$r('sys.float.ohos_id_card_border_radius')
+          }
         })
         this.overlayNode()
       }.alignContent(Alignment.TopEnd)
@@ -137,6 +131,6 @@ export struct IllustCard{
           }).width(48)
       }.borderRadius({bottomLeft:$r('sys.float.ohos_id_card_border_radius'),bottomRight:$r('sys.float.ohos_id_card_border_radius')})
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
-    .backgroundColor(Color.Orange)
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
   }
 }
