@@ -44,6 +44,7 @@ export class AppConfig{
 
   /**
    * DOH
+   * @link https://coding.gs/2024/06/09/available-doh/#%E5%9B%BD%E5%86%85
    * */
-  public static readonly DOH:string = 'https://208.67.220.220/dns-query'
+  public static readonly DOH:string = 'https://doh.dns.sb/dns-query'
 }

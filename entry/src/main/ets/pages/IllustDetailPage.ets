@@ -1,10 +1,9 @@
 import { ApiClient } from '../network/ApiClient'
 import { Illust, MetaPage, Tag } from '../network/model/Illust'
-import { LengthUnit, router } from '@kit.ArkUI'
+import { BasicPrefetcher, LengthUnit, router } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
 import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
 import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse';
-import { LazyDataSource } from '../entity/LazyDataSource';
 import { SaveImage } from '../comp/SaveImage';
 import { DateTimeUtil } from '../network/util/DateTimeUtil';
 import { UgoiraImage } from '../comp/UgoiraImage';
@@ -12,14 +11,16 @@ import { IllustRouterParam } from '../param/IllustRouterParam';
 import { UserRouterParam } from '../param/UserRouterParam';
 import { SearchRouterParam } from '../param/SearchRouterParam';
 import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum';
+import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching';
 
 
 @Entry
 @ComponentV2
 struct IllustDetailPage {
+  private relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
+  private illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
   @Local illustId: number = 0
   @Local illust: Illust|null = null
-  @Local relatedIllusts: LazyDataSource<Illust> = new LazyDataSource()
   @Local nextUrl:string|undefined = ''
   @Local followed: boolean = false
   @Local illustsRawUrl:Array<string> = []
@@ -143,12 +144,6 @@ struct IllustDetailPage {
                         userId: this.illust.user.id
                       } as UserRouterParam
                     })
-                    // router.pushUrl({
-                    //   url: `pages/UserDetailPage`,
-                    //   params:{
-                    //     userId: this.illust.user.id
-                    //   }
-                    // })
                   }
                 })
                 Button(this.followed?'已关注':'关注').width(80)
@@ -222,16 +217,30 @@ struct IllustDetailPage {
                         name: 'illustDetailPage',
                         param: {illustId:item.id} as IllustRouterParam
                       })
-                      // router.pushUrl({
-                      //   url: 'pages/IllustDetailPage',
-                      //   params: {
-                      //     illustId: item.id
-                      //   }
-                      // })
                     })
                   })
                 }.columnsTemplate('1fr 1fr 1fr')
-                .cachedCount(9)
+                .height('100%')
+                .cachedCount(6)
+                .onScrollIndex((first,last)=>{
+                  this.illustPrefetcher.visibleAreaChanged(first,last)
+                })
+                //嵌套滚动控制
+                .nestedScroll({
+                  //滚动组件往末尾端滚动时的嵌套滚动选项
+                  scrollForward:NestedScrollMode.PARENT_FIRST,
+                  //滚动组件往起始端滚动时的嵌套滚动选项
+                  scrollBackward:NestedScrollMode.SELF_FIRST
+                })
+                .onReachEnd(()=>{
+                  if (this.nextUrl){
+                    ApiClient.getNext(this.nextUrl).then(res=>{
+                      const resp = res?.toJSON() as IllustRelatedResponse
+                      this.relatedIllusts.push(...resp.illusts)
+                      this.nextUrl = resp.next_url
+                    })
+                  }
+                })
               }
             }
           }.width('100%')
@@ -243,17 +252,9 @@ struct IllustDetailPage {
           modalTransition: ModalTransition.ALPHA
         })
       }
+      .scrollBar(BarState.Off)
       .height('100%')
       .width('100%')
-      .onReachEnd(()=>{
-        if (this.nextUrl){
-          ApiClient.getNext(this.nextUrl).then(res=>{
-            const resp = res?.toJSON() as IllustRelatedResponse
-            this.relatedIllusts.push(...resp.illusts)
-            this.nextUrl = resp.next_url
-          })
-        }
-      })
     }
     .hideTitleBar(true)
   }

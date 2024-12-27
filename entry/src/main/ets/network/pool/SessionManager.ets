@@ -31,7 +31,6 @@ export class SessionManager {
           'App-OS': AppConfig.APP_OS,
           'App-OS-Version': AppConfig.APP_OS_VERSION,
           'App-Version': AppConfig.APP_VERSION,
-          'Host': AppConfig.HOST,
           "Content-type": 'application/x-www-form-urlencoded;charset=UTF-8',
           'Referer': AppConfig.BASE_API_URL,
         },
