@@ -19,6 +19,8 @@ import { SearchUserResponse } from "../network/response/SearchUserResponse"
 import { UserPreview } from "../network/model/UserPreview"
 import { UserPreviewCard } from "../comp/UserPreviewCard"
 import { UserRouterParam } from "../param/UserRouterParam"
+import { TrendTag, TrendTagsResponse } from "../network/response/TrendTagsResponse"
+import { HttpImage } from "../comp/HttpImage"
 
 @ComponentV2
 export struct SearchPage{
@@ -38,6 +40,7 @@ export struct SearchPage{
   private illusts:LazyDataSource<Illust> = new LazyDataSource()
   private novels:LazyDataSource<Novel> = new LazyDataSource()
   private users:LazyDataSource<UserPreview> = new LazyDataSource()
+  @Local private trendTags:Array<TrendTag> = []
   @Local private startDate:Date|null = null
   @Local private endDate:Date|null = null
   @Local private targetSelectOpt:Array<SelectOption> = []
@@ -52,6 +55,7 @@ export struct SearchPage{
 
   aboutToAppear(): void {
     this.pathStack = this.queryNavigationInfo()?.pathStack
+    this.getIllustTrendTags()
     if (this.pathStack) {
       const param = this.pathStack.getParamByName('searchPage').pop() as SearchRouterParam
       if (param) {
@@ -112,11 +116,13 @@ export struct SearchPage{
   watch(){
     switch (this.searchType){
       case 'illust':
+        this.getIllustTrendTags()
         this.targetSelectOpt = this.illustSearchTargetOpt
         this.searchTargets = this.illustSearchTargets
         this.searchTarget = IllustSearchTargetEnum.TITLE_AND_CAPTION
         break
       case 'novel':
+        this.getNovelTrendTags()
         this.targetSelectOpt = this.novelSearchTargetOpt
         this.searchTargets = this.novelSearchTargets
         this.searchTarget = NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS
@@ -167,6 +173,26 @@ export struct SearchPage{
         const resp = res.toJSON() as SearchUserResponse
         this.nextUrl = resp.next_url
         this.users.setData(resp.user_previews)
+        console.info('1111',resp)
+      }
+    })
+  }
+
+  getIllustTrendTags(){
+    ApiClient.getIllustTrendTags().then(res=>{
+      if (res){
+        const resp = res.toJSON() as TrendTagsResponse
+        this.trendTags = resp.trend_tags
+        console.info('1111',resp)
+      }
+    })
+  }
+
+  getNovelTrendTags(){
+    ApiClient.getNovelTrendTags().then(res=>{
+      if (res){
+        const resp = res.toJSON() as TrendTagsResponse
+        this.trendTags = resp.trend_tags
         console.info('1111',resp)
       }
     })
@@ -284,85 +310,112 @@ export struct SearchPage{
         }
       })
   }
+  @Builder tagTitle(tag:TrendTag){
+    Column(){
+      Text(tag.tag).fontSize(12).maxLines(1)
+      if (tag.translated_name){
+        Text(tag.translated_name).fontSize(10).maxLines(1)
+      }
+    }.width('100%')
+    .height(30)
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+  }
 
   build() {
     NavDestination(){
-      if (this.searchType === 'illust'){
-        WaterFlow(){
-          LazyForEach(this.illusts, (item:Illust)=>{
-            FlowItem(){
-              IllustCard({illust: item})
-            }.onClick(()=>{
-              this.pathStack?.pushPath({
-                name: 'illustDetailPage',
-                param: {illustId: item.id} as IllustRouterParam
-              })
-            })
-          },(item:Illust)=>item.id.toString())
-        }
-        .cachedCount(8)
-        .columnsTemplate('1fr 1fr')
+      Stack(){
+        Grid(){
+          Repeat<TrendTag>(this.trendTags).each(item=>{
+            GridItem(){
+              HttpImage({url: item.item.illust.image_urls.square_medium,aRatio:1})
+                .overlay(this.tagTitle(item.item),{
+                  align:Alignment.Bottom
+                })
+            }
+          }).key(item=>item.tag)
+        }.width('100%')
+        .height('100%')
+        .columnsTemplate('repeat(auto-fit, 120)')
         .columnsGap(8)
         .rowsGap(8)
-        .onReachEnd(()=>{
-          if (this.nextUrl){
-            ApiClient.getNext(this.nextUrl).then(res=>{
-              if (res) {
-                const resp = res.toJSON() as SearchIllustResponse
-                this.nextUrl = resp.next_url
-                this.illusts.push(...resp.illusts)
-              }
-            })
-          }
-        })
-      }else if (this.searchType === 'novel'){
-        List({space:8}){
-          LazyForEach(this.novels, (item:Novel)=>{
-            ListItem(){
-              NovelCard({novel: item})
-            }.onClick(()=>{
-              this.pathStack?.pushPath({
-                name: 'novelDetailPage',
-                param: {novelId: item.id} as NovelRouterParam
+
+        if (this.searchType === 'illust'){
+          WaterFlow(){
+            LazyForEach(this.illusts, (item:Illust)=>{
+              FlowItem(){
+                IllustCard({illust: item})
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'illustDetailPage',
+                  param: {illustId: item.id} as IllustRouterParam
+                })
               })
-            })
-          },(item:Novel)=>item.id.toString())
-        }.cachedCount(4)
-        .onReachEnd(()=>{
-          if (this.nextUrl){
-            ApiClient.getNext(this.nextUrl).then(res=>{
-              if (res) {
-                const resp = res.toJSON() as SearchNovelResponse
-                this.nextUrl = resp.next_url
-                this.novels.push(...resp.novels)
-              }
-            })
+            },(item:Illust)=>item.id.toString())
           }
-        })
-      }else if (this.searchType === 'user'){
-        List({space:8}){
-          LazyForEach(this.users, (item:UserPreview)=>{
-            ListItem(){
-              UserPreviewCard({userPreview: item})
-            }.onClick(()=>{
-              this.pathStack?.pushPath({
-                name: 'userDetailPage',
-                param: {userId: item.user.id} as UserRouterParam
+          .cachedCount(8)
+          .columnsTemplate('1fr 1fr')
+          .columnsGap(8)
+          .rowsGap(8)
+          .onReachEnd(()=>{
+            if (this.nextUrl){
+              ApiClient.getNext(this.nextUrl).then(res=>{
+                if (res) {
+                  const resp = res.toJSON() as SearchIllustResponse
+                  this.nextUrl = resp.next_url
+                  this.illusts.push(...resp.illusts)
+                }
               })
-            })
-          },(item:UserPreview)=>item.user.id.toString())
-        }.cachedCount(4)
-        .onReachEnd(()=>{
-          if (this.nextUrl){
-            ApiClient.getNext(this.nextUrl).then(res=>{
-              if (res) {
-                const resp = res.toJSON() as SearchUserResponse
-                this.nextUrl = resp.next_url
-                this.users.push(...resp.user_previews)
-              }
-            })
-          }
-        })
+            }
+          })
+        }else if (this.searchType === 'novel'){
+          List({space:8}){
+            LazyForEach(this.novels, (item:Novel)=>{
+              ListItem(){
+                NovelCard({novel: item})
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'novelDetailPage',
+                  param: {novelId: item.id} as NovelRouterParam
+                })
+              })
+            },(item:Novel)=>item.id.toString())
+          }.cachedCount(4)
+          .onReachEnd(()=>{
+            if (this.nextUrl){
+              ApiClient.getNext(this.nextUrl).then(res=>{
+                if (res) {
+                  const resp = res.toJSON() as SearchNovelResponse
+                  this.nextUrl = resp.next_url
+                  this.novels.push(...resp.novels)
+                }
+              })
+            }
+          })
+        }else if (this.searchType === 'user'){
+          List({space:8}){
+            LazyForEach(this.users, (item:UserPreview)=>{
+              ListItem(){
+                UserPreviewCard({userPreview: item})
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'userDetailPage',
+                  param: {userId: item.user.id} as UserRouterParam
+                })
+              })
+            },(item:UserPreview)=>item.user.id.toString())
+          }.cachedCount(4)
+          .onReachEnd(()=>{
+            if (this.nextUrl){
+              ApiClient.getNext(this.nextUrl).then(res=>{
+                if (res) {
+                  const resp = res.toJSON() as SearchUserResponse
+                  this.nextUrl = resp.next_url
+                  this.users.push(...resp.user_previews)
+                }
+              })
+            }
+          })
+        }
       }
     }
     .title(this.searchTitle())
