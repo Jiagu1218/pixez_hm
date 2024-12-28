@@ -6,6 +6,9 @@ import { IllustRecommendedResponse } from '../network/response/IllustRecommended
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
 import { NovelRouterParam } from '../param/NovelRouterParam'
 import { IllustWaterFlow } from '../comp/IllustWaterFlow'
+import { NavRouterType } from '../param/NavRouterType'
+import { UserRouterParam } from '../param/UserRouterParam'
+import { IllustRouterParam } from '../param/IllustRouterParam'
 
 @Entry
 @ComponentV2
@@ -17,7 +20,37 @@ struct HomePage {
   private novelScroller:Scroller = new Scroller()
   private tabController:TabsController = new TabsController()
   @Local private currentIndex:number = 0
-
+  onPageShow(){
+    this.appRequire()
+  }
+  /**
+   * 处理app被拉起的请求参数，跳转到指定页面
+   */
+  appRequire(){
+    const routerType = AppStorage.get<NavRouterType>('routerType')
+    if (routerType) {
+      switch (routerType.name){
+        case 'userDetailPage':
+          this.pathStack.pushPath({
+            name: 'userDetailPage',
+            param: {userId: routerType.id} as UserRouterParam
+          })
+          break;
+        case 'illustDetailPage':
+          this.pathStack.pushPath({
+            name: 'illustDetailPage',
+            param: {illustId: routerType.id} as IllustRouterParam
+          })
+          break;
+        case 'novelDetailPage':
+          this.pathStack.pushPath({
+            name: 'novelDetailPage',
+            param: {novelId: routerType.id} as NovelRouterParam
+          })
+      }
+    }
+    AppStorage.delete('routerType')
+  }
   aboutToAppear(): void {
     ApiClient.getNovelRecommended().then(res=>{
       const json = res?.toJSON()
@@ -119,7 +152,9 @@ struct HomePage {
       .onChange((index)=>{
         this.currentIndex = index
       })
-    }
+    }.height('100%')
+    .width('100%')
+    .hideToolBar(true)
   }
 }
 

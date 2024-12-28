@@ -1,4 +1,5 @@
 import { LengthUnit, router } from '@kit.ArkUI';
+import { HtmlText } from '../comp/HtmlText';
 import { HttpImage } from '../comp/HttpImage';
 import { ApiClient } from '../network/ApiClient';
 import { NovelSearchTargetEnum } from '../network/enums/NovelSearchTargetEnum';
@@ -102,11 +103,15 @@ struct NovelDetailPage {
               }
             }
             Divider()
-            Column(){
-              //TODO 处理富文本信息
-              Text(this.webViewNovel.caption.replaceAll('<br />', '\n')).fontSize(16).fontWeight(FontWeight.Bold).backgroundColor(Color.Gray).borderRadius(4)
-            }.width('80%')
-            Divider()
+            if (this.webViewNovel.caption){
+              Row(){
+                HtmlText({htmlText:this.webViewNovel.caption})
+              }.margin(16)
+              .padding(8)
+              .width('90%')
+              .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+              .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
+            }
             Column(){
               ForEach(this.content, (item: string, index) => {
                 if (/pixivimage:(\d+(?:-\d+)?)/.test(item)) {

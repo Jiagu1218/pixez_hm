@@ -37,7 +37,25 @@
               "entity.system.home"
             ],
             "actions": [
-              "action.system.home"
+              "action.system.home",
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "https",
+                "host": "www.pixiv.net",
+                "pathStartWith": "artworks"
+              },
+              {
+                "scheme": "https",
+                "host": "www.pixiv.net",
+                "path": "novel"
+              },
+              {
+                "scheme": "https",
+                "host": "www.pixiv.net",
+                "pathStartWith": "users"
+              }
             ]
           }
         ]

@@ -4,11 +4,48 @@ import { window } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
 import { ImageUtil } from '../network/util/ImageUtli';
-import { SessionPoolNew } from '../network/pool/SessionPoolNew';
 import { SessionManager } from '../network/pool/SessionManager';
+import { url } from '@kit.ArkTS';
+import { NavRouterType } from '../param/NavRouterType';
 
 export default class EntryAbility extends UIAbility {
+  /**
+   * 处理应用被拉起的参数
+   * @param want
+   */
+  handleParam(want: Want){
+    if (want.uri) {
+      // https://www.pixiv.net/artworks/81804379
+      // const tempUrl = 'https://www.pixiv.net/artworks/81804379'
+      const urlInfo = url.URL.parseURL(want.uri)
+      const paths = urlInfo.pathname.split('/')
+      switch (paths[1]){
+        case 'users':
+          AppStorage.setOrCreate<NavRouterType>('routerType',{
+            name:'userDetailPage',
+            id:Number.parseInt(paths[2])
+          })
+          break;
+        case 'artworks':
+          AppStorage.setOrCreate<NavRouterType>('routerType',{
+            name:'illustDetailPage',
+            id:Number.parseInt(paths[2])
+          })
+          break;
+        case 'novel':
+          AppStorage.setOrCreate<NavRouterType>('routerType',{
+            name:'novelDetailPage',
+            id:Number.parseInt(paths[2])
+          })
+          break;
+      }
+    }
+  }
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    // 初始化链接
+    SessionManager.init()
+    ImageUtil.init(this.context)
+    this.handleParam(want)
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     try {
       // webview.WebviewController.setHttpDns(webview.SecureDnsMode.SECURE_ONLY,'https://max.rethinkdns.com/dns-query')
@@ -32,11 +69,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    // 初始化链接
-    // SessionPoolNew.init()
-    SessionManager.init()
-    ImageUtil.init(this.context)
-    windowStage.loadContent('pages/Index', (err) => {
+    windowStage.loadContent('pages/HomePage', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;
@@ -53,6 +86,11 @@ export default class EntryAbility extends UIAbility {
   onForeground(): void {
     // Ability has brought to foreground
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
+  }
+
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    this.handleParam(want)
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onNewWant');
   }
 
   onBackground(): void {
