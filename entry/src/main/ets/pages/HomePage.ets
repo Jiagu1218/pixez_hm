@@ -106,7 +106,7 @@ struct HomePage {
     Navigation(this.pathStack){
       Tabs({controller:this.tabController}){
         TabContent(){
-          IllustWaterFlow({scroller:this.illustScroller,firstPage:()=>this.getIllustRecommend()})
+          IllustWaterFlow({scroller:this.illustScroller,marginTop:56,firstPage:()=>this.getIllustRecommend()})
         }.tabBar(this.tabBarTitle({
           index:0,
           title:'推荐插画',
@@ -116,6 +116,7 @@ struct HomePage {
         }))
         TabContent(){
           List({scroller:this.novelScroller}){
+            ListItem().height(56)
             LazyForEach(this.recommendNovels, (item: Novel)=>{
               ListItem(){
                 NovelCard({novel:item})
@@ -149,6 +150,8 @@ struct HomePage {
         }))
       }.width('100%')
       .height('100%')
+      .barOverlap(true)
+      .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .onChange((index)=>{
         this.currentIndex = index
       })

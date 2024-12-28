@@ -15,6 +15,10 @@ export struct IllustWaterFlow {
   private nextUrl:string|null = null
   @Require @Param firstPage:()=> Promise<IllustPageResponseBase |null>
   @Param scroller:Scroller = new Scroller()
+  @Param marginTop:number = 0
+  @Param columnCount:number = 2
+  @Local private columnArr:number[] = [-1,-2]
+
 
   aboutToAppear(): void {
     this.pathStack = this.queryNavigationInfo()?.pathStack
@@ -34,6 +38,11 @@ export struct IllustWaterFlow {
   }
   build() {
     WaterFlow({scroller:this.scroller}){
+      if (this.marginTop>0){
+        ForEach(this.columnArr, (item: number)=>{
+          FlowItem().height(this.marginTop)
+        },(item: number)=>item.toString())
+      }
       LazyForEach(this.datasource, (item: Illust)=>{
         if (item.visible) {
           FlowItem(){
@@ -70,7 +79,7 @@ export struct IllustWaterFlow {
         })
       }
     }).cachedCount(4)
-    .columnsTemplate('1fr 1fr')
+    .columnsTemplate('1fr '.repeat(this.columnCount))
     .columnsGap(8)
     .rowsGap(8)
     .height('100%')
