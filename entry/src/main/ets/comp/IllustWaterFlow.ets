@@ -37,53 +37,71 @@ export struct IllustWaterFlow {
     this.datasource.destroy()
   }
   build() {
-    WaterFlow({scroller:this.scroller}){
-      if (this.marginTop>0){
-        ForEach(this.columnArr, (item: number)=>{
-          FlowItem().height(this.marginTop)
-            .width('100%')
-        },(item: number)=>item.toString())
-      }
-      LazyForEach(this.datasource, (item: Illust)=>{
-        if (item.visible) {
-          FlowItem(){
-            IllustCard({illust:item})
-          }
-          .onClick(()=>{
-            this.pathStack?.pushPath({
-              name: 'illustDetailPage',
-              param: {illustId: item.id} as IllustRouterParam
+    Stack(){
+      WaterFlow({scroller:this.scroller}){
+        if (this.marginTop>0){
+          ForEach(this.columnArr, (item: number)=>{
+            FlowItem().height(this.marginTop)
+              .width('100%')
+          },(item: number)=>item.toString())
+        }
+        LazyForEach(this.datasource, (item: Illust)=>{
+          if (item.visible) {
+            FlowItem(){
+              IllustCard({illust:item})
+            }
+            .onClick(()=>{
+              this.pathStack?.pushPath({
+                name: 'illustDetailPage',
+                param: {illustId: item.id} as IllustRouterParam
+              })
             })
+          }
+        },(item: Illust)=>item.id.toString())
+      }
+      .onScrollIndex((first,last)=>{
+        this.prefetcher.visibleAreaChanged(first,last)
+      })
+      //嵌套滚动控制
+      .nestedScroll({
+        //滚动组件往末尾端滚动时的嵌套滚动选项
+        scrollForward:NestedScrollMode.PARENT_FIRST,
+        //滚动组件往起始端滚动时的嵌套滚动选项
+        scrollBackward:NestedScrollMode.SELF_FIRST
+      })
+      .onReachEnd(()=>{
+        if (this.nextUrl && this.nextUrl?.length>0) {
+          ApiClient.getNext(this.nextUrl).then(res=>{
+            const json = res?.toJSON()
+            if (json) {
+              const data = json as IllustPageResponseBase
+              this.datasource.push(...data.illusts)
+              this.nextUrl = data.next_url
+            }
           })
         }
-      },(item: Illust)=>item.id.toString())
-    }
-    .onScrollIndex((first,last)=>{
-      this.prefetcher.visibleAreaChanged(first,last)
-    })
-    //嵌套滚动控制
-    .nestedScroll({
-      //滚动组件往末尾端滚动时的嵌套滚动选项
-      scrollForward:NestedScrollMode.PARENT_FIRST,
-      //滚动组件往起始端滚动时的嵌套滚动选项
-      scrollBackward:NestedScrollMode.SELF_FIRST
-    })
-    .onReachEnd(()=>{
-      if (this.nextUrl && this.nextUrl?.length>0) {
-        ApiClient.getNext(this.nextUrl).then(res=>{
-          const json = res?.toJSON()
-          if (json) {
-            const data = json as IllustPageResponseBase
-            this.datasource.push(...data.illusts)
-            this.nextUrl = data.next_url
-          }
+      }).cachedCount(4)
+      .columnsTemplate('1fr '.repeat(this.columnCount))
+      .columnsGap(8)
+      .rowsGap(8)
+      .height('100%')
+      .width('100%')
+
+      SymbolGlyph($r('sys.symbol.arrow_up_circle'))
+        .fontSize(40)
+        .width(40)
+        .height(40)
+        .borderRadius(20)
+        .onClick(()=>{
+          this.scroller?.scrollTo({xOffset:0,yOffset:0})
         })
-      }
-    }).cachedCount(4)
-    .columnsTemplate('1fr '.repeat(this.columnCount))
-    .columnsGap(8)
-    .rowsGap(8)
+        .offset({
+          x: -20,
+          y: -80
+        })
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+    }.width('100%')
     .height('100%')
-    .width('100%')
+    .alignContent(Alignment.BottomEnd)
   }
 }
