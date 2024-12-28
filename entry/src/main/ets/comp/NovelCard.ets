@@ -42,18 +42,22 @@ export struct NovelCard {
       .alignItems(HorizontalAlign.Start)
       .justifyContent(FlexAlign.Start)
       Column(){
-        SymbolGlyph(this.like?$r('sys.symbol.bookmark_fill'):$r('sys.symbol.bookmark')).fontSize(24)
+        SymbolGlyph(this.like?$r('sys.symbol.bookmark_fill'):$r('sys.symbol.bookmark'))
+          .fontColor(this.like?[Color.Orange]:[Color.Gray])
+          .fontSize(24)
         Text(this.novel.total_bookmarks.toString()).fontSize(14)
       }.width('10%')
       .onClick(()=>{
         if (this.like) {
           ApiClient.postNovelBookmarkDelete(this.novel.id).then(res=>{
             this.like = false
+            this.novel.is_bookmarked = false
             console.info('取消收藏成功', res)
           })
         }else {
           ApiClient.postNovelBookmarkAdd(this.novel.id,'public').then(res=>{
             this.like = true
+            this.novel.is_bookmarked = true
             console.info('收藏成功', res)
           })
         }
@@ -61,18 +65,6 @@ export struct NovelCard {
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .width('100%')
     .aspectRatio(16/9)
-    .backgroundColor(Color.Orange)
-    // .onClick(()=>{
-    //   this.pathStack?.pushPath({
-    //     name: 'novelDetailPage',
-    //     param: {novelId: this.novel.id} as NovelRouterParam
-    //   })
-    //   // router.pushUrl({
-    //   //   url: 'pages/NovelDetailPage',
-    //   //   params: {
-    //   //     novelId: this.novel.id
-    //   //   }
-    //   // })
-    // })
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
   }
 }

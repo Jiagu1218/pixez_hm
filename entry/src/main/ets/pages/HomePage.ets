@@ -1,7 +1,4 @@
-import { NovelCard } from '../comp/NovelCard'
-import { LazyDataSource } from '../entity/LazyDataSource'
 import { ApiClient } from '../network/ApiClient'
-import { Novel } from '../network/model/Novel'
 import { IllustRecommendedResponse } from '../network/response/IllustRecommendedResponse'
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse'
 import { NovelRouterParam } from '../param/NovelRouterParam'
@@ -9,13 +6,12 @@ import { IllustWaterFlow } from '../comp/IllustWaterFlow'
 import { NavRouterType } from '../param/NavRouterType'
 import { UserRouterParam } from '../param/UserRouterParam'
 import { IllustRouterParam } from '../param/IllustRouterParam'
+import { NovelList } from '../comp/NovelList'
 
 @Entry
 @ComponentV2
 struct HomePage {
   private pathStack: NavPathStack = new NavPathStack()
-  private recommendNovels: LazyDataSource<Novel> = new LazyDataSource<Novel>()
-  private nextNovelUrl:string|null = null
   private illustScroller:Scroller = new Scroller()
   private novelScroller:Scroller = new Scroller()
   private tabController:TabsController = new TabsController()
@@ -52,15 +48,6 @@ struct HomePage {
     AppStorage.delete('routerType')
   }
   aboutToAppear(): void {
-    ApiClient.getNovelRecommended().then(res=>{
-      const json = res?.toJSON()
-      if (json) {
-        const data = json as NovelRecommendedResponse
-        this.recommendNovels.push(...data.novels)
-        this.recommendNovels.push(...data.ranking_novels)
-        this.nextNovelUrl = data.next_url
-      }
-    })
   }
 
   getIllustRecommend():Promise<IllustRecommendedResponse|null>{
@@ -68,6 +55,17 @@ struct HomePage {
       const json = res?.toJSON()
       if (json) {
         return json as IllustRecommendedResponse
+      }else {
+        return null
+      }
+    })
+  }
+
+  getNovelRecommended():Promise<NovelRecommendedResponse|null>{
+    return ApiClient.getNovelRecommended().then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        return json as NovelRecommendedResponse
       }else {
         return null
       }
@@ -115,32 +113,7 @@ struct HomePage {
           }
         }))
         TabContent(){
-          List({scroller:this.novelScroller}){
-            ListItem().height(56)
-            LazyForEach(this.recommendNovels, (item: Novel)=>{
-              ListItem(){
-                NovelCard({novel:item})
-              }.onClick(()=>{
-                this.pathStack?.pushPath({
-                  name: 'novelDetailPage',
-                  param: {novelId: item.id} as NovelRouterParam
-                })
-              })
-            },(item: Novel)=>item.id.toString())
-          }.cachedCount(4)
-          .onReachEnd(()=>{
-            if (this.nextNovelUrl) {
-              ApiClient.getNext(this.nextNovelUrl).then(res=>{
-                const json = res?.toJSON()
-                if (json) {
-                  const data = json as NovelRecommendedResponse
-                  this.recommendNovels.push(...data.novels)
-                  this.recommendNovels.push(...data.ranking_novels)
-                  this.nextNovelUrl = data.next_url
-                }
-              })
-            }
-          })
+          NovelList({scroller:this.novelScroller,marginTop:56,firstPage:()=>this.getNovelRecommended()})
         }.tabBar(this.tabBarTitle({
           index:1,
           title:'推荐小说',

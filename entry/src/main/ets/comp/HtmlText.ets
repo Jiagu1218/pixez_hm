@@ -39,6 +39,6 @@ export struct HtmlText{
           }
         }
       })
-    }
+    }.copyOption(CopyOptions.LocalDevice)
   }
 }
