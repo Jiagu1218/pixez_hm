@@ -37,6 +37,9 @@ export struct HtmlText{
               }
             })
           }
+          else {
+            Span(item.text)
+          }
         }
       })
     }.copyOption(CopyOptions.LocalDevice)
