@@ -41,6 +41,7 @@ export struct IllustWaterFlow {
       if (this.marginTop>0){
         ForEach(this.columnArr, (item: number)=>{
           FlowItem().height(this.marginTop)
+            .width('100%')
         },(item: number)=>item.toString())
       }
       LazyForEach(this.datasource, (item: Illust)=>{

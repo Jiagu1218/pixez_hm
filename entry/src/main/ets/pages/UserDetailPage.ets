@@ -69,49 +69,48 @@ struct UserDetailPage {
 
   build() {
     NavDestination(){
-      Column() {
-        List(){
+      List(){
+        ListItem(){
+          Stack(){
+            if (this.userDetail?.profile.background_image_url){
+              HttpImage({url:this.userDetail.profile.background_image_url})
+              // .blur(20)
+            }
+            if (this.userDetail){
+              Column(){
+                HttpImage({url:this.userDetail.user.profile_image_urls.medium,aRatio:1,br:30}).width(60)
+                Text(this.userDetail.user.name).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
+                  .borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
+                  .padding(4)
+                  .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+              }.alignItems(HorizontalAlign.Start)
+            }
+          }.width('100%')
+          .alignContent(Alignment.BottomStart)
+        }
+        ListItemGroup(){
           ListItem(){
-            Stack(){
-              if (this.userDetail?.profile.background_image_url){
-                HttpImage({url:this.userDetail.profile.background_image_url})
-                  // .blur(20)
-              }
-              if (this.userDetail){
-                Column(){
-                  HttpImage({url:this.userDetail.user.profile_image_urls.medium,aRatio:1,br:30}).width(60)
-                  Text(this.userDetail.user.name).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-                    .borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
-                    .padding(4)
-                    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
-                }.alignItems(HorizontalAlign.Start)
-              }
-            }.width('100%')
-            .alignContent(Alignment.BottomStart)
-          }
-          ListItemGroup(){
-            ListItem(){
-              Tabs(){
-                TabContent(){
-                  IllustWaterFlow({firstPage:()=>this.getUserIllusts()})
-                }.tabBar('作品')
-                TabContent(){
-                  IllustWaterFlow({firstPage:()=>this.getUserManga()})
-                }.tabBar('漫画')
-                TabContent(){
-                  IllustWaterFlow({firstPage:()=>this.getBookmarksIllust()})
-                }.tabBar('收藏')
-                TabContent(){
+            Tabs(){
+              TabContent(){
+                IllustWaterFlow({firstPage:()=>this.getUserIllusts(),marginTop:56})
+              }.tabBar('作品')
+              TabContent(){
+                IllustWaterFlow({firstPage:()=>this.getUserManga(),marginTop:56})
+              }.tabBar('漫画')
+              TabContent(){
+                IllustWaterFlow({firstPage:()=>this.getBookmarksIllust(),marginTop:56})
+              }.tabBar('收藏')
+              TabContent(){
 
-                }.tabBar('详情')
-              }
-            }.height('100%')
-          }
-        }.sticky(StickyStyle.Header)
-        .scrollBar(BarState.Off)
-      }
+              }.tabBar('详情')
+            }.barOverlap(true)
+            .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+          }.height('100%')
+        }
+      }.sticky(StickyStyle.Header)
       .height('100%')
       .width('100%')
+      .scrollBar(BarState.Off)
     }.hideTitleBar(true)
   }
 }
