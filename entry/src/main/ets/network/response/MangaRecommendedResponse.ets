@@ -1,13 +1,11 @@
 import { Illust } from "../model/Illust"
 import { PrivacyPolicy } from "../model/PrivacyPolicy"
+import { IllustPageResponseBase } from "./IllustPageResponseBase"
+
 /**
  * 漫画推荐response
  * */
-export interface MangaRecommendedResponse {
-  /**
-   * 插图信息
-   * */
-  illusts: Illust[]
+export interface MangaRecommendedResponse extends IllustPageResponseBase {
   /**
    * 排行榜插图信息
    * */
@@ -16,8 +14,5 @@ export interface MangaRecommendedResponse {
    * 隐私政策
    * */
   privacy_policy: PrivacyPolicy
-  /**
-   * 下一页的URL，如果存在
-   * */
-  next_url?: string
+
 }

@@ -7,6 +7,7 @@ import { NavRouterType } from '../param/NavRouterType'
 import { UserRouterParam } from '../param/UserRouterParam'
 import { IllustRouterParam } from '../param/IllustRouterParam'
 import { NovelList } from '../comp/NovelList'
+import { MangaRecommendedResponse } from '../network/response/MangaRecommendedResponse'
 
 @Entry
 @ComponentV2
@@ -14,6 +15,7 @@ struct HomePage {
   private pathStack: NavPathStack = new NavPathStack()
   private illustScroller:Scroller = new Scroller()
   private novelScroller:Scroller = new Scroller()
+  private mangaScroller:Scroller = new Scroller()
   private tabController:TabsController = new TabsController()
   @Local private currentIndex:number = 0
   onPageShow(){
@@ -55,6 +57,17 @@ struct HomePage {
       const json = res?.toJSON()
       if (json) {
         return json as IllustRecommendedResponse
+      }else {
+        return null
+      }
+    })
+  }
+
+  getMangaRecommend():Promise<MangaRecommendedResponse|null>{
+    return ApiClient.getMangaRecommend().then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        return json as MangaRecommendedResponse
       }else {
         return null
       }
@@ -120,6 +133,12 @@ struct HomePage {
           doubleClick:()=>{
             this.novelScroller.scrollTo({xOffset:0,yOffset:0})
           }
+        }))
+        TabContent(){
+          IllustWaterFlow({scroller:this.mangaScroller,marginTop:56,firstPage:()=>this.getMangaRecommend()})
+        }.tabBar(this.tabBarTitle({
+          index:2,
+          title:'推荐漫画'
         }))
       }.width('100%')
       .height('100%')
