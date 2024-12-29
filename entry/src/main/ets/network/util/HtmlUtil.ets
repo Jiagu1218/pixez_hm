@@ -56,6 +56,12 @@ export class HtmlUtil {
         const tagName = match[1]
         const tagAttrStr = match[2]
         const tagContent = match[3]
+        // 处理嵌套标签
+        if (tagContent.includes('<')) {
+          // 嵌套标签，递归调用getRichTextInfo方法解析嵌套标签
+          result.push(...HtmlUtil.getRichTextInfo(tagContent))
+          continue
+        }
         // 初始化标签属性对象
         const tagAttr: Record<string, string> = {}
         // 解析标签属性
