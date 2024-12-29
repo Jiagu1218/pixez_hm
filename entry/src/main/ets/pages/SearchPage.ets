@@ -331,6 +331,20 @@ export struct SearchPage{
                 .overlay(this.tagTitle(item.item),{
                   align:Alignment.Bottom
                 })
+                .onClick(()=>{
+                  this.word = item.item.tag
+                  switch (this.searchType){
+                    case 'illust':
+                      this.searchIllust()
+                      break
+                    case 'novel':
+                      this.searchNovel()
+                      break
+                    case 'user':
+                      this.searchUser()
+                      break
+                  }
+                })
             }
           }).key(item=>item.tag)
         }.width('100%')
