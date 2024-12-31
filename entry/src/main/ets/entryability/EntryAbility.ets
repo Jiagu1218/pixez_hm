@@ -7,6 +7,7 @@ import { ImageUtil } from '../network/util/ImageUtli';
 import { SessionManager } from '../network/pool/SessionManager';
 import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
+import { AppConfig } from '../network/AppConfig';
 
 export default class EntryAbility extends UIAbility {
   /**
@@ -48,7 +49,7 @@ export default class EntryAbility extends UIAbility {
     this.handleParam(want)
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     try {
-      // webview.WebviewController.setHttpDns(webview.SecureDnsMode.SECURE_ONLY,'https://max.rethinkdns.com/dns-query')
+      webview.WebviewController.setHttpDns(webview.SecureDnsMode.SECURE_ONLY,AppConfig.DOH)
       // connection.setAppHttpProxy({
       //   host: '127.0.0.1',
       //   port: 7987,
@@ -69,7 +70,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    windowStage.loadContent('pages/HomePage', (err) => {
+    windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;
