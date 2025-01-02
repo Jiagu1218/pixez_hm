@@ -10,6 +10,7 @@ import { NovelList } from '../comp/NovelList'
 import { MangaRecommendedResponse } from '../network/response/MangaRecommendedResponse'
 import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
 import { NovelListController } from '../controller/NovelListController'
+import { SearchTab } from '../comp/SearchTab'
 
 @Entry
 @ComponentV2
@@ -144,6 +145,12 @@ struct HomePage {
           doubleClick:()=>{
             this.mangaController.top()
           }
+        }))
+        TabContent(){
+          SearchTab({marginTop:56})
+        }.tabBar(this.tabBarTitle({
+          index:3,
+          title:'搜索'
         }))
       }.width('100%')
       .height('100%')

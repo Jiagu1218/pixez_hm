@@ -39,13 +39,11 @@ export struct SearchPage{
   private users:LazyDataSource<UserPreview> = new LazyDataSource()
   private illustController:IllustWaterFlowController = new IllustWaterFlowController()
   private novelController:NovelListController = new NovelListController()
-  @Local private trendTags:Array<TrendTag> = []
   @Local private startDate:Date|null = null
   @Local private endDate:Date|null = null
   @Local private targetSelectOpt:Array<SelectOption> = []
   @Local private showSheet:boolean = false
   @Local private showAI:boolean = true
-  @Local private historyWord: Array<string> = []
   @Local private word: string = ''
   @Local private autoComplete: Array<string> = []
   @Local private searchType: string = 'illust'
@@ -54,7 +52,6 @@ export struct SearchPage{
 
   aboutToAppear(): void {
     this.pathStack = this.queryNavigationInfo()?.pathStack
-    this.getIllustTrendTags()
     if (this.pathStack) {
       const param = this.pathStack.getParamByName('searchPage').pop() as SearchRouterParam
       if (param) {
@@ -104,6 +101,12 @@ export struct SearchPage{
             }
             this.novelController.getFirstPage()
             break
+          case 'user':
+            this.searchType = 'user'
+            this.searchTargets = []
+            this.targetSelectOpt = []
+            this.searchUser()
+            break
           default:
             this.searchType = 'illust'
         }
@@ -115,13 +118,11 @@ export struct SearchPage{
   watch(){
     switch (this.searchType){
       case 'illust':
-        this.getIllustTrendTags()
         this.targetSelectOpt = this.illustSearchTargetOpt
         this.searchTargets = this.illustSearchTargets
         this.searchTarget = IllustSearchTargetEnum.TITLE_AND_CAPTION
         break
       case 'novel':
-        this.getNovelTrendTags()
         this.targetSelectOpt = this.novelSearchTargetOpt
         this.searchTargets = this.novelSearchTargets
         this.searchTarget = NovelSearchTargetEnum.PARTIAL_MATCH_FOR_TAGS
@@ -143,8 +144,6 @@ export struct SearchPage{
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchIllustResponse
-        // this.nextUrl = resp.next_url
-        // this.illusts.setData(resp.illusts)
         this.showAI = resp.show_ai
         return resp
       }else {
@@ -162,8 +161,6 @@ export struct SearchPage{
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchNovelResponse
-        // this.nextUrl = resp.next_url
-        // this.novels.setData(resp.novels)
         this.showAI = resp.show_ai
         return resp
       }else {
@@ -183,25 +180,6 @@ export struct SearchPage{
     })
   }
 
-  getIllustTrendTags(){
-    ApiClient.getIllustTrendTags().then(res=>{
-      if (res){
-        const resp = res.toJSON() as TrendTagsResponse
-        this.trendTags = resp.trend_tags
-        console.info('1111',resp)
-      }
-    })
-  }
-
-  getNovelTrendTags(){
-    ApiClient.getNovelTrendTags().then(res=>{
-      if (res){
-        const resp = res.toJSON() as TrendTagsResponse
-        this.trendTags = resp.trend_tags
-        console.info('1111',resp)
-      }
-    })
-  }
 
   @Builder searchSetting(){
     Column({space:16}){
@@ -290,7 +268,6 @@ export struct SearchPage{
   @Builder searchTitle(){
     Search({value: this.word,controller: this.searchController})
       .onChange((value: string) => {
-        this.word = value
         ApiClient.getSearchAutocomplete(value).then((res) => {
           if (res) {
             const resp = res.toJSON() as SearchAutoCompleteResponse
@@ -299,6 +276,7 @@ export struct SearchPage{
         })
       })
       .onSubmit(value=>{
+        this.word = value
         this.nextUrl = null
         this.illustController.clean()
         this.novelController.clean()
@@ -328,65 +306,34 @@ export struct SearchPage{
 
   build() {
     NavDestination(){
-      Stack(){
-        Grid(){
-          Repeat<TrendTag>(this.trendTags).each(item=>{
-            GridItem(){
-              HttpImage({url: item.item.illust.image_urls.square_medium,aRatio:1})
-                .overlay(this.tagTitle(item.item),{
-                  align:Alignment.Bottom
-                })
-                .onClick(()=>{
-                  this.word = item.item.tag
-                  switch (this.searchType){
-                    case 'illust':
-                      this.illustController.getFirstPage()
-                      break
-                    case 'novel':
-                      this.novelController.getFirstPage()
-                      break
-                    case 'user':
-                      this.searchUser()
-                      break
-                  }
-                })
-            }
-          }).key(item=>item.tag)
-        }.width('100%')
-        .height('100%')
-        .columnsTemplate('repeat(auto-fit, 120)')
-        .columnsGap(8)
-        .rowsGap(8)
-
-        if (this.searchType === 'illust'){
-          IllustWaterFlow({controller:this.illustController,firstPage:()=>this.searchIllust()})
-        }else if (this.searchType === 'novel'){
-          NovelList({controller:this.novelController,firstPage:()=>this.searchNovel()})
-        }else if (this.searchType === 'user'){
-          List({space:8}){
-            LazyForEach(this.users, (item:UserPreview)=>{
-              ListItem(){
-                UserPreviewCard({userPreview: item})
-              }.onClick(()=>{
-                this.pathStack?.pushPath({
-                  name: 'userDetailPage',
-                  param: {userId: item.user.id} as UserRouterParam
-                })
+      if (this.searchType === 'illust'){
+        IllustWaterFlow({controller:this.illustController,firstPage:()=>this.searchIllust()})
+      }else if (this.searchType === 'novel'){
+        NovelList({controller:this.novelController,firstPage:()=>this.searchNovel()})
+      }else if (this.searchType === 'user'){
+        List({space:8}){
+          LazyForEach(this.users, (item:UserPreview)=>{
+            ListItem(){
+              UserPreviewCard({userPreview: item})
+            }.onClick(()=>{
+              this.pathStack?.pushPath({
+                name: 'userDetailPage',
+                param: {userId: item.user.id} as UserRouterParam
               })
-            },(item:UserPreview)=>item.user.id.toString())
-          }.cachedCount(4)
-          .onReachEnd(()=>{
-            if (this.nextUrl){
-              ApiClient.getNext(this.nextUrl).then(res=>{
-                if (res) {
-                  const resp = res.toJSON() as SearchUserResponse
-                  this.nextUrl = resp.next_url
-                  this.users.push(...resp.user_previews)
-                }
-              })
-            }
-          })
-        }
+            })
+          },(item:UserPreview)=>item.user.id.toString())
+        }.cachedCount(4)
+        .onReachEnd(()=>{
+          if (this.nextUrl){
+            ApiClient.getNext(this.nextUrl).then(res=>{
+              if (res) {
+                const resp = res.toJSON() as SearchUserResponse
+                this.nextUrl = resp.next_url
+                this.users.push(...resp.user_previews)
+              }
+            })
+          }
+        })
       }
     }
     .title(this.searchTitle())
