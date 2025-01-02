@@ -16,8 +16,18 @@ export struct NovelList{
   private top = ()=> {
     this.scroller.scrollTo({xOffset:0,yOffset:0})
   }
-  private clear = ()=> {
+  private clean = ()=> {
     this.datasource.clean()
+  }
+  private getFirstPage = ()=>{
+    this.firstPage().then(res=>{
+      if (res) {
+        this.datasource.push(...res.novels)
+        this.nextUrl = res.next_url
+      }
+    }).catch((error:BusinessError)=>{
+      console.error('获取小说列表失败', error)
+    })
   }
   @Param controller:NovelListController = new NovelListController()
   @Require @Param firstPage:()=> Promise<NovelPageResponseBase |null>
@@ -25,7 +35,8 @@ export struct NovelList{
 
   aboutToAppear(): void {
     this.controller.top = this.top
-    this.controller.clear = this.clear
+    this.controller.clean = this.clean
+    this.controller.getFirstPage = this.getFirstPage
     this.pathStack = this.queryNavigationInfo()?.pathStack
     this.firstPage().then(res=>{
       if (res) {
@@ -33,7 +44,7 @@ export struct NovelList{
         this.nextUrl = res.next_url
       }
     }).catch((error:BusinessError)=>{
-      console.error('获取插画列表失败', error)
+      console.error('获取小说列表失败', error)
     })
   }
   aboutToDisappear(): void {

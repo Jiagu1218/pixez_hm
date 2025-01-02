@@ -1,15 +1,9 @@
-import { IllustCard } from "../comp/IllustCard"
-import { NovelCard } from "../comp/NovelCard"
 import { LazyDataSource } from "../entity/LazyDataSource"
 import { ApiClient } from "../network/ApiClient"
 import { IllustSearchTargetEnum } from "../network/enums/IllustSearchTargetEnum"
 import { NovelSearchTargetEnum } from "../network/enums/NovelSearchTargetEnum"
-import { Illust } from "../network/model/Illust"
-import { Novel } from "../network/model/Novel"
 import { SearchAutoCompleteResponse } from "../network/response/SearchAutoCompleteResponse"
 import { SearchIllustResponse } from "../network/response/SearchIllustResponse"
-import { IllustRouterParam } from "../param/IllustRouterParam"
-import { NovelRouterParam } from "../param/NovelRouterParam"
 import { SearchRouterParam } from "../param/SearchRouterParam"
 import { SymbolGlyphModifier } from "@kit.ArkUI"
 import { DateTimeUtil } from "../network/util/DateTimeUtil"
@@ -21,6 +15,12 @@ import { UserPreviewCard } from "../comp/UserPreviewCard"
 import { UserRouterParam } from "../param/UserRouterParam"
 import { TrendTag, TrendTagsResponse } from "../network/response/TrendTagsResponse"
 import { HttpImage } from "../comp/HttpImage"
+import { IllustPageResponseBase } from "../network/response/IllustPageResponseBase"
+import { IllustWaterFlowController } from "../controller/IllustWaterFlowController"
+import { IllustWaterFlow } from "../comp/IllustWaterFlow"
+import { NovelList } from "../comp/NovelList"
+import { NovelListController } from "../controller/NovelListController"
+import { NovelPageResponseBase } from "../network/response/NovelPageResponseBase"
 
 @ComponentV2
 export struct SearchPage{
@@ -36,10 +36,9 @@ export struct SearchPage{
   private sort:string|undefined = undefined
   private nextUrl:string|null = null
 
-
-  private illusts:LazyDataSource<Illust> = new LazyDataSource()
-  private novels:LazyDataSource<Novel> = new LazyDataSource()
   private users:LazyDataSource<UserPreview> = new LazyDataSource()
+  private illustController:IllustWaterFlowController = new IllustWaterFlowController()
+  private novelController:NovelListController = new NovelListController()
   @Local private trendTags:Array<TrendTag> = []
   @Local private startDate:Date|null = null
   @Local private endDate:Date|null = null
@@ -78,7 +77,7 @@ export struct SearchPage{
               default:
                 this.searchTarget = IllustSearchTargetEnum.EXACT_MATCH_FOR_TAGS
             }
-            this.searchIllust()
+            this.illustController.getFirstPage()
             break
           case 'novel':
             this.searchType = 'novel'
@@ -103,7 +102,7 @@ export struct SearchPage{
               default:
                 this.searchTarget = NovelSearchTargetEnum.EXACT_MATCH_FOR_TAGS
             }
-            this.searchNovel()
+            this.novelController.getFirstPage()
             break
           default:
             this.searchType = 'illust'
@@ -133,8 +132,8 @@ export struct SearchPage{
     }
   }
 
-  searchIllust(){
-    ApiClient.getSearchIllust({
+  searchIllust(): Promise<IllustPageResponseBase|null>{
+    return ApiClient.getSearchIllust({
       word: this.word,
       searchTarget:this.searchTarget,
       sort: this.sort,
@@ -144,14 +143,17 @@ export struct SearchPage{
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchIllustResponse
-        this.nextUrl = resp.next_url
-        this.illusts.setData(resp.illusts)
+        // this.nextUrl = resp.next_url
+        // this.illusts.setData(resp.illusts)
         this.showAI = resp.show_ai
+        return resp
+      }else {
+        return null
       }
     })
   }
-  searchNovel(){
-    ApiClient.getSearchNovel({
+  searchNovel(): Promise<NovelPageResponseBase|null>{
+    return ApiClient.getSearchNovel({
       word: this.word,
       searchTarget:this.searchTarget,
       sort: this.sort,
@@ -160,9 +162,12 @@ export struct SearchPage{
     }).then(res=>{
       if (res) {
         const resp = res.toJSON() as SearchNovelResponse
-        this.nextUrl = resp.next_url
-        this.novels.setData(resp.novels)
+        // this.nextUrl = resp.next_url
+        // this.novels.setData(resp.novels)
         this.showAI = resp.show_ai
+        return resp
+      }else {
+        return null
       }
     })
   }
@@ -295,14 +300,14 @@ export struct SearchPage{
       })
       .onSubmit(value=>{
         this.nextUrl = null
-        this.illusts.clean()
-        this.novels.clean()
+        this.illustController.clean()
+        this.novelController.clean()
         switch (this.searchType){
           case 'illust':
-            this.searchIllust()
+            this.illustController.getFirstPage()
             break
           case 'novel':
-            this.searchNovel()
+            this.novelController.getFirstPage()
             break
           case 'user':
             this.searchUser()
@@ -335,10 +340,10 @@ export struct SearchPage{
                   this.word = item.item.tag
                   switch (this.searchType){
                     case 'illust':
-                      this.searchIllust()
+                      this.illustController.getFirstPage()
                       break
                     case 'novel':
-                      this.searchNovel()
+                      this.novelController.getFirstPage()
                       break
                     case 'user':
                       this.searchUser()
@@ -354,57 +359,9 @@ export struct SearchPage{
         .rowsGap(8)
 
         if (this.searchType === 'illust'){
-          WaterFlow(){
-            LazyForEach(this.illusts, (item:Illust)=>{
-              FlowItem(){
-                IllustCard({illust: item})
-              }.onClick(()=>{
-                this.pathStack?.pushPath({
-                  name: 'illustDetailPage',
-                  param: {illustId: item.id} as IllustRouterParam
-                })
-              })
-            },(item:Illust)=>item.id.toString())
-          }
-          .cachedCount(8)
-          .columnsTemplate('1fr 1fr')
-          .columnsGap(8)
-          .rowsGap(8)
-          .onReachEnd(()=>{
-            if (this.nextUrl){
-              ApiClient.getNext(this.nextUrl).then(res=>{
-                if (res) {
-                  const resp = res.toJSON() as SearchIllustResponse
-                  this.nextUrl = resp.next_url
-                  this.illusts.push(...resp.illusts)
-                }
-              })
-            }
-          })
+          IllustWaterFlow({controller:this.illustController,firstPage:()=>this.searchIllust()})
         }else if (this.searchType === 'novel'){
-          List({space:8}){
-            LazyForEach(this.novels, (item:Novel)=>{
-              ListItem(){
-                NovelCard({novel: item})
-              }.onClick(()=>{
-                this.pathStack?.pushPath({
-                  name: 'novelDetailPage',
-                  param: {novelId: item.id} as NovelRouterParam
-                })
-              })
-            },(item:Novel)=>item.id.toString())
-          }.cachedCount(4)
-          .onReachEnd(()=>{
-            if (this.nextUrl){
-              ApiClient.getNext(this.nextUrl).then(res=>{
-                if (res) {
-                  const resp = res.toJSON() as SearchNovelResponse
-                  this.nextUrl = resp.next_url
-                  this.novels.push(...resp.novels)
-                }
-              })
-            }
-          })
+          NovelList({controller:this.novelController,firstPage:()=>this.searchNovel()})
         }else if (this.searchType === 'user'){
           List({space:8}){
             LazyForEach(this.users, (item:UserPreview)=>{

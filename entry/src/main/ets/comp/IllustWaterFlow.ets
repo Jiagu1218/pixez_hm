@@ -18,8 +18,18 @@ export struct IllustWaterFlow {
   private top = ()=> {
     this.scroller.scrollTo({xOffset:0,yOffset:0})
   }
-  private clear = ()=>{
+  private clean = ()=>{
     this.datasource.clean()
+  }
+  private getFirstPage = ()=>{
+    this.firstPage().then(res=>{
+      if (res) {
+        this.datasource.push(...res.illusts)
+        this.nextUrl = res.next_url
+      }
+    }).catch((error:BusinessError)=>{
+      console.error('获取插画列表失败', error)
+    })
   }
   @Param controller:IllustWaterFlowController = new IllustWaterFlowController()
   @Require @Param firstPage:()=> Promise<IllustPageResponseBase |null>
@@ -30,8 +40,8 @@ export struct IllustWaterFlow {
 
   aboutToAppear(): void {
     this.controller.top = this.top
-    this.controller.clear = this.clear
-
+    this.controller.clean = this.clean
+    this.controller.getFirstPage = this.getFirstPage
     this.pathStack = this.queryNavigationInfo()?.pathStack
     this.datasource.getSession()
     this.prefetcher.setDataSource(this.datasource)
