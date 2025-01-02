@@ -41,8 +41,9 @@ struct Index {
   build() {
     Column(){
       Web({controller:this.controller,src:'https://www.youtube.com'})
-        .onAppear(()=>{
+        .onControllerAttached(()=>{
           this.controller.enableSafeBrowsing(false)
+          this.controller.setCustomUserAgent('Mozilla/5.0 (Phone Android; OpenHarmony 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 ArkWeb/4.1.6.1 Mobile')
         })
         .onErrorReceive(e => {
           let errorInfo = e.error.getErrorInfo()

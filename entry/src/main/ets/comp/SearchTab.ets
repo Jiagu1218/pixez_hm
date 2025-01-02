@@ -14,6 +14,7 @@ export struct SearchTab{
   @Param marginTop:number = 0
   @Local private historyWord: Array<string> = []
   @Local private autoComplete: Array<string> = []
+  @Local private showAutoComplete: boolean = false
   @Local private trendTags:Array<TrendTag> = []
 
 
@@ -29,6 +30,14 @@ export struct SearchTab{
         console.info('1111',resp)
       }
     })
+  }
+  @Monitor('autoComplete')
+  watchAutoComplete(){
+    if (this.autoComplete.length>0){
+      this.showAutoComplete = true
+    }else {
+      this.showAutoComplete = false
+    }
   }
 
   @Monitor('searchType')
@@ -54,6 +63,17 @@ export struct SearchTab{
         console.info('1111',resp)
       }
     })
+  }
+
+  @Builder popup(){
+    Column({space:8}){
+      Repeat<string>(this.autoComplete).each(item=>{
+        Text(item.item).maxLines(1).onClick(()=>{
+          this.showAutoComplete = false
+          this.submit(item.item)
+        })
+      }).key(item=>item)
+    }.width('100%')
   }
 
   submit(value:string){
@@ -125,20 +145,18 @@ export struct SearchTab{
             const word = value.trim()
             this.submit(word)
           })
-        Column({space:8}){
-          Repeat<string>(this.autoComplete).each(item=>{
-            Text(item.item).fontSize(12).maxLines(1).onClick(()=>{
-              this.submit(item.item)
-            })
-          }).key(item=>item)
-        }.visibility(this.autoComplete.length>0?Visibility.Visible:Visibility.None)
-        Flex({wrap:FlexWrap.Wrap}){
-          Repeat<string>(this.historyWord).each(item=>{
-            Text(item.item).fontSize(12).maxLines(1).onClick(()=>{
-              this.submit(item.item)
-            })
-          }).key(item=>item)
-        }.visibility(this.autoComplete.length>0?Visibility.None:Visibility.Visible)
+          .bindPopup(this.showAutoComplete,{
+            builder: this.popup()
+          })
+        if (this.historyWord.length>0){
+          Flex({wrap:FlexWrap.Wrap}){
+            Repeat<string>(this.historyWord).each(item=>{
+              Text(item.item).fontSize(12).maxLines(1).onClick(()=>{
+                this.submit(item.item)
+              })
+            }).key(item=>item)
+          }
+        }
       }
       Divider()
       Row({space:32}){
