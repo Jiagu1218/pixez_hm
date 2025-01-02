@@ -82,12 +82,18 @@ export struct IllustCard{
   build() {
     Column(){
       Stack(){
-        HttpImage({
-          url: this.illust.image_urls.large,aRatio:this.aRatio,
-          br:{
-            topLeft:$r('sys.float.ohos_id_card_border_radius'),
-            topRight:$r('sys.float.ohos_id_card_border_radius')
-          }
+        Column(){
+          HttpImage({
+            url: this.illust.image_urls.large,aRatio:this.aRatio,
+            br:{
+              topLeft:$r('sys.float.ohos_id_card_border_radius'),
+              topRight:$r('sys.float.ohos_id_card_border_radius')
+            }
+          })
+        }.compositingFilter(this.filter)
+        .borderRadius({
+          topLeft:$r('sys.float.ohos_id_card_border_radius'),
+          topRight:$r('sys.float.ohos_id_card_border_radius')
         })
         this.overlayNode()
       }.alignContent(Alignment.TopEnd)

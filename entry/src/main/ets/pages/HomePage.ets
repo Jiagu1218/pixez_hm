@@ -8,15 +8,17 @@ import { UserRouterParam } from '../param/UserRouterParam'
 import { IllustRouterParam } from '../param/IllustRouterParam'
 import { NovelList } from '../comp/NovelList'
 import { MangaRecommendedResponse } from '../network/response/MangaRecommendedResponse'
+import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
+import { NovelListController } from '../controller/NovelListController'
 
 @Entry
 @ComponentV2
 struct HomePage {
   private pathStack: NavPathStack = new NavPathStack()
-  private illustScroller:Scroller = new Scroller()
-  private novelScroller:Scroller = new Scroller()
-  private mangaScroller:Scroller = new Scroller()
+  private novelController:NovelListController = new NovelListController()
   private tabController:TabsController = new TabsController()
+  private illustController:IllustWaterFlowController = new IllustWaterFlowController()
+  private mangaController:IllustWaterFlowController = new IllustWaterFlowController()
   @Local private currentIndex:number = 0
   onPageShow(){
     this.appRequire()
@@ -117,28 +119,31 @@ struct HomePage {
     Navigation(this.pathStack){
       Tabs({controller:this.tabController}){
         TabContent(){
-          IllustWaterFlow({scroller:this.illustScroller,marginTop:56,firstPage:()=>this.getIllustRecommend()})
+          IllustWaterFlow({controller:this.illustController,marginTop:56,firstPage:()=>this.getIllustRecommend()})
         }.tabBar(this.tabBarTitle({
           index:0,
           title:'推荐插画',
           doubleClick:()=>{
-            this.illustScroller.scrollTo({xOffset:0,yOffset:0})
+            this.illustController.top()
           }
         }))
         TabContent(){
-          NovelList({scroller:this.novelScroller,marginTop:56,firstPage:()=>this.getNovelRecommended()})
+          NovelList({controller:this.novelController,marginTop:56,firstPage:()=>this.getNovelRecommended()})
         }.tabBar(this.tabBarTitle({
           index:1,
           title:'推荐小说',
           doubleClick:()=>{
-            this.novelScroller.scrollTo({xOffset:0,yOffset:0})
+            this.novelController.top()
           }
         }))
         TabContent(){
-          IllustWaterFlow({scroller:this.mangaScroller,marginTop:56,firstPage:()=>this.getMangaRecommend()})
+          IllustWaterFlow({controller:this.mangaController,marginTop:56,firstPage:()=>this.getMangaRecommend()})
         }.tabBar(this.tabBarTitle({
           index:2,
-          title:'推荐漫画'
+          title:'推荐漫画',
+          doubleClick:()=>{
+            this.mangaController.top()
+          }
         }))
       }.width('100%')
       .height('100%')

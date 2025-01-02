@@ -5,17 +5,27 @@ import { NovelPageResponseBase } from "../network/response/NovelPageResponseBase
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { NovelCard } from "./NovelCard"
 import { BusinessError } from "@kit.BasicServicesKit"
+import { NovelListController } from "../controller/NovelListController"
 
 @ComponentV2
 export struct NovelList{
   private pathStack: NavPathStack|undefined = undefined
   private datasource: LazyDataSource<Novel> = new LazyDataSource<Novel>()
   private nextUrl:string |null = null
+  private scroller:Scroller = new Scroller()
+  private top = ()=> {
+    this.scroller.scrollTo({xOffset:0,yOffset:0})
+  }
+  private clear = ()=> {
+    this.datasource.clean()
+  }
+  @Param controller:NovelListController = new NovelListController()
   @Require @Param firstPage:()=> Promise<NovelPageResponseBase |null>
-  @Param scroller:Scroller = new Scroller()
   @Param marginTop:number = 0
 
   aboutToAppear(): void {
+    this.controller.top = this.top
+    this.controller.clear = this.clear
     this.pathStack = this.queryNavigationInfo()?.pathStack
     this.firstPage().then(res=>{
       if (res) {
@@ -27,8 +37,8 @@ export struct NovelList{
     })
   }
   aboutToDisappear(): void {
-
   }
+
   build() {
     Stack(){
       List({space:8,scroller:this.scroller}){
@@ -67,7 +77,7 @@ export struct NovelList{
         .height(40)
         .borderRadius(20)
         .onClick(()=>{
-          this.scroller?.scrollTo({xOffset:0,yOffset:0})
+          this.controller.top()
         })
         .offset({
           x: -20,

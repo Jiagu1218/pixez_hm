@@ -6,6 +6,7 @@ import { IllustCard } from "./IllustCard";
 import { ApiClient } from "../network/ApiClient";
 import { IllustPageResponseBase } from "../network/response/IllustPageResponseBase";
 import { BusinessError } from "@kit.BasicServicesKit";
+import { IllustWaterFlowController } from "../controller/IllustWaterFlowController";
 
 @ComponentV2
 export struct IllustWaterFlow {
@@ -13,14 +14,24 @@ export struct IllustWaterFlow {
   private prefetcher = new BasicPrefetcher()
   private pathStack:NavPathStack|undefined = undefined
   private nextUrl:string|null = null
+  private scroller:Scroller = new Scroller()
+  private top = ()=> {
+    this.scroller.scrollTo({xOffset:0,yOffset:0})
+  }
+  private clear = ()=>{
+    this.datasource.clean()
+  }
+  @Param controller:IllustWaterFlowController = new IllustWaterFlowController()
   @Require @Param firstPage:()=> Promise<IllustPageResponseBase |null>
-  @Param scroller:Scroller = new Scroller()
   @Param marginTop:number = 0
   @Param columnCount:number = 2
   @Local private columnArr:number[] = [-1,-2]
 
 
   aboutToAppear(): void {
+    this.controller.top = this.top
+    this.controller.clear = this.clear
+
     this.pathStack = this.queryNavigationInfo()?.pathStack
     this.datasource.getSession()
     this.prefetcher.setDataSource(this.datasource)
@@ -33,6 +44,7 @@ export struct IllustWaterFlow {
       console.error('获取插画列表失败', error)
     })
   }
+
   aboutToDisappear(): void {
     this.datasource.destroy()
   }
@@ -93,7 +105,7 @@ export struct IllustWaterFlow {
         .height(40)
         .borderRadius(20)
         .onClick(()=>{
-          this.scroller?.scrollTo({xOffset:0,yOffset:0})
+          this.controller.top()
         })
         .offset({
           x: -20,
