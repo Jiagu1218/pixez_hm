@@ -6,6 +6,7 @@ import { OauthClient } from '../OauthClient'
 import { TokenResponse } from '../response/TokenResponse'
 import { AccountManager } from '../util/AccountManager'
 import { UserPreference } from '../util/UserPerference'
+import { ArkTSUtils } from '@kit.ArkTS'
 
 
 /**
@@ -14,6 +15,7 @@ import { UserPreference } from '../util/UserPerference'
  */
 export class TokenInterceptor implements rcp.Interceptor {
   private loginPageName: string = 'loginPage'
+  private lock: ArkTSUtils.locks.AsyncLock = ArkTSUtils.locks.AsyncLock.request('refreshToken')
   /**
    * 拦截请求的执行方法
    * @param context 请求上下文，包含请求和响应信息
@@ -33,23 +35,27 @@ export class TokenInterceptor implements rcp.Interceptor {
       if (!error?.indexOf('OAuth')) {
         return response
       }
-      //TODO 删除token
-      // 尝试刷新token
-      const res = await OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '')
-      if (context.request.headers){
-        context.request.headers['refreshed-token'] = 'true'
-      }else {
-        context.request.headers = {'refreshed-token' : 'true'}
-      }
-      if (res && res.statusCode == 200) {
-        // 如果刷新成功，保存新的token信息，并重新执行请求
-        let result = res.toJSON() as TokenResponse
-        AccountManager.getInstance()
-          .saveAccount(result.user.account, result.refresh_token, ApiUtil.noNullRecord(result.user))
-        AppStorage.setOrCreate<string>('token', result.access_token)
-        UserPreference.set(UserPreference.TOKEN,result.access_token)
-        return this.request(context, next)
-      }
+
+      return this.lock.lockAsync<rcp.Response>(async ()=>{
+        //TODO 删除token
+        // 尝试刷新token
+        const res = await OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '')
+        if (context.request.headers){
+          context.request.headers['refreshed-token'] = 'true'
+        }else {
+          context.request.headers = {'refreshed-token' : 'true'}
+        }
+        if (res && res.statusCode == 200) {
+          // 如果刷新成功，保存新的token信息，并重新执行请求
+          let result = res.toJSON() as TokenResponse
+          AccountManager.getInstance()
+            .saveAccount(result.user.account, result.refresh_token, ApiUtil.noNullRecord(result.user))
+          AppStorage.setOrCreate<string>('token', result.access_token)
+          UserPreference.set(UserPreference.TOKEN,result.access_token)
+          return this.request(context, next)
+        }
+        return response
+      })
     }
     // 如果不需要刷新token，直接返回响应
     return response
