@@ -8,6 +8,7 @@ import { SessionManager } from '../network/pool/SessionManager';
 import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
 import { AppConfig } from '../network/AppConfig';
+import { UserPreference } from '../network/util/UserPerference';
 
 export default class EntryAbility extends UIAbility {
   /**
@@ -44,8 +45,10 @@ export default class EntryAbility extends UIAbility {
   }
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 初始化链接
+    UserPreference.init(this.context)
     SessionManager.init()
     ImageUtil.init(this.context)
+    AppStorage.setOrCreate(UserPreference.TOKEN,UserPreference.get(UserPreference.TOKEN))
     this.handleParam(want)
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     try {

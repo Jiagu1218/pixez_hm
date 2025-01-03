@@ -1,5 +1,6 @@
 import { appAccount, BusinessError } from "@kit.BasicServicesKit"
 import { bundleManager } from "@kit.AbilityKit"
+import { UserPreference } from "./UserPerference"
 
 /**
  * AccountManager类提供了一组管理用户账号的方法，包括保存账号及其刷新令牌、获取账号列表、获取刷新令牌等。
@@ -48,6 +49,7 @@ export class AccountManager {
       this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken)
         .catch((e: BusinessError) => {
           console.error('保存token失败', e)
+          UserPreference.set(AccountManager.REFRESH_TOKEN, refreshToken)
         })
     })
   }

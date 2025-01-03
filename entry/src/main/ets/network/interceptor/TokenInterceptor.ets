@@ -4,7 +4,8 @@ import { AppConfig } from '../AppConfig'
 import { DateTimeUtil } from '../util/DateTimeUtil'
 import { OauthClient } from '../OauthClient'
 import { TokenResponse } from '../response/TokenResponse'
-import { AccountManager } from '../../util/AccountManager'
+import { AccountManager } from '../util/AccountManager'
+import { UserPreference } from '../util/UserPerference'
 
 
 /**
@@ -46,6 +47,7 @@ export class TokenInterceptor implements rcp.Interceptor {
         AccountManager.getInstance()
           .saveAccount(result.user.account, result.refresh_token, ApiUtil.noNullRecord(result.user))
         AppStorage.setOrCreate<string>('token', result.access_token)
+        UserPreference.set(UserPreference.TOKEN,result.access_token)
         return this.request(context, next)
       }
     }

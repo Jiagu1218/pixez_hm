@@ -6,7 +6,7 @@ import { webview } from '@kit.ArkWeb';
 import { url, util } from '@kit.ArkTS';
 import { Novel } from '../network/model/Novel';
 import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
-import { AccountManager } from '../util/AccountManager';
+import { AccountManager } from '../network/util/AccountManager';
 import { ApiUtil } from '../network/util/ApiUtil';
 import { router } from '@kit.ArkUI';
 import { HtmlUtil } from '../network/util/HtmlUtil';
