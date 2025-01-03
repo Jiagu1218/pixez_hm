@@ -23,6 +23,7 @@ export class SessionManager {
     const commonSessionConfig:SessionPoolConfig ={
       maxSessions: 6,
       coreSessions: 4,
+      lookPrefix: 'commonSession',
       sessionConfiguration:{
         baseAddress: AppConfig.BASE_API_URL,
         headers: {
@@ -62,6 +63,7 @@ export class SessionManager {
     const fileSessionConfig:SessionPoolConfig ={
       maxSessions: 10,
       coreSessions: 6,
+      lookPrefix: 'fileSession',
       sessionConfiguration:{
         baseAddress: AppConfig.BASE_API_URL,
         headers: {

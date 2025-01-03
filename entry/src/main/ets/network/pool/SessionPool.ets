@@ -1,9 +1,10 @@
-import { LinkedList } from "@kit.ArkTS";
+import { ArkTSUtils, LinkedList } from "@kit.ArkTS";
 import { rcp } from "@kit.RemoteCommunicationKit";
 
 export interface SessionPoolConfig {
   maxSessions: number;
   coreSessions: number;
+  lookPrefix: string;
   sessionConfiguration?: rcp.SessionConfiguration;
 }
 
@@ -12,6 +13,8 @@ export interface SessionPoolConfig {
  * 它使用链表来维护会话池和等待队列，并根据需要创建和分配会话
  */
 export class SessionPool {
+  private lock: ArkTSUtils.locks.AsyncLock
+
   // 会话池，用于存储可用的会话
   private sessionPool: LinkedList<rcp.Session>;
   // 等待队列，用于存储等待会话的请求
@@ -30,6 +33,7 @@ export class SessionPool {
     this.maxSessions = 16;
     this.coreSessions = 4;
     this.activeSessions = 0;
+    this.lock = ArkTSUtils.locks.AsyncLock.request(`${config?.lookPrefix}_activeSessions_lock`)
     this.sessionConfiguration = config?.sessionConfiguration ?? {};
     this.init(config);
   }
@@ -72,7 +76,9 @@ export class SessionPool {
 
         try {
           const session = this.createSession();
-          this.activeSessions++;
+          this.lock.lockAsync(()=>{
+            this.activeSessions++;
+          })
           resolve(session);
           timer > -1 && clearTimeout(timer);
         }catch (e){
@@ -100,13 +106,15 @@ export class SessionPool {
    * 如果等待队列不为空，则从等待队列中取出一个请求并分配会话
    * @param {rcp.Session} session 要释放的会话
    */
-  public release(session: rcp.Session): void {
+  public async release(session: rcp.Session):Promise<void> {
     if (this.waitingQueue.length == 0) {
       if (this.sessionPool.length < this.coreSessions) {
         this.sessionPool.add(session);
       } else {
         session.close();
-        this.activeSessions--;
+        await this.lock.lockAsync(()=>{
+          this.activeSessions--;
+        })
       }
     } else {
       const nextRequest = this.waitingQueue.removeFirst();

@@ -15,7 +15,7 @@ import { ArkTSUtils } from '@kit.ArkTS'
  */
 export class TokenInterceptor implements rcp.Interceptor {
   private loginPageName: string = 'loginPage'
-  private lock: ArkTSUtils.locks.AsyncLock = ArkTSUtils.locks.AsyncLock.request('refreshToken')
+  private lock: ArkTSUtils.locks.AsyncLock = ArkTSUtils.locks.AsyncLock.request('refreshToken_lock')
   /**
    * 拦截请求的执行方法
    * @param context 请求上下文，包含请求和响应信息
@@ -32,7 +32,7 @@ export class TokenInterceptor implements rcp.Interceptor {
     // 检查响应状态码，如果是400或401，表示可能需要刷新token
     if (response.statusCode == 400 || response.statusCode == 401) {
       const error = response.toString()
-      if (error?.indexOf('OAuth') !== -1) {
+      if (error?.indexOf('OAuth') === -1) {
         return response
       }
 

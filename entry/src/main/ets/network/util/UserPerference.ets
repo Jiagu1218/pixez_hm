@@ -53,7 +53,9 @@ export class UserPreference {
     // 如果实例存在，使用 put 方法设置键值对，并调用 flush 方法保存更改
     if (UserPreference.instance) {
       UserPreference.instance.put(key,value).then(()=>{
-        UserPreference.instance.flush()
+        UserPreference.instance.flush().catch((e:BusinessError)=>{
+          console.error('固化用户首选项失败',e)
+        })
       }).catch((e:BusinessError)=>{
         // 处理设置键值对时的错误
         console.error('保存用户首选项失败',e)
