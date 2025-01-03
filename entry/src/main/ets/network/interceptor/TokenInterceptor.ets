@@ -32,7 +32,7 @@ export class TokenInterceptor implements rcp.Interceptor {
     // 检查响应状态码，如果是400或401，表示可能需要刷新token
     if (response.statusCode == 400 || response.statusCode == 401) {
       const error = response.toString()
-      if (!error?.indexOf('OAuth')) {
+      if (error?.indexOf('OAuth') !== -1) {
         return response
       }
 
