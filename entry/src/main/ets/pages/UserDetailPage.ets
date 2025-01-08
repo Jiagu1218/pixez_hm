@@ -83,6 +83,16 @@ struct UserDetailPage {
                   .borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
                   .padding(4)
                   .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+                Text(){
+                  Span('粉丝：')
+                  Span(this.userDetail?.profile.total_follow_users.toString())
+                  Span('\t\t\t\t')
+                  Span('关注：')
+                  Span(this.userDetail?.profile.total_mypixiv_users.toString())
+                }.borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
+                .fontSize($r('sys.float.Subtitle_S'))
+                .padding(4)
+                .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
               }.alignItems(HorizontalAlign.Start)
             }
           }.width('100%')
@@ -93,13 +103,13 @@ struct UserDetailPage {
             Tabs(){
               TabContent(){
                 IllustWaterFlow({firstPage:()=>this.getUserIllusts(),marginTop:56})
-              }.tabBar('作品')
+              }.tabBar(`作品 ${this.userDetail?.profile.total_illusts}`)
               TabContent(){
                 IllustWaterFlow({firstPage:()=>this.getUserManga(),marginTop:56})
-              }.tabBar('漫画')
+              }.tabBar(`漫画 ${this.userDetail?.profile.total_manga}`)
               TabContent(){
                 IllustWaterFlow({firstPage:()=>this.getBookmarksIllust(),marginTop:56})
-              }.tabBar('收藏')
+              }.tabBar(`收藏`)
               TabContent(){
                 Column({space:16}){
                   Row().height(40).width('100%')
