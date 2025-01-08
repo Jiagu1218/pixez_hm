@@ -101,7 +101,97 @@ struct UserDetailPage {
                 IllustWaterFlow({firstPage:()=>this.getBookmarksIllust(),marginTop:56})
               }.tabBar('收藏')
               TabContent(){
+                Column({space:16}){
+                  Row().height(40).width('100%')
+                  if(this.userDetail?.user.comment && this.userDetail?.user.comment.length > 0){
+                    Row(){
+                      Text(this.userDetail.user.comment)
+                    }.width('100%')
+                    .backgroundColor(Color.Gray)
+                    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+                    Divider()
+                  }
+                  Row(){
+                    Text('昵称：')
+                    Blank()
+                    Text(this.userDetail?.user.name)
+                  }.width('100%')
+                  Divider()
+                  Row(){
+                    Text('ID:')
+                    Blank()
+                    Text(this.userDetail?.user.id.toString())
+                  }.width('100%')
+                  Divider()
 
+                  if ((this.userDetail?.profile.birth && this.userDetail.profile.birth.length>0) ||
+                      (this.userDetail?.profile.birth_day && this.userDetail.profile.birth_day.length > 0)
+                  ){
+                    Row(){
+                      Text('生日：')
+                      Blank()
+                      Text(){
+                        if (this.userDetail?.profile_publicity.birth_year === 'public'){
+                          Span(this.userDetail.profile.birth)
+                        }
+                        Span(' ')
+                        if (this.userDetail?.profile_publicity.birth_day === 'public'){
+                          Span(this.userDetail.profile.birth_day)
+                        }
+                      }
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile_publicity.gender === 'public' && this.userDetail?.profile.gender.length > 0 ){
+                    Row(){
+                      Text('性别：')
+                      Blank()
+                      Text(this.userDetail.profile.gender)
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile_publicity.region === 'public' && this.userDetail?.profile.region.length > 0){
+                    Row(){
+                      Text('地区：')
+                      Blank()
+                      Text(this.userDetail.profile.region)
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile_publicity.job === 'public' && this.userDetail?.profile.job.length > 0){
+                    Row(){
+                      Text('职业：')
+                      Blank()
+                      Text(this.userDetail.profile.job)
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile_publicity.pawoo && this.userDetail?.profile.pawoo_url){
+                    Row(){
+                      Text('PAWOO：')
+                      Blank()
+                      Hyperlink(this.userDetail.profile.pawoo_url)
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile.webpage && this.userDetail.profile.webpage.length > 0){
+                    Row(){
+                      Text('网站：')
+                      Blank()
+                      Hyperlink(this.userDetail.profile.webpage)
+                    }.width('100%')
+                    Divider()
+                  }
+                  if (this.userDetail?.profile.twitter_url){
+                    Row(){
+                      Text('Twitter：')
+                      Blank()
+                      Hyperlink(this.userDetail.profile.twitter_url,this.userDetail.profile.twitter_account)
+                    }.width('100%')
+                    Divider()
+                  }
+                }.width('100%')
+                .height('100%')
               }.tabBar('详情')
             }.barOverlap(true)
             .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
