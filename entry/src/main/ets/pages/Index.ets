@@ -20,7 +20,6 @@ import { Illust } from '../network/model/Illust';
 import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { AppConfig } from '../network/AppConfig';
-import { connection } from '@kit.NetworkKit';
 
 @Entry
 @ComponentV2
@@ -29,13 +28,35 @@ struct Index {
   @Local url: string = '';
   @Local code: string = '';
   @Local controller: webview.WebviewController = new webview.WebviewController();
+  schemeHandler: webview.WebSchemeHandler = new webview.WebSchemeHandler();
   @Local novels:Array<Novel> = new Array<Novel>();
   @Local aRatio:number = 1;
   @Local ani:Array<ImageFrameInfo> = []
   @Local illust:Illust|null = null
 
   aboutToAppear(): void {
-
+    // schemeHandler 处理登录回调 todo 移植到登录页面
+    this.schemeHandler.onRequestStart(callbacck=>{
+      const parsedUrl = url.URL.parseURL(callbacck.getRequestUrl())
+      const params = new url.URLParams(parsedUrl.search)
+      if (params.has('code')){
+        const code = params.get('code')!
+        OauthClient.code2Token(code).then(res=>{
+          if (res?.statusCode == 200) {
+            const resp = res.toJSON() as TokenResponse
+            this.accountManager.saveAccount(resp.user.account, resp.refresh_token)
+            AppStorage.setOrCreate('token', resp.access_token)
+            router.replaceUrl({
+              url: 'pages/HomePage'
+            })
+          }
+        })
+        // 拦截请求
+        return true
+      }
+      // 不进行拦截
+      return false
+    })
   }
 
   build() {
@@ -44,6 +65,7 @@ struct Index {
         .onControllerAttached(()=>{
           this.controller.enableSafeBrowsing(false)
           this.controller.setCustomUserAgent('Mozilla/5.0 (Phone Android; OpenHarmony 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 ArkWeb/4.1.6.1 Mobile')
+          this.controller.setWebSchemeHandler('pixiv', this.schemeHandler)
         })
         .onErrorReceive(e => {
           let errorInfo = e.error.getErrorInfo()
@@ -263,18 +285,7 @@ struct Index {
             })
           })
           Button("刷新token").onClick(() => {
-            //TODO 删除该token
-            OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '').then(res => {
-              if (res && res.statusCode == 200) {
-                let result = res.toJSON() as TokenResponse
-                this.accountManager.saveAccount(result.user.account, result.refresh_token,ApiUtil.noNullRecord(result.user))
-                AppStorage.setOrCreate<string>('token', result.access_token)
-                console.info('11111', res)
-              }
 
-            }).catch((e: BusinessError) => {
-              console.error('22222', e)
-            })
           })
           Button("首页").onClick(() => {
             router.pushUrl({
@@ -304,7 +315,7 @@ struct Index {
               query.set('return_to',temp.toString())
               query.set('source','pixiv-android')
               query.set('ref','')
-              this.controller.loadUrl(`https://accounts.pixiv.net/login?${query.toString()}`,
+              this.controller.loadUrl(this.url,
                 [
                   {headerKey:'User-Agent',headerValue:AppConfig.USER_AGENT},
                   {headerKey:'Accept-language',headerValue:AppConfig.ACCEPT_LANGUAGE},

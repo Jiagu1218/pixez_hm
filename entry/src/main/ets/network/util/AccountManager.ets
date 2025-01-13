@@ -42,15 +42,19 @@ export class AccountManager {
       .catch((e: BusinessError) => {
         console.error('移除账号失败', e)
       }).finally(() => {
-      this.accountManager.createAccount(account, opt).catch((e: BusinessError) => {
-        console.error('保存账号失败', e)
-      })
-      // 保存刷新令牌
-      this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken)
-        .catch((e: BusinessError) => {
-          console.error('保存token失败', e)
-          UserPreference.set(AccountManager.REFRESH_TOKEN, refreshToken)
-        })
+        this.accountManager.createAccount(account, opt)
+          .then(() => {
+            // 保存刷新令牌
+            this.accountManager.setAuthToken(account, AccountManager.REFRESH_TOKEN, refreshToken)
+              .catch((e: BusinessError) => {
+                console.error('保存token失败', e)
+                UserPreference.set(AccountManager.REFRESH_TOKEN, refreshToken)
+              })
+          })
+          .catch((e: BusinessError) => {
+            console.error('保存账号失败', e)
+          })
+
     })
   }
 

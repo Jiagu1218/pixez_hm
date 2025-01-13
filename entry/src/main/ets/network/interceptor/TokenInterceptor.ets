@@ -37,9 +37,14 @@ export class TokenInterceptor implements rcp.Interceptor {
       }
 
       return this.lock.lockAsync<rcp.Response>(async ()=>{
-        //TODO 删除token
         // 尝试刷新token
-        const res = await OauthClient.postRefreshAutoToken('zjvmJr5Ip4oVxuwFPOSQNDjV8wCp0O2lzeDrLHN9rX0', '')
+        const accountManager = AccountManager.getInstance()
+        const accounts = await accountManager.getAccounts()
+        if (accounts.length == 0) {
+          return response
+        }
+        const refreshToken = await accountManager.getRefreshToken(accounts[0].name)
+        const res = await OauthClient.postRefreshAutoToken(refreshToken, '')
         if (context.request.headers){
           context.request.headers['refreshed-token'] = 'true'
         }else {
