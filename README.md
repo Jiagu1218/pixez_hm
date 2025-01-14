@@ -13,11 +13,14 @@ API 13
 7. 保存图片
 8. ugoira 播放
 9. 小说详情页
+10. 搜索
+11. 登录注册
 
 ## 待实现
 
-1. 搜索
-2. 评论
+1. 评论
+2. 个人中心
+3. 排行榜
 
 ## 参考链接 
 [Pixiv API](https://github.com/upbit/pixivpy)

@@ -11,6 +11,10 @@ import { MangaRecommendedResponse } from '../network/response/MangaRecommendedRe
 import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
 import { NovelListController } from '../controller/NovelListController'
 import { SearchTab } from '../comp/SearchTab'
+import { IllustRankingModeEnum } from '../network/enums/IllustRankingModeEnum'
+import { IllustRankingResponse } from '../network/response/IllustRankingResponse'
+import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum'
+import { NovelRankingResponse } from '../network/response/NovelRankingResponse'
 
 @Entry
 @ComponentV2
@@ -20,6 +24,10 @@ struct HomePage {
   private tabController:TabsController = new TabsController()
   private illustController:IllustWaterFlowController = new IllustWaterFlowController()
   private mangaController:IllustWaterFlowController = new IllustWaterFlowController()
+  private illustRankingController:IllustWaterFlowController = new IllustWaterFlowController()
+  private novelRankingController:NovelListController = new NovelListController()
+
+  @Local private tabLoad:Array<boolean> = [true,false,false,false,false,false]
   @Local private currentIndex:number = 0
   onPageShow(){
     this.appRequire()
@@ -88,6 +96,28 @@ struct HomePage {
     })
   }
 
+  getIllustRanking():Promise<IllustRankingResponse|null>{
+    return ApiClient.getIllustRanking(IllustRankingModeEnum.DAY).then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        return json as IllustRankingResponse
+      }else {
+        return null
+      }
+    })
+  }
+
+  getNovelRanking():Promise<NovelRankingResponse|null>{
+    return ApiClient.getNovelRanking(NovelRankingModeEnum.DAY).then(res=>{
+      const json = res?.toJSON()
+      if (json) {
+        return json as NovelRankingResponse
+      }else {
+        return null
+      }
+    })
+  }
+
   aboutToDisappear(): void {
   }
 
@@ -109,6 +139,7 @@ struct HomePage {
         TapGesture({count:1}).onAction((event)=>{
           if (event) {
             this.tabController.changeIndex(param.index)
+            this.tabLoad[param.index] = true
             param.click?.()
           }
         })
@@ -129,7 +160,9 @@ struct HomePage {
           }
         }))
         TabContent(){
-          NovelList({controller:this.novelController,marginTop:56,firstPage:()=>this.getNovelRecommended()})
+          if (this.tabLoad[1]){
+            NovelList({controller:this.novelController,marginTop:56,firstPage:()=>this.getNovelRecommended()})
+          }
         }.tabBar(this.tabBarTitle({
           index:1,
           title:'推荐小说',
@@ -138,7 +171,9 @@ struct HomePage {
           }
         }))
         TabContent(){
-          IllustWaterFlow({controller:this.mangaController,marginTop:56,firstPage:()=>this.getMangaRecommend()})
+          if (this.tabLoad[2]){
+            IllustWaterFlow({controller:this.mangaController,marginTop:56,firstPage:()=>this.getMangaRecommend()})
+          }
         }.tabBar(this.tabBarTitle({
           index:2,
           title:'推荐漫画',
@@ -147,9 +182,33 @@ struct HomePage {
           }
         }))
         TabContent(){
-          SearchTab({marginTop:56})
+          if (this.tabLoad[3]){
+            IllustWaterFlow({controller:this.illustRankingController,marginTop:56,firstPage:()=>this.getIllustRanking()})
+          }
         }.tabBar(this.tabBarTitle({
           index:3,
+          title:'插画排行',
+          doubleClick:()=>{
+            this.illustRankingController.top()
+          }
+        }))
+        TabContent(){
+          if (this.tabLoad[4]){
+            NovelList({controller:this.novelRankingController,marginTop:56,firstPage:()=>this.getNovelRanking()})
+          }
+        }.tabBar(this.tabBarTitle({
+          index:4,
+          title:'小说排行',
+          doubleClick:()=>{
+            this.novelRankingController.top()
+          }
+        }))
+        TabContent(){
+          if (this.tabLoad[5]){
+            SearchTab({marginTop:56})
+          }
+        }.tabBar(this.tabBarTitle({
+          index:5,
           title:'搜索'
         }))
       }.width('100%')
@@ -158,6 +217,7 @@ struct HomePage {
       .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .onChange((index)=>{
         this.currentIndex = index
+        this.tabLoad[index] = true
       })
     }.height('100%')
     .width('100%')
