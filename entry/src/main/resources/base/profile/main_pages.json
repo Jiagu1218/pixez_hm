@@ -4,6 +4,7 @@
     "pages/HomePage",
     "pages/IllustDetailPage",
     "pages/NovelDetailPage",
-    "pages/UserDetailPage"
+    "pages/UserDetailPage",
+    "pages/LoginPage"
   ]
 }

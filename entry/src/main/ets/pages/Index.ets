@@ -292,6 +292,11 @@ struct Index {
               url: 'pages/HomePage'
             })
           })
+          Button("登录").onClick(() => {
+            router.pushUrl({
+              url: 'pages/LoginPage'
+            })
+          })
           Button("用户信息").onClick(() => {
             router.pushUrl({
               url: 'pages/UserDetailPage'
