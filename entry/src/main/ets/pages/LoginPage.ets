@@ -38,6 +38,12 @@ struct LoginPage {
     this.showWeb = true
   }
 
+  register(){
+    this.sheetTitle = '注册'
+    this.webUrl = OauthClient.generateWebviewUrl(true)
+    this.showWeb = true
+  }
+
   @Builder webSheet(){
     Web({controller:this.controller,src:this.webUrl})
       .onControllerAttached(()=>{
@@ -108,11 +114,16 @@ struct LoginPage {
   build() {
     Column({space:16}) {
       Image($r('app.media.app_icon')).width('40%')
-      Button('登录').onClick(() => {
-        this.login()
-      })
-      Button('注册')
+      Row({space:32}){
+        Button('登录').onClick(() => {
+          this.login()
+        })
+        Button('注册').onClick(() => {
+          this.register()
+        })
+      }
     }
+    .justifyContent(FlexAlign.Center)
     .height('100%')
     .width('100%')
     .onAppear(() => {
