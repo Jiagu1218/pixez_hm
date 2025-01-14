@@ -14,6 +14,9 @@ import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum'
 import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching';
 import { HtmlUtil, RichTextInfo } from '../network/util/HtmlUtil';
 import { HtmlText } from '../comp/HtmlText';
+import { CommentsResponse } from '../network/response/CommentsResponse';
+import { LazyDataSource } from '../entity/LazyDataSource';
+import { Comment } from '../network/model/Comment';
 
 
 @Entry
@@ -21,12 +24,15 @@ import { HtmlText } from '../comp/HtmlText';
 struct IllustDetailPage {
   private relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
   private illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
+  private comments:LazyDataSource<Comment> = new LazyDataSource<Comment>()
   @Local illustId: number = 0
   @Local illust: Illust|null = null
-  @Local nextUrl:string|undefined = ''
+  @Local nextUrl:string|null = null
+  @Local commentsNextUrl:string|null = null
   @Local followed: boolean = false
   @Local illustsRawUrl:Array<string> = []
   @Local showRaw:boolean = false
+  @Local showComments:boolean = false
   @Local initIndex:number = 0
   @Local currentRawUrl:string = ''
   private pathStack:NavPathStack|undefined = undefined
@@ -59,6 +65,16 @@ struct IllustDetailPage {
     })
   }
 
+  getComments(){
+    this.comments.clean()
+    this.commentsNextUrl = null
+    ApiClient.getIllustComments(this.illustId).then(res=>{
+      const resp = res?.toJSON() as CommentsResponse
+      this.comments.push(...resp.comments)
+      this.commentsNextUrl = resp.next_url
+    })
+  }
+
   aboutToDisappear(): void {
     this.relatedIllusts.destroy()
   }
@@ -83,6 +99,44 @@ struct IllustDetailPage {
         .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       }
     }
+  }
+
+  @Builder commentSheet(){
+    List({space:16}){
+      LazyForEach(this.comments,(item:Comment)=>{
+        ListItem(){
+          Row({space:16}){
+            HttpImage({url: item.user.profile_image_urls.medium,aRatio:1,br:20}).width(40)
+            Column({space:8}){
+              Text(item.user.name).fontSize(14).fontWeight(FontWeight.Bold)
+              Row(){
+                Text(item.comment).fontSize(14)
+                if (item.stamp) {
+                  HttpImage({url: item.stamp.stamp_url,aRatio:1}).width(40)
+                }
+              }
+              Row({space:32}){
+                Text(DateTimeUtil.parseIsoTimeToLocalFormatTime(item.date)).fontSize(12)
+                Text("回复").fontSize(12).fontColor(Color.Blue)
+              }
+            }.alignItems(HorizontalAlign.Start)
+            .layoutWeight(1)
+          }.alignItems(VerticalAlign.Top)
+        }
+      })
+    }.height('100%')
+    .divider({
+      strokeWidth:1
+    })
+    .onReachEnd(()=>{
+      if (this.commentsNextUrl){
+        ApiClient.getNext(this.commentsNextUrl).then(res=>{
+          const resp = res?.toJSON() as CommentsResponse
+          this.comments.push(...resp.comments)
+          this.commentsNextUrl = resp.next_url
+        })
+      }
+    })
   }
 
   build() {
@@ -209,6 +263,22 @@ struct IllustDetailPage {
               .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
               .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
             }
+            Row(){
+              Text(){
+                SymbolSpan($r('sys.symbol.topic_message_fill')).fontColor([Color.Gray])
+                Span("查看评论")
+              }.fontColor(Color.Blue)
+              .onClick(()=>{
+                this.showComments = true
+                this.getComments()
+              })
+            }.bindSheet(this.showComments,this.commentSheet(),{
+              blurStyle:BlurStyle.Thin,
+              title:{title:'相关评论'},
+              shouldDismiss:()=>{
+                this.showComments = false
+              }
+            })
             if (this.relatedIllusts){
               Column(){
                 Grid(){

@@ -1,14 +1,8 @@
 import { Illust } from "../model/Illust"
+import { IllustPageResponseBase } from "./IllustPageResponseBase"
+
 /**
  * 相关插画response
  * */
-export interface IllustRelatedResponse{
-  /**
-   * 插图
-   * */
-  illusts: Illust[]
-  /**
-   * 下一步的url
-   * */
-  next_url?: string
+export interface IllustRelatedResponse extends IllustPageResponseBase{
 }
