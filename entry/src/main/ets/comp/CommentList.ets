@@ -2,9 +2,7 @@ import { LazyDataSource } from "../entity/LazyDataSource"
 import { ApiClient } from "../network/ApiClient"
 import { Comment } from "../network/model/Comment"
 import { CommentsResponse } from "../network/response/CommentsResponse"
-import { DateTimeUtil } from "../network/util/DateTimeUtil"
-import { Comments } from "./Comment"
-import { HttpImage } from "./HttpImage"
+import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2
 export struct CommentList{
@@ -26,11 +24,18 @@ export struct CommentList{
     List({space:16}){
       LazyForEach(this.comments,(item:Comment)=>{
         ListItem(){
-          Comments({comment:item,getReply:()=>this.getReply(item.id)})
+          CommentLabel({comment:item,getReply:()=>this.getReply(item.id)})
         }
       })
     }.constraintSize({
       maxHeight:'100%'
+    })
+    //嵌套滚动控制
+    .nestedScroll({
+      //滚动组件往末尾端滚动时的嵌套滚动选项
+      scrollForward:NestedScrollMode.PARENT_FIRST,
+      //滚动组件往起始端滚动时的嵌套滚动选项
+      scrollBackward:NestedScrollMode.SELF_FIRST
     })
     .divider({
       strokeWidth:1

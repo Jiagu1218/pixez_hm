@@ -5,7 +5,7 @@ import { CommentList } from "./CommentList"
 import { HttpImage } from "./HttpImage"
 
 @ComponentV2
-export struct Comments{
+export struct CommentLabel{
   @Local private showReply:boolean = false
   @Require @Param comment:Comment
   @Require @Param getReply:(commentId:number)=> Promise<CommentsResponse |null>
