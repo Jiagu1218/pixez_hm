@@ -1,9 +1,8 @@
-import { taskpool, url } from "@kit.ArkTS";
+import { buffer, taskpool, url } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
 import { zlib } from "@kit.BasicServicesKit";
-import { fileIo } from "@kit.CoreFileKit";
-import { SessionPoolNew } from "../pool/SessionPoolNew";
+import { fileIo, ReadOptions } from "@kit.CoreFileKit";
 import { SessionManager } from "../pool/SessionManager";
 import { rcp } from "@kit.RemoteCommunicationKit";
 
@@ -26,33 +25,34 @@ export class DownloadUtil {
     if(localCache){
       // 提取文件名
       const fileName = localCache.filename || src.split('/').pop()
-      // 提取文件目录名
       const fileDir = localCache.dir
-      // 定义缓存目录
-      let cacheBaseDir:string;
-      switch (localCache.cacheType){
-        case 'temp':
-          cacheBaseDir = getContext().tempDir
-          break
-        case 'cache':
-          cacheBaseDir = getContext().cacheDir
-          break
-        case 'file':
-          cacheBaseDir = getContext().filesDir
-          break
-        default:
-          cacheBaseDir = getContext().cacheDir
-      }
+      // 文件路径
+      const filePath = DownloadUtil.getCacheBaseDir(localCache.cacheType) + '/' + fileDir + '/' + fileName
       //判断文件是否存在
-      // 创建文件
-      const filePath = cacheBaseDir + '/' + fileDir + '/' + fileName
       if (fileIo.accessSync(filePath, fileIo.AccessModeType.EXIST)) {
         // 创建PixelMap并调用回调函数
-        const file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE)
-        const buffer = new ArrayBuffer(4096)
-        fileIo.readSync(file.fd,buffer)
-        fileIo.close(file.fd)
-        const imageSource = image.createImageSource(buffer)
+        const file = fileIo.openSync(filePath, fileIo.OpenMode.READ_ONLY)
+        let buffers: buffer.Buffer[] = []
+        try{
+          // 读取文件内容
+          // 读取源文件内容并写入至目的文件
+          let bufSize = 4096;
+          let readSize = 0;
+          let buf = new ArrayBuffer(bufSize);
+          let readOptions: ReadOptions = {
+            offset: readSize,
+            length: bufSize
+          };
+          let readLen:number;
+          while ((readLen = fileIo.readSync(file.fd, buf, readOptions)) > 0) {
+            readSize += readLen;
+            readOptions.offset = readSize;
+            buffers.push(buffer.from(buf.slice(0, readLen)))
+          }
+        } finally {
+          fileIo.close(file.fd)
+        }
+        const imageSource = image.createImageSource(buffer.concat(buffers).buffer)
         const pixelMap = imageSource.createPixelMapSync()
         PixelCache.setCache(src, pixelMap)
         return pixelMap
@@ -66,7 +66,8 @@ export class DownloadUtil {
       if (localCache) {
         //异步保存文件
         const fileName = localCache.filename || src.split('/').pop();
-        taskpool.execute(saveLocal, localCache, fileName, response.body)
+        const cacheDir = DownloadUtil.getCacheBaseDir(localCache.cacheType) + '/' + localCache.dir
+        taskpool.execute(saveLocal, cacheDir, fileName, response.body)
       }
       // 创建PixelMap并调用回调函数
       const imageSource = image.createImageSource(response.body)
@@ -166,6 +167,26 @@ export class DownloadUtil {
     }
   }
 
+  /**
+   * 获取缓存目录
+   * @param {CacheType} type 缓存类型
+   * @returns {string} 缓存目录
+   */
+  private static getCacheBaseDir(type:CacheType){
+    switch (type) {
+      case 'temp':
+        return getContext().tempDir;
+      case 'cache':
+        return getContext().cacheDir;
+        break;
+      case 'file':
+        return getContext().filesDir;
+        break;
+      default:
+        return getContext().cacheDir;
+    }
+  }
+
 }
 
 /**
@@ -176,30 +197,13 @@ export class DownloadUtil {
  * @returns {void}
  */
 @Concurrent
-function saveLocal(localCache: LocalCacheInfo, fileName: string, body: ArrayBuffer) {
-  // 提取文件目录名
-  const fileDir = localCache.dir;
-  // 定义缓存目录
-  let cacheBaseDir: string;
-  switch (localCache.cacheType) {
-    case 'temp':
-      cacheBaseDir = getContext().tempDir;
-      break;
-    case 'cache':
-      cacheBaseDir = getContext().cacheDir;
-      break;
-    case 'file':
-      cacheBaseDir = getContext().filesDir;
-      break;
-    default:
-      cacheBaseDir = getContext().cacheDir;
-  }
+function saveLocal(dir:string, fileName: string, body: ArrayBuffer) {
   // 创建缓存目录
-  if (!fileIo.accessSync(cacheBaseDir + '/' + fileDir, fileIo.AccessModeType.EXIST)) {
-    fileIo.mkdirSync(cacheBaseDir + '/' + fileDir, true);
+  if (!fileIo.accessSync(dir, fileIo.AccessModeType.EXIST)) {
+    fileIo.mkdirSync(dir, true);
   }
   // 创建文件
-  const filePath = cacheBaseDir + '/' + fileDir + '/' + fileName;
+  const filePath = dir + '/' + fileName;
   const file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
   if (file) {
     // 将数据写入文件
