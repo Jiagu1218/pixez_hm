@@ -68,6 +68,16 @@ struct IllustDetailPage {
     })
   }
 
+  getCommentReply(commentId:number): Promise<CommentsResponse | null>{
+    return ApiClient.getIllustCommentsReplies(commentId).then(res=>{
+      if (res) {
+        return res.toJSON() as CommentsResponse
+      }else {
+        return null
+      }
+    })
+  }
+
   aboutToDisappear(): void {
     this.relatedIllusts.destroy()
   }
@@ -95,7 +105,10 @@ struct IllustDetailPage {
   }
 
   @Builder commentSheet(){
-    CommentList({firstPage:()=>this.getComments()})
+    CommentList({
+      firstPage:()=>this.getComments(),
+      getReply:(commentId)=>this.getCommentReply(commentId)
+    })
   }
 
   build() {

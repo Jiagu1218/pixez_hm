@@ -1,9 +1,11 @@
 import { LengthUnit, router } from '@kit.ArkUI';
+import { CommentList } from '../comp/CommentList';
 import { HtmlText } from '../comp/HtmlText';
 import { HttpImage } from '../comp/HttpImage';
 import { ApiClient } from '../network/ApiClient';
 import { NovelSearchTargetEnum } from '../network/enums/NovelSearchTargetEnum';
 import { WebViewNovel } from '../network/model/WebViewNovel';
+import { CommentsResponse } from '../network/response/CommentsResponse';
 import { HtmlUtil } from '../network/util/HtmlUtil';
 import { NovelRouterParam } from '../param/NovelRouterParam';
 import { SearchRouterParam } from '../param/SearchRouterParam';
@@ -11,6 +13,7 @@ import { SearchRouterParam } from '../param/SearchRouterParam';
 @Entry
 @ComponentV2
 struct NovelDetailPage {
+  @Local private showComments: boolean = false;
   @Local private novelId: number = 0
   @Local private webViewNovel: WebViewNovel | null = null
   @Local private content:Array<string> = []
@@ -45,6 +48,25 @@ struct NovelDetailPage {
       illusts.push(...textParts.filter(Boolean));
     }
     this.content = illusts
+  }
+
+  getComments(): Promise<CommentsResponse | null> {
+    return ApiClient.getNovelComments(this.novelId).then(res=>{
+      if (res) {
+        return res.toJSON() as CommentsResponse
+      }else {
+        return null
+      }
+    })
+  }
+  getCommentReply(commentId:number): Promise<CommentsResponse | null>{
+    return ApiClient.getNovelCommentsReplies(commentId).then(res=>{
+      if (res) {
+        return res.toJSON() as CommentsResponse
+      }else {
+        return null
+      }
+    })
   }
 
   getWebViewNovel() {
@@ -99,6 +121,8 @@ struct NovelDetailPage {
                     })
                 })
               }
+              Text('查看评论').fontColor(Color.Blue)
+                .onClick(() => this.showComments = true)
             }
             Divider()
             if (this.webViewNovel.caption){
@@ -169,9 +193,24 @@ struct NovelDetailPage {
       }
       .height('100%')
       .width('100%')
+      .bindSheet(this.showComments,this.commentSheet(),{
+        blurStyle:BlurStyle.Thin,
+        title:{title:'相关评论'},
+        shouldDismiss:()=>{
+          this.showComments = false
+        }
+      })
     }
     .hideTitleBar(true)
   }
+
+  @Builder commentSheet(): CustomBuilder {
+    CommentList({
+      firstPage: () => this.getComments(),
+      getReply: (commentId: number) => this.getCommentReply(commentId)
+    })
+  }
+
 }
 
 @Builder export function NovelDetailPageBuilder(){
