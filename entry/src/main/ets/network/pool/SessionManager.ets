@@ -52,7 +52,6 @@ export class SessionManager {
           },
           security: {
             remoteValidation: (context) => {
-              console.info('context', context);
               return true;
             }
           }
@@ -93,7 +92,6 @@ export class SessionManager {
           },
           security: {
             remoteValidation: (context) => {
-              console.info('context', context);
               return true;
             }
           }

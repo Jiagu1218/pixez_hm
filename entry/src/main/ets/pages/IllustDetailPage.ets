@@ -49,16 +49,13 @@ struct IllustDetailPage {
       this.illustId = temp.illustId
     }
     ApiClient.getIllustDetail(this.illustId).then(res=>{
-      console.info('1111',res)
       const resp = res?.toJSON() as IllustDetailResponse
       this.illustId = resp.illust.id
       this.illust = resp.illust
       this.followed = resp.illust.user.is_followed
       this.illustsRawUrl = resp.illust.meta_single_page.original_image_url?[resp.illust.meta_single_page.original_image_url]:resp.illust.meta_pages.map(item=>item.image_urls.original)
-      console.info('illust',this.illustsRawUrl)
     })
     ApiClient.getIllustRelated(this.illustId).then(res=>{
-      console.info('2222',res)
       const resp = res?.toJSON() as IllustRelatedResponse
       this.relatedIllusts.push(...resp.illusts)
       this.nextUrl = resp.next_url

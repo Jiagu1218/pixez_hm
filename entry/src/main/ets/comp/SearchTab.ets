@@ -27,7 +27,6 @@ export struct SearchTab{
       if (res){
         const resp = res.toJSON() as TrendTagsResponse
         this.trendTags = resp.trend_tags
-        console.info('1111',resp)
       }
     })
   }
@@ -60,7 +59,6 @@ export struct SearchTab{
       if (res){
         const resp = res.toJSON() as TrendTagsResponse
         this.trendTags = resp.trend_tags
-        console.info('1111',resp)
       }
     })
   }

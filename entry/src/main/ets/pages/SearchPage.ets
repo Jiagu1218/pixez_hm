@@ -175,7 +175,6 @@ export struct SearchPage{
         const resp = res.toJSON() as SearchUserResponse
         this.nextUrl = resp.next_url
         this.users.setData(resp.user_previews)
-        console.info('1111',resp)
       }
     })
   }

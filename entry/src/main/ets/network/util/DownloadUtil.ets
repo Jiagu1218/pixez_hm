@@ -103,14 +103,12 @@ export class DownloadUtil {
         file:file.fd,
         keepLocal:true
       }).then(response=>{
-        console.log('response',response)
         // 检查并创建缓存目录
         if (!fileIo.accessSync(cacheDir, fileIo.AccessModeType.EXIST)) {
           fileIo.mkdirSync(cacheDir,true)
         }
         // 解压缩文件到缓存目录
         return zlib.decompressFile(filePath,cacheDir).then(()=>{
-          console.log('decompressFile success')
           return true
         }).finally(()=>{
           // 关闭文件并删除临时文件

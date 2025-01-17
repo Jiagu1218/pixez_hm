@@ -116,7 +116,6 @@ export class SessionPoolNew{
         },
         security: {
           remoteValidation: (context) => {
-            console.info('context', context);
             return true;
           }
         }

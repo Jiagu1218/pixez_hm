@@ -20,11 +20,9 @@ struct UserDetailPage {
       this.userId = param.userId
     }
     ApiClient.getUserDetail(this.userId).then(res => {
-      console.info('1111',res)
       if (res) {
         const resp = res.toJSON() as UserDetailResponse
         this.userDetail = resp
-        console.info('2222',resp)
       }
     })
     // ApiClient.getUserBookmarkTagsIllust(this.userId).then(res => {

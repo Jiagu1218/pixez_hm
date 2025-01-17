@@ -13,7 +13,7 @@ export class ImageUtil{
       ImageUtil.photoHelper = photoAccessHelper.getPhotoAccessHelper(context)
       ImageUtil.context = context
     } catch (e) {
-      console.log('获取图片保存权限失败',e)
+      console.error('获取图片保存权限失败',e)
     }
   }
 
@@ -46,7 +46,7 @@ export class ImageUtil{
         quality:100
       }).catch((e:BusinessError)=>{
         result = false
-        console.log('打包图片失败',e)
+        console.error('打包图片失败',e)
       }).finally(()=>{
         callback?.(result)
         fileIo.close(file)
@@ -54,7 +54,7 @@ export class ImageUtil{
       })
     }).catch((e:BusinessError)=>{
       callback?.(false)
-      console.log('创建资产失败',e)
+      console.error('创建资产失败',e)
     })
   }
 

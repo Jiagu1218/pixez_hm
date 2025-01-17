@@ -53,10 +53,8 @@ struct NovelDetailPage {
         if (res?.headers['content-type']?.match('text/html')) {
           const body = res.toString()
           const jsonStr = HtmlUtil.getNovelJson(body!)
-          console.info('11111', body, jsonStr)
           if (jsonStr) {
             const json = JSON.parse(jsonStr) as WebViewNovel
-            console.info('webviewNovel', json)
             this.webViewNovel = json
             this.scroller.scrollTo({ yOffset:0,xOffset:0,animation:true})
           }

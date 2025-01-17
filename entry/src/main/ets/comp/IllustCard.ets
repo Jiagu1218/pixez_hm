@@ -28,7 +28,6 @@ export struct IllustCard{
   getBookmarkDetail(){
     ApiClient.getIllustBookmarkDetail(this.illust.id).then(res=>{
       if (res) {
-        console.info('收藏详情', res)
         const resp = res.toJSON() as IllustBookmarkDetailResponse
         this.bookmarkDetail = resp.bookmark_detail
         this.like = resp.bookmark_detail.is_bookmarked

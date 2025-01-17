@@ -3,6 +3,7 @@ import { HttpImage } from "./HttpImage"
 import { LengthUnit, router } from "@kit.ArkUI"
 import { ApiClient } from "../network/ApiClient"
 import { NovelRouterParam } from "../param/NovelRouterParam"
+import { BusinessError } from "@kit.BasicServicesKit"
 
 @ComponentV2
 export struct NovelCard {
@@ -52,13 +53,15 @@ export struct NovelCard {
           ApiClient.postNovelBookmarkDelete(this.novel.id).then(res=>{
             this.like = false
             this.novel.is_bookmarked = false
-            console.info('取消收藏成功', res)
+          }).catch((e:BusinessError)=>{
+            console.error('取消收藏失败',e)
           })
         }else {
           ApiClient.postNovelBookmarkAdd(this.novel.id,'public').then(res=>{
             this.like = true
             this.novel.is_bookmarked = true
-            console.info('收藏成功', res)
+          }).catch((e:BusinessError)=>{
+            console.error('收藏失败',e)
           })
         }
       })

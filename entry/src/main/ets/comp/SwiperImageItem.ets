@@ -1,4 +1,4 @@
-import { ImageViewTouch, DisplayType} from "@ohos/imageviewzoom"
+import { ImageViewTouch } from "@ohos/imageviewzoom"
 import { DownloadUtil } from "../network/util/DownloadUtil"
 import { image } from "@kit.ImageKit"
 
