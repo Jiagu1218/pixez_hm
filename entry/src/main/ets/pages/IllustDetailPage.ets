@@ -12,11 +12,9 @@ import { UserRouterParam } from '../param/UserRouterParam';
 import { SearchRouterParam } from '../param/SearchRouterParam';
 import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum';
 import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching';
-import { HtmlUtil, RichTextInfo } from '../network/util/HtmlUtil';
 import { HtmlText } from '../comp/HtmlText';
 import { CommentsResponse } from '../network/response/CommentsResponse';
-import { LazyDataSource } from '../entity/LazyDataSource';
-import { Comment } from '../network/model/Comment';
+import { CommentList } from '../comp/CommentList';
 
 
 @Entry
@@ -24,11 +22,9 @@ import { Comment } from '../network/model/Comment';
 struct IllustDetailPage {
   private relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
   private illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
-  private comments:LazyDataSource<Comment> = new LazyDataSource<Comment>()
   @Local illustId: number = 0
   @Local illust: Illust|null = null
   @Local nextUrl:string|null = null
-  @Local commentsNextUrl:string|null = null
   @Local followed: boolean = false
   @Local illustsRawUrl:Array<string> = []
   @Local showRaw:boolean = false
@@ -62,13 +58,13 @@ struct IllustDetailPage {
     })
   }
 
-  getComments(){
-    this.comments.clean()
-    this.commentsNextUrl = null
-    ApiClient.getIllustComments(this.illustId).then(res=>{
-      const resp = res?.toJSON() as CommentsResponse
-      this.comments.push(...resp.comments)
-      this.commentsNextUrl = resp.next_url
+  getComments():Promise<CommentsResponse|null>{
+    return ApiClient.getIllustComments(this.illustId).then(res=>{
+      if (res) {
+        return res.toJSON() as CommentsResponse
+      }else {
+        return null
+      }
     })
   }
 
@@ -99,41 +95,7 @@ struct IllustDetailPage {
   }
 
   @Builder commentSheet(){
-    List({space:16}){
-      LazyForEach(this.comments,(item:Comment)=>{
-        ListItem(){
-          Row({space:16}){
-            HttpImage({url: item.user.profile_image_urls.medium,aRatio:1,br:20}).width(40)
-            Column({space:8}){
-              Text(item.user.name).fontSize(14).fontWeight(FontWeight.Bold)
-              Row(){
-                Text(item.comment).fontSize(14)
-                if (item.stamp) {
-                  HttpImage({url: item.stamp.stamp_url,aRatio:1}).width(40)
-                }
-              }
-              Row({space:32}){
-                Text(DateTimeUtil.parseIsoTimeToLocalFormatTime(item.date)).fontSize(12)
-                Text("回复").fontSize(12).fontColor(Color.Blue)
-              }
-            }.alignItems(HorizontalAlign.Start)
-            .layoutWeight(1)
-          }.alignItems(VerticalAlign.Top)
-        }
-      })
-    }.height('100%')
-    .divider({
-      strokeWidth:1
-    })
-    .onReachEnd(()=>{
-      if (this.commentsNextUrl){
-        ApiClient.getNext(this.commentsNextUrl).then(res=>{
-          const resp = res?.toJSON() as CommentsResponse
-          this.comments.push(...resp.comments)
-          this.commentsNextUrl = resp.next_url
-        })
-      }
-    })
+    CommentList({firstPage:()=>this.getComments()})
   }
 
   build() {
@@ -267,7 +229,6 @@ struct IllustDetailPage {
               }.fontColor(Color.Blue)
               .onClick(()=>{
                 this.showComments = true
-                this.getComments()
               })
             }.bindSheet(this.showComments,this.commentSheet(),{
               blurStyle:BlurStyle.Thin,
