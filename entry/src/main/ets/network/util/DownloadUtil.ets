@@ -1,4 +1,4 @@
-import { url } from "@kit.ArkTS";
+import { taskpool, url } from "@kit.ArkTS";
 import { image } from "@kit.ImageKit";
 import { PixelCache } from "../cache/PixelMapCache";
 import { zlib } from "@kit.BasicServicesKit";
@@ -15,34 +15,80 @@ export class DownloadUtil {
 
   /**
    * 下载图片
-   * @param {string} url 图片下载链接
+   * @param {string} src 图片下载链接
    * @returns {Promise<PixelMap>} 返回PixelMap对象
    */
-  public static async downloadImage(url:string): Promise<PixelMap> {
-    let cache = PixelCache.getCache(url);
+  public static async downloadImage(src:string,localCache?:LocalCacheInfo): Promise<PixelMap> {
+    let cache = PixelCache.getCache(src);
     if (cache) {
       return cache
+    }
+    if(localCache){
+      // 提取文件名
+      const fileName = localCache.filename || src.split('/').pop()
+      // 提取文件目录名
+      const fileDir = localCache.dir
+      // 定义缓存目录
+      let cacheBaseDir:string;
+      switch (localCache.cacheType){
+        case 'temp':
+          cacheBaseDir = getContext().tempDir
+          break
+        case 'cache':
+          cacheBaseDir = getContext().cacheDir
+          break
+        case 'file':
+          cacheBaseDir = getContext().filesDir
+          break
+        default:
+          cacheBaseDir = getContext().cacheDir
+      }
+      //判断文件是否存在
+      // 创建文件
+      const filePath = cacheBaseDir + '/' + fileDir + '/' + fileName
+      if (fileIo.accessSync(filePath, fileIo.AccessModeType.EXIST)) {
+        // 创建PixelMap并调用回调函数
+        const file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE)
+        const buffer = new ArrayBuffer(4096)
+        fileIo.readSync(file.fd,buffer)
+        fileIo.close(file.fd)
+        const imageSource = image.createImageSource(buffer)
+        const pixelMap = imageSource.createPixelMapSync()
+        PixelCache.setCache(src, pixelMap)
+        return pixelMap
+      }
     }
 
     const session = await SessionManager.fileSessionPool.acquire()
     try {
       // 发起GET请求下载图片
-      const response = await session.get(url);
+      const response = await session.get(src);
+      if (localCache) {
+        //异步保存文件
+        const fileName = localCache.filename || src.split('/').pop();
+        taskpool.execute(saveLocal, localCache, fileName, response.body)
+      }
       // 创建PixelMap并调用回调函数
       const imageSource = image.createImageSource(response.body)
       const pixelMap = imageSource.createPixelMapSync()
-      PixelCache.setCache(url, pixelMap)
+      PixelCache.setCache(src, pixelMap)
       return pixelMap
     } finally {
       SessionManager.fileSessionPool.release(session)
-
     }
   }
 
+
   /**
    * 发送请求
+   * 提前获文件设置缓存
+   * @param {rcp.Request} request 请求对象
+   * @returns {Promise<void>}
    * */
   public static async fetch(request: rcp.Request): Promise<void> {
+    if(PixelCache.hasKey(request.url.toString())){
+      return
+    }
     const session: rcp.Session = await SessionManager.fileSessionPool.acquire()
     try {
       const response = await session.fetch(request)
@@ -120,4 +166,71 @@ export class DownloadUtil {
     }
   }
 
+}
+
+/**
+ * 保存文件到本地
+ * @param {LocalCacheInfo} localCache 本地缓存信息
+ * @param {string} fileName 文件名
+ * @param {rcp.Response} response 文件响应
+ * @returns {void}
+ */
+@Concurrent
+function saveLocal(localCache: LocalCacheInfo, fileName: string, body: ArrayBuffer) {
+  // 提取文件目录名
+  const fileDir = localCache.dir;
+  // 定义缓存目录
+  let cacheBaseDir: string;
+  switch (localCache.cacheType) {
+    case 'temp':
+      cacheBaseDir = getContext().tempDir;
+      break;
+    case 'cache':
+      cacheBaseDir = getContext().cacheDir;
+      break;
+    case 'file':
+      cacheBaseDir = getContext().filesDir;
+      break;
+    default:
+      cacheBaseDir = getContext().cacheDir;
+  }
+  // 创建缓存目录
+  if (!fileIo.accessSync(cacheBaseDir + '/' + fileDir, fileIo.AccessModeType.EXIST)) {
+    fileIo.mkdirSync(cacheBaseDir + '/' + fileDir, true);
+  }
+  // 创建文件
+  const filePath = cacheBaseDir + '/' + fileDir + '/' + fileName;
+  const file = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE);
+  if (file) {
+    // 将数据写入文件
+    fileIo.write(file.fd, body);
+    // 关闭文件
+    fileIo.close(file.fd);
+  }
+}
+
+/**
+ * 缓存类型
+ * @type {string}
+ * @description temp:临时文件 cache:缓存文件 file:本地文件
+ */
+type CacheType = 'temp'|'cache'|'file'
+/**
+ * 本地缓存信息
+ * @interface
+ * @description 用于描述本地缓存的信息
+ */
+export interface LocalCacheInfo{
+  /**
+   * 文件名
+   */
+  filename?:string
+  /**
+   * 文件目录
+   */
+  dir:string
+  /**
+   * 缓存类型
+   */
+  cacheType:CacheType
 }

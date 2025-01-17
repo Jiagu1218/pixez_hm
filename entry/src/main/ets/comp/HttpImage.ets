@@ -1,5 +1,5 @@
 import { image } from "@kit.ImageKit"
-import { DownloadUtil } from "../network/util/DownloadUtil"
+import { DownloadUtil, LocalCacheInfo } from "../network/util/DownloadUtil"
 import { BusinessError } from "@kit.BasicServicesKit"
 
 @ComponentV2
@@ -7,12 +7,13 @@ export struct HttpImage{
   @Require @Param url:string
   @Param aRatio:number|null = null
   @Param br:Length | BorderRadiuses | LocalizedBorderRadiuses|null = null
+  @Param cacheInfo:LocalCacheInfo|undefined = undefined
   @Local private defaultRatio:number = 16/9
   @Local private pic:image.PixelMap|null = null
   @Event callback?:(pixelMap:image.PixelMap)=>void
 
   aboutToAppear(): void {
-    DownloadUtil.downloadImage(this.url).then(pixelMap=>{
+    DownloadUtil.downloadImage(this.url,this.cacheInfo).then(pixelMap=>{
       this.pic = pixelMap
       this.callback?.(pixelMap)
     }).catch((e:BusinessError)=>{

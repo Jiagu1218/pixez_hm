@@ -17,7 +17,10 @@ export struct CommentLabel{
         Row(){
           Text(this.comment.comment).fontSize(14)
           if (this.comment.stamp) {
-            HttpImage({url: this.comment.stamp.stamp_url,aRatio:1}).width(40)
+            HttpImage({
+              url: this.comment.stamp.stamp_url,aRatio:1,
+              cacheInfo:{dir:'stamp',cacheType:'cache',filename:this.comment.stamp.stamp_id+'.png'}
+            }).width(40)
           }
         }
         Row({space:32}){

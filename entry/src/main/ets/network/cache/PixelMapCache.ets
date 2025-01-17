@@ -40,6 +40,15 @@ export class PixelCache {
   }
 
   /**
+   * 检查缓存中是否存在指定键的缓存项。
+   * @param key 缓存项的唯一键
+   * @returns 返回一个布尔值，表示缓存中是否存在该键的缓存项。
+   */
+  public static hasKey(key: string): boolean {
+    return PixelCache.cache.hasKey(key)
+  }
+
+  /**
    * 清空整个缓存。
    * 这在需要释放资源或重新初始化缓存时非常有用。
    */
