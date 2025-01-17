@@ -1,19 +1,5 @@
-export class IllustWaterFlowController{
-  /**
-   * 回到顶部
-   * 此方法用于将滚动位置重置为顶部，通常用于响应用户的“回到顶部”操作
-   */
-  top:()=>void = () => {}
+import { ListControllerBase } from "./ListControllerBase"
 
-  /**
-   * 清除控制器状态
-   * 当需要释放资源或重置控制器时调用此方法，确保控制器能够被正确地重置或清理
-   */
-  clean:()=>void = () => {}
+export class IllustWaterFlowController extends ListControllerBase{
 
-  /**
-   * 获取第一页数据
-   * 此方法用于加载或重新加载第一页的数据，通常在组件初始化或用户请求查看第一页时调用
-   */
-  getFirstPage:()=>void = ()=>{}
 }
