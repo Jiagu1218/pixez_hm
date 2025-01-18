@@ -12,9 +12,9 @@ export struct NovelList{
   private pathStack: NavPathStack|undefined = undefined
   private datasource: LazyDataSource<Novel> = new LazyDataSource<Novel>()
   private nextUrl:string |null = null
-  private scroller:Scroller = new Scroller()
+  private listScroller:Scroller = new Scroller()
   private top = ()=> {
-    this.scroller.scrollTo({xOffset:0,yOffset:0})
+    this.listScroller.scrollTo({xOffset:0,yOffset:0})
   }
   private clean = ()=> {
     this.datasource.clean()
@@ -32,6 +32,7 @@ export struct NovelList{
   @Param controller:NovelListController = new NovelListController()
   @Require @Param firstPage:()=> Promise<NovelPageResponseBase |null>
   @Param marginTop:number = 0
+  @Param marginBottom:number = 0
 
   aboutToAppear(): void {
     this.controller.top = this.top
@@ -52,7 +53,7 @@ export struct NovelList{
 
   build() {
     Stack(){
-      List({space:8,scroller:this.scroller}){
+      List({space:8,scroller:this.listScroller}){
         if (this.marginTop>0){
           ListItem().height(this.marginTop)
         }

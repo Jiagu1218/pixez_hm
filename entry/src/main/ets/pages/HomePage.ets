@@ -126,7 +126,9 @@ struct HomePage {
       if (param.icon){
         SymbolGlyph(param.icon).fontColor(this.currentIndex===param.index?[Color.Blue]:[Color.Black])
       }
-      Text(param.title).fontColor(this.currentIndex===param.index?Color.Blue:Color.Black)
+      Text(param.title)
+        .fontSize(12)
+        .fontColor(this.currentIndex===param.index?Color.Blue:Color.Black)
     }
     .gesture(
       GestureGroup(
@@ -151,7 +153,7 @@ struct HomePage {
     Navigation(this.pathStack){
       Tabs({controller:this.tabController}){
         TabContent(){
-          IllustWaterFlow({controller:this.illustController,marginTop:56,firstPage:()=>this.getIllustRecommend()})
+          IllustWaterFlow({controller:this.illustController,firstPage:()=>this.getIllustRecommend()})
         }.tabBar(this.tabBarTitle({
           index:0,
           title:'推荐插画',
@@ -161,7 +163,7 @@ struct HomePage {
         }))
         TabContent(){
           if (this.tabLoad[1]){
-            NovelList({controller:this.novelController,marginTop:56,firstPage:()=>this.getNovelRecommended()})
+            NovelList({controller:this.novelController,marginBottom:56,firstPage:()=>this.getNovelRecommended()})
           }
         }.tabBar(this.tabBarTitle({
           index:1,
@@ -172,7 +174,7 @@ struct HomePage {
         }))
         TabContent(){
           if (this.tabLoad[2]){
-            IllustWaterFlow({controller:this.mangaController,marginTop:56,firstPage:()=>this.getMangaRecommend()})
+            IllustWaterFlow({controller:this.mangaController,firstPage:()=>this.getMangaRecommend()})
           }
         }.tabBar(this.tabBarTitle({
           index:2,
@@ -183,7 +185,7 @@ struct HomePage {
         }))
         TabContent(){
           if (this.tabLoad[3]){
-            IllustWaterFlow({controller:this.illustRankingController,marginTop:56,firstPage:()=>this.getIllustRanking()})
+            IllustWaterFlow({controller:this.illustRankingController,firstPage:()=>this.getIllustRanking()})
           }
         }.tabBar(this.tabBarTitle({
           index:3,
@@ -194,7 +196,7 @@ struct HomePage {
         }))
         TabContent(){
           if (this.tabLoad[4]){
-            NovelList({controller:this.novelRankingController,marginTop:56,firstPage:()=>this.getNovelRanking()})
+            NovelList({controller:this.novelRankingController,marginBottom:100,firstPage:()=>this.getNovelRanking()})
           }
         }.tabBar(this.tabBarTitle({
           index:4,
@@ -209,11 +211,13 @@ struct HomePage {
           }
         }.tabBar(this.tabBarTitle({
           index:5,
-          title:'搜索'
+          title:'搜索',
+          icon:$r('sys.symbol.magnifyingglass')
         }))
       }.width('100%')
       .height('100%')
-      .barOverlap(true)
+      // .barOverlap(true)
+      .barPosition(BarPosition.End)
       .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .onChange((index)=>{
         this.currentIndex = index
@@ -222,6 +226,7 @@ struct HomePage {
     }.height('100%')
     .width('100%')
     .hideToolBar(true)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }
 
