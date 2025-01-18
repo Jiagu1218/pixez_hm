@@ -13,13 +13,8 @@
  * limitations under the License.
  */
 
-
-import { common } from '@kit.AbilityKit';
 import { ImageModel } from './CommonModel';
 import { windowSizeManager } from './CommonUtils';
-
-
-const TAG: string = '[ImageItemView]';
 
 /**
  * ImageItemView
@@ -30,16 +25,15 @@ export struct ImageItemView {
   @Require @Param imageData: PixelMap | ResourceStr | DrawableDescriptor;
   @Param imageModel: ImageModel = new ImageModel();
   // Whether to display the picture toolbar
-  @Require @Param isOverlay: boolean;
+  @Param isOverlay: boolean = false;
   @Event $isOverlay:(val:boolean)=>void = (val:boolean)=>{}
   // Swipe whether to switch
-  @Require @Param isDisableSwipe: boolean;
+  @Param isDisableSwipe: boolean = false;
   @Event $isDisableSwipe:(val:boolean)=>void = (val:boolean)=>{}
-  @Require @Param isImageReset: boolean;
-  @Require @Param bgc: Color;
-  private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+  @Param isImageReset: boolean = false;
+  @Param bgc: Color = Color.Black;
   // Image original aspect ratio
-  private imageWHRatio: number = 0;
+  @Local private imageWHRatio: number = 0;
 
   aboutToAppear(): void {
     this.imageModel.windowSize();

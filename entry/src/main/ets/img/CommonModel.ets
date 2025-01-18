@@ -20,13 +20,13 @@ import { runWithAnimation, windowSizeManager } from './CommonUtils';
 @ObservedV2
 export class ImageModel {
   // Copy function of Matrix
-  public matrix: matrix4.Matrix4Transit = matrix4.identity().copy();
+  @Trace public matrix: matrix4.Matrix4Transit = matrix4.identity().copy();
   // The current scale
   public curScale: number = 1;
   // The current offset X
-  public curOffsetX: number = 0;
+  @Trace public curOffsetX: number = 0;
   // The current offset is Y
-  public curOffsetY: number = 0;
+  @Trace public curOffsetY: number = 0;
   // Record the last zoom
   public lastScale: number = 1;
   // Record the offset of the last X-axis
@@ -53,9 +53,9 @@ export class ImageModel {
   public componentHeight: number = 0;
   public componentWidth: number = 0;
   // Picture Width
-  public imageWidth: number = 100;
+  @Trace public imageWidth: number = 100;
   // Picture Height
-  public imageHeight: number = 100;
+  @Trace public imageHeight: number = 100;
   // Whether to allow swiper components to slide
   public isDisableSwipe: boolean = false;
 
