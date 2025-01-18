@@ -347,6 +347,7 @@ export struct SearchPage{
         this.showSheet = true
       }
     }])
+    .padding({top:32})
     .bindSheet(this.showSheet,this.searchSetting(),{
       title: { title:'搜索设置' },
       height:SheetSize.MEDIUM,
