@@ -12,6 +12,7 @@ export struct SearchTab{
   private searchTypes: Array<string> = ['illust', 'novel', 'user']
   @Local private searchType: string = 'illust'
   @Param marginTop:number = 0
+  @Param marginBottom:number = 0
   @Local private historyWord: Array<string> = []
   @Local private autoComplete: Array<string> = []
   @Local private showAutoComplete: boolean = false
@@ -180,6 +181,10 @@ export struct SearchTab{
       .columnsTemplate('repeat(auto-fit, 120)')
       .columnsGap(8)
       .rowsGap(8)
+
+      if (this.marginBottom>0){
+        Row().width('100%').height(this.marginBottom - 16)
+      }
     }
   }
 }

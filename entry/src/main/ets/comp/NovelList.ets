@@ -33,6 +33,7 @@ export struct NovelList{
   @Require @Param firstPage:()=> Promise<NovelPageResponseBase |null>
   @Param marginTop:number = 0
   @Param marginBottom:number = 0
+  @Local private showBottom:boolean = false
 
   aboutToAppear(): void {
     this.controller.top = this.top
@@ -67,6 +68,9 @@ export struct NovelList{
             })
           })
         },(item: Novel)=>item.id.toString())
+        if (this.marginBottom>0 && this.showBottom){
+          ListItem().height(this.marginBottom)
+        }
       }.cachedCount(4)
       .width('100%')
       .height('100%')
@@ -80,6 +84,8 @@ export struct NovelList{
               this.nextUrl = data.next_url
             }
           })
+        }else {
+          this.showBottom = true
         }
       })
 

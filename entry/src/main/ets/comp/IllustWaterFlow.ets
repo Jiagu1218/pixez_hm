@@ -15,6 +15,7 @@ export struct IllustWaterFlow {
   private pathStack:NavPathStack|undefined = undefined
   private nextUrl:string|null = null
   private scroller:Scroller = new Scroller()
+  private waterFlowOpt:WaterFlowOptions = {scroller:this.scroller}
   private top = ()=> {
     this.scroller.scrollTo({xOffset:0,yOffset:0})
   }
@@ -34,6 +35,7 @@ export struct IllustWaterFlow {
   @Param controller:IllustWaterFlowController = new IllustWaterFlowController()
   @Require @Param firstPage:()=> Promise<IllustPageResponseBase |null>
   @Param marginTop:number = 0
+  @Param marginBottom:number = 0
   @Param columnCount:number = 2
   @Local private columnArr:number[] = [-1,-2]
 
@@ -53,14 +55,20 @@ export struct IllustWaterFlow {
     }).catch((error:BusinessError)=>{
       console.error('获取插画列表失败', error)
     })
+    if (this.marginBottom>0) {
+      this.waterFlowOpt.footer = this.footer
+    }
   }
 
   aboutToDisappear(): void {
     this.datasource.destroy()
   }
+  @Builder footer(){
+    Row(){}.height(this.marginBottom).width('100%')
+  }
   build() {
     Stack(){
-      WaterFlow({scroller:this.scroller}){
+      WaterFlow({scroller:this.scroller,footer:this.footer}){
         if (this.marginTop>0){
           ForEach(this.columnArr, (item: number)=>{
             FlowItem().height(this.marginTop)
@@ -92,7 +100,7 @@ export struct IllustWaterFlow {
         scrollBackward:NestedScrollMode.SELF_FIRST
       })
       .onReachEnd(()=>{
-        if (this.nextUrl && this.nextUrl?.length>0) {
+        if (this.nextUrl) {
           ApiClient.getNext(this.nextUrl).then(res=>{
             const json = res?.toJSON()
             if (json) {

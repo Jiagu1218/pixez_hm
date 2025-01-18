@@ -291,6 +291,7 @@ export struct SearchPage{
             break
         }
       })
+
   }
   @Builder tagTitle(tag:TrendTag){
     Column(){
@@ -335,7 +336,10 @@ export struct SearchPage{
         })
       }
     }
-    .title(this.searchTitle())
+    .title(this.searchTitle,{
+      backgroundBlurStyle: BlurStyle.BACKGROUND_THIN,
+      enableHoverMode:true
+    })
     .menus([{
       value: '搜索设置',
       symbolIcon:new SymbolGlyphModifier($r('sys.symbol.more')),

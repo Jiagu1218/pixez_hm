@@ -15,6 +15,7 @@ import { IllustRankingModeEnum } from '../network/enums/IllustRankingModeEnum'
 import { IllustRankingResponse } from '../network/response/IllustRankingResponse'
 import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum'
 import { NovelRankingResponse } from '../network/response/NovelRankingResponse'
+import { SymbolGlyphModifier } from '@kit.ArkUI'
 
 @Entry
 @ComponentV2
@@ -26,6 +27,28 @@ struct HomePage {
   private mangaController:IllustWaterFlowController = new IllustWaterFlowController()
   private illustRankingController:IllustWaterFlowController = new IllustWaterFlowController()
   private novelRankingController:NovelListController = new NovelListController()
+
+  private illustBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.picture')),
+    selected: new SymbolGlyphModifier($r('sys.symbol.picture_fill')),
+  }, '推荐插画')
+  private novelBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.doc_text')),
+    selected: new SymbolGlyphModifier($r('sys.symbol.doc_text_fill'))
+  }, '推荐小说')
+  private mangaBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.picture_2')),
+    selected: new SymbolGlyphModifier($r('sys.symbol.picture_2_fill'))
+  }, '推荐漫画')
+  private illustRankingBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.sort'))
+  }, '插画排行')
+  private novelRankingBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.sort'))
+  }, '小说排行')
+  private searchBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.magnifyingglass')),
+  }, '搜索')
 
   @Local private tabLoad:Array<boolean> = [true,false,false,false,false,false]
   @Local private currentIndex:number = 0
@@ -61,6 +84,15 @@ struct HomePage {
     AppStorage.delete('routerType')
   }
   aboutToAppear(): void {
+    this.setBarPadding(10)
+  }
+  setBarPadding(barHeight: number){
+    this.illustBar.padding({bottom:barHeight})
+    this.novelBar.padding({bottom:barHeight})
+    this.mangaBar.padding({bottom:barHeight})
+    this.illustRankingBar.padding({bottom:barHeight})
+    this.novelRankingBar.padding({bottom:barHeight})
+    this.searchBar.padding({bottom:barHeight})
   }
 
   getIllustRecommend():Promise<IllustRecommendedResponse|null>{
@@ -149,74 +181,42 @@ struct HomePage {
     )
   }
 
+
+
   build() {
     Navigation(this.pathStack){
       Tabs({controller:this.tabController}){
         TabContent(){
-          IllustWaterFlow({controller:this.illustController,firstPage:()=>this.getIllustRecommend()})
-        }.tabBar(this.tabBarTitle({
-          index:0,
-          title:'推荐插画',
-          doubleClick:()=>{
-            this.illustController.top()
-          }
-        }))
+          IllustWaterFlow({controller:this.illustController,marginBottom:56,firstPage:()=>this.getIllustRecommend()})
+        }.tabBar(this.illustBar)
         TabContent(){
           if (this.tabLoad[1]){
             NovelList({controller:this.novelController,marginBottom:56,firstPage:()=>this.getNovelRecommended()})
           }
-        }.tabBar(this.tabBarTitle({
-          index:1,
-          title:'推荐小说',
-          doubleClick:()=>{
-            this.novelController.top()
-          }
-        }))
+        }.tabBar(this.novelBar)
         TabContent(){
           if (this.tabLoad[2]){
-            IllustWaterFlow({controller:this.mangaController,firstPage:()=>this.getMangaRecommend()})
+            IllustWaterFlow({controller:this.mangaController,marginBottom:56,firstPage:()=>this.getMangaRecommend()})
           }
-        }.tabBar(this.tabBarTitle({
-          index:2,
-          title:'推荐漫画',
-          doubleClick:()=>{
-            this.mangaController.top()
-          }
-        }))
+        }.tabBar(this.mangaBar)
         TabContent(){
           if (this.tabLoad[3]){
-            IllustWaterFlow({controller:this.illustRankingController,firstPage:()=>this.getIllustRanking()})
+            IllustWaterFlow({controller:this.illustRankingController,marginBottom:56,firstPage:()=>this.getIllustRanking()})
           }
-        }.tabBar(this.tabBarTitle({
-          index:3,
-          title:'插画排行',
-          doubleClick:()=>{
-            this.illustRankingController.top()
-          }
-        }))
+        }.tabBar(this.illustRankingBar)
         TabContent(){
           if (this.tabLoad[4]){
-            NovelList({controller:this.novelRankingController,marginBottom:100,firstPage:()=>this.getNovelRanking()})
+            NovelList({controller:this.novelRankingController,marginBottom:56,firstPage:()=>this.getNovelRanking()})
           }
-        }.tabBar(this.tabBarTitle({
-          index:4,
-          title:'小说排行',
-          doubleClick:()=>{
-            this.novelRankingController.top()
-          }
-        }))
+        }.tabBar(this.novelRankingBar)
         TabContent(){
           if (this.tabLoad[5]){
-            SearchTab({marginTop:56})
+            SearchTab({marginTop:56,marginBottom:56})
           }
-        }.tabBar(this.tabBarTitle({
-          index:5,
-          title:'搜索',
-          icon:$r('sys.symbol.magnifyingglass')
-        }))
+        }.tabBar(this.searchBar)
       }.width('100%')
       .height('100%')
-      // .barOverlap(true)
+      .barOverlap(true)
       .barPosition(BarPosition.End)
       .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .onChange((index)=>{
