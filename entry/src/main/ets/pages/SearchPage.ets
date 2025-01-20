@@ -312,16 +312,21 @@ export struct SearchPage{
         NovelList({controller:this.novelController,firstPage:()=>this.searchNovel()})
       }else if (this.searchType === 'user'){
         List({space:8}){
-          LazyForEach(this.users, (item:UserPreview)=>{
-            ListItem(){
-              UserPreviewCard({userPreview: item})
-            }.onClick(()=>{
-              this.pathStack?.pushPath({
-                name: 'userDetailPage',
-                param: {userId: item.user.id} as UserRouterParam
-              })
-            })
-          },(item:UserPreview)=>item.user.id.toString())
+          ListItemGroup({
+            style:ListItemGroupStyle.CARD,
+            space:8
+          }){
+            LazyForEach(this.users, (item:UserPreview)=>{
+              ListItem({style:ListItemStyle.CARD}){
+                UserPreviewCard({userPreview: item})
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'userDetailPage',
+                  param: {userId: item.user.id} as UserRouterParam
+                })
+              }).height(undefined)
+            },(item:UserPreview)=>item.user.id.toString())
+          }.divider({strokeWidth:2,startMargin:16,endMargin:16})
         }.cachedCount(4)
         .onReachEnd(()=>{
           if (this.nextUrl){

@@ -31,8 +31,7 @@ export struct UserPreviewCard{
       }
       Row({space:16}){
         HttpImage({url: this.userPreview.user.profile_image_urls.medium,aRatio:1,br:20}).width(40)
-        Text(this.userPreview.user.name)
-        Blank()
+        Text(this.userPreview.user.name).layoutWeight(1).maxLines(2)
         Button(this.follow?'已关注':'关注')
           .onClick(()=>{
             if (!this.userPreview.user){
@@ -50,5 +49,6 @@ export struct UserPreviewCard{
           })
       }.width('100%')
     }.width('100%')
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
   }
 }

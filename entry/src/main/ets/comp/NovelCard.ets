@@ -67,7 +67,6 @@ export struct NovelCard {
       })
     }.borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .width('100%')
-    .aspectRatio(16/9)
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
   }
 }

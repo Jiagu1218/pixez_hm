@@ -55,22 +55,25 @@ export struct NovelList{
   build() {
     Stack(){
       List({space:8,scroller:this.listScroller}){
-        if (this.marginTop>0){
-          ListItem().height(this.marginTop)
+        ListItemGroup({
+          style:ListItemGroupStyle.CARD,
+          space:8,
+          header: this.groupHeader() ,
+          footer:this.groupFooter(),
+        }){
+          LazyForEach(this.datasource, (item: Novel)=>{
+            ListItem({style:ListItemStyle.CARD}){
+              NovelCard({novel:item})
+            }.onClick(()=>{
+              this.pathStack?.pushPath({
+                name: 'novelDetailPage',
+                param: {novelId: item.id} as NovelRouterParam
+              })
+            }).height(undefined)
+          },(item: Novel)=>item.id.toString())
         }
-        LazyForEach(this.datasource, (item: Novel)=>{
-          ListItem(){
-            NovelCard({novel:item})
-          }.onClick(()=>{
-            this.pathStack?.pushPath({
-              name: 'novelDetailPage',
-              param: {novelId: item.id} as NovelRouterParam
-            })
-          })
-        },(item: Novel)=>item.id.toString())
-        if (this.marginBottom>0 && this.showBottom){
-          ListItem().height(this.marginBottom)
-        }
+        .divider({strokeWidth:2,startMargin:16,endMargin:16})
+
       }.cachedCount(4)
       .width('100%')
       .height('100%')
@@ -105,5 +108,12 @@ export struct NovelList{
     }.width('100%')
     .height('100%')
     .alignContent(Alignment.BottomEnd)
+  }
+
+  @Builder groupHeader(){
+    Row().height(this.marginTop).width('100%')
+  }
+  @Builder groupFooter(){
+    Text().height(this.marginBottom).width('100%')
   }
 }
