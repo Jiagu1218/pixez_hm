@@ -104,6 +104,21 @@ export class DownloadUtil {
     }
   }
 
+  public static async fetchForPrefetch(request: rcp.Request,session:rcp.Session): Promise<void> {
+    if(PixelCache.hasKey(request.url.toString())){
+      return
+    }
+    const response = await session.fetch(request)
+    if (response.statusCode == 200) {
+      // 创建PixelMap并调用回调函数
+      const imageSource = image.createImageSource(response.body)
+      const pixelMap = imageSource.createPixelMapSync()
+      PixelCache.setCache(request.url.toString(), pixelMap)
+    }
+  }
+
+
+
   /**
    * 下载ugoira文件
    *

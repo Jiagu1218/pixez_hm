@@ -5,6 +5,7 @@ import { PlainArray } from "@kit.ArkTS";
 import { rcp } from "@kit.RemoteCommunicationKit";
 import { DownloadUtil } from "../network/util/DownloadUtil";
 import { SessionManager } from "../network/pool/SessionManager";
+import { BusinessError } from "@kit.BasicServicesKit";
 
 export class IllustDataSourcePrefetching extends LazyDataSource<Illust> implements IDataSourcePrefetching {
   private preFetchList: PlainArray<rcp.Request>  = new PlainArray<rcp.Request>()
@@ -22,14 +23,19 @@ export class IllustDataSourcePrefetching extends LazyDataSource<Illust> implemen
   }
 
   prefetch(index: number): void | Promise<void> {
-    const data = this.getData(index)
-    if (data) {
-      const request = new rcp.Request(data.image_urls.medium)
-      this.preFetchList.add(index, request)
-      DownloadUtil.fetch(request).finally(()=>{
-        this.preFetchList.remove(index)
-      })
-    }
+    //todo 优化
+    // const data = this.getData(index)
+    // if (data) {
+    //   const request = new rcp.Request(data.image_urls.medium)
+    //   this.preFetchList.add(index, request)
+    //   if (this.session) {
+    //     DownloadUtil.fetchForPrefetch(request,this.session).catch((e:BusinessError)=>{
+    //       console.error('prefetch fetch error',e)
+    //     }).finally(()=>{
+    //       this.preFetchList.remove(index)
+    //     })
+    //   }
+    // }
   }
 
   cancel?(index: number): void | Promise<void> {
