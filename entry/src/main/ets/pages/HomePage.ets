@@ -16,6 +16,7 @@ import { IllustRankingResponse } from '../network/response/IllustRankingResponse
 import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum'
 import { NovelRankingResponse } from '../network/response/NovelRankingResponse'
 import { SymbolGlyphModifier } from '@kit.ArkUI'
+import { RankingTab } from '../comp/RankingTab'
 
 @Entry
 @ComponentV2
@@ -25,8 +26,6 @@ struct HomePage {
   private tabController:TabsController = new TabsController()
   private illustController:IllustWaterFlowController = new IllustWaterFlowController()
   private mangaController:IllustWaterFlowController = new IllustWaterFlowController()
-  private illustRankingController:IllustWaterFlowController = new IllustWaterFlowController()
-  private novelRankingController:NovelListController = new NovelListController()
 
   private illustBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
     normal: new SymbolGlyphModifier($r('sys.symbol.picture')),
@@ -40,12 +39,9 @@ struct HomePage {
     normal: new SymbolGlyphModifier($r('sys.symbol.picture_2')),
     selected: new SymbolGlyphModifier($r('sys.symbol.picture_2_fill'))
   }, '推荐漫画')
-  private illustRankingBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+  private rankingBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
     normal: new SymbolGlyphModifier($r('sys.symbol.sort'))
-  }, '插画排行')
-  private novelRankingBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
-    normal: new SymbolGlyphModifier($r('sys.symbol.sort'))
-  }, '小说排行')
+  }, '排行榜')
   private searchBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
     normal: new SymbolGlyphModifier($r('sys.symbol.magnifyingglass')),
   }, '搜索')
@@ -90,8 +86,7 @@ struct HomePage {
     this.illustBar.padding({bottom:barHeight})
     this.novelBar.padding({bottom:barHeight})
     this.mangaBar.padding({bottom:barHeight})
-    this.illustRankingBar.padding({bottom:barHeight})
-    this.novelRankingBar.padding({bottom:barHeight})
+    this.rankingBar.padding({bottom:barHeight})
     this.searchBar.padding({bottom:barHeight})
   }
 
@@ -201,16 +196,11 @@ struct HomePage {
         }.tabBar(this.mangaBar)
         TabContent(){
           if (this.tabLoad[3]){
-            IllustWaterFlow({controller:this.illustRankingController,marginBottom:56,firstPage:()=>this.getIllustRanking()})
+            RankingTab()
           }
-        }.tabBar(this.illustRankingBar)
+        }.tabBar(this.rankingBar)
         TabContent(){
           if (this.tabLoad[4]){
-            NovelList({controller:this.novelRankingController,marginBottom:56,firstPage:()=>this.getNovelRanking()})
-          }
-        }.tabBar(this.novelRankingBar)
-        TabContent(){
-          if (this.tabLoad[5]){
             SearchTab({marginTop:56,marginBottom:56})
           }
         }.tabBar(this.searchBar)
