@@ -42,6 +42,7 @@ export class SessionManager {
               if (response.statusCode == 200) {
                 return true
               }
+              console.error(`请求失败，状态码为：${response.statusCode}`, response.toJSON())
               return false
             }
           },

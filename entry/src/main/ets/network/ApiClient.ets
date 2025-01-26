@@ -151,6 +151,30 @@ export class ApiClient {
     })
     return ApiUtil.get(`/v1/manga/recommended?${params}`)
   }
+  /**
+   * 获取插画系列详情
+   *
+   * @param seriesId {number} 系列ID
+   * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
+   */
+  public static getIllustSeries(seriesId: number): Promise<rcp.Response | null> {
+    const params = new url.URLParams({
+      'illust_series_id': seriesId.toString()
+    })
+    return ApiUtil.get(`/v1/illust/series?${params}`)
+  }
+  /**
+   * 获取插画系列插画
+   * 用于获取上篇和下一篇数据
+   * @param illustId {number} 插画ID
+   * @returns {Promise<rcp.Response | null>} 返回一个Promise，包含响应对象或null
+   */
+  public static getIllustSeriesIllust(illustId: number): Promise<rcp.Response | null> {
+    const params = new url.URLParams({
+      'illust_id': illustId.toString()
+    })
+    return ApiUtil.get(`/v1/illust-series/illust?${params}`)
+  }
 
   /**
    * 获取用户推荐

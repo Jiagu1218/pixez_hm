@@ -15,6 +15,9 @@ import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetchi
 import { HtmlText } from '../comp/HtmlText';
 import { CommentsResponse } from '../network/response/CommentsResponse';
 import { CommentList } from '../comp/CommentList';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { IllustSeriesIllustResponse } from '../network/response/IllustSeriesIllustResponse';
+import { IllustSeriesResponse } from '../network/response/IllustSeriesResponse';
 
 
 @Entry
@@ -50,6 +53,9 @@ struct ArtWorksPage {
       this.illust = resp.illust
       this.followed = resp.illust.user.is_followed
       this.illustsRawUrl = resp.illust.meta_single_page.original_image_url?[resp.illust.meta_single_page.original_image_url]:resp.illust.meta_pages.map(item=>item.image_urls.original)
+      if (resp.illust.series) {
+        this.getPreAndNextInfo()
+      }
     })
     ApiClient.getIllustRelated(this.illustId).then(res=>{
       const resp = res?.toJSON() as IllustRelatedResponse
@@ -74,6 +80,25 @@ struct ArtWorksPage {
         return res.toJSON() as CommentsResponse
       }else {
         return null
+      }
+    })
+  }
+
+
+  getMangaSeries(seriesId: number){
+    ApiClient.getIllustSeries(seriesId).then(res=>{
+      if (res) {
+        const resp = res.toJSON() as IllustSeriesResponse
+        console.info('MangaSeries',resp)
+      }
+    })
+  }
+
+  getPreAndNextInfo(){
+    ApiClient.getIllustSeriesIllust(this.illustId).then(res=>{
+      if (res) {
+        const resp = res.toJSON() as IllustSeriesIllustResponse
+        console.info('PreAndNextInfo',resp)
       }
     })
   }
