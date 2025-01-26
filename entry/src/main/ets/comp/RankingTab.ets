@@ -7,11 +7,20 @@ import { IllustRankingResponse } from "../network/response/IllustRankingResponse
 import { NovelRankingResponse } from "../network/response/NovelRankingResponse"
 import { IllustWaterFlow } from "./IllustWaterFlow"
 import { NovelList } from "./NovelList"
+import { SymbolGlyphModifier } from "@kit.ArkUI"
 
 @ComponentV2
 export struct RankingTab{
   private illustRankingController:IllustWaterFlowController = new IllustWaterFlowController()
   private novelRankingController:NovelListController = new NovelListController()
+  private illustBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.picture')),
+    selected: new SymbolGlyphModifier($r('sys.symbol.picture_fill')),
+  }, '插画')
+  private novelBar: BottomTabBarStyle | SubTabBarStyle = BottomTabBarStyle.of({
+    normal: new SymbolGlyphModifier($r('sys.symbol.doc_text')),
+    selected: new SymbolGlyphModifier($r('sys.symbol.doc_text_fill'))
+  }, '小说')
   @Local private tabLoad:Array<boolean> = [true,false]
   getIllustRanking():Promise<IllustRankingResponse|null>{
     return ApiClient.getIllustRanking(IllustRankingModeEnum.DAY).then(res=>{
@@ -40,12 +49,12 @@ export struct RankingTab{
         if (this.tabLoad[0]){
           IllustWaterFlow({controller:this.illustRankingController,marginTop:56,marginBottom:56,firstPage:()=>this.getIllustRanking()})
         }
-      }.tabBar( '插画')
+      }.tabBar(this.illustBar)
       TabContent(){
         if (this.tabLoad[1]){
           NovelList({controller:this.novelRankingController,marginTop:56,marginBottom:56,firstPage:()=>this.getNovelRanking()})
         }
-      }.tabBar('小说')
+      }.tabBar(this.novelBar)
     }.barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
     .onChange((index)=>{
       this.tabLoad[index] = true

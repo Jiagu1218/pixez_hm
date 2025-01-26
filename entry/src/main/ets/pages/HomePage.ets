@@ -11,10 +11,6 @@ import { MangaRecommendedResponse } from '../network/response/MangaRecommendedRe
 import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
 import { NovelListController } from '../controller/NovelListController'
 import { SearchTab } from '../comp/SearchTab'
-import { IllustRankingModeEnum } from '../network/enums/IllustRankingModeEnum'
-import { IllustRankingResponse } from '../network/response/IllustRankingResponse'
-import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum'
-import { NovelRankingResponse } from '../network/response/NovelRankingResponse'
 import { SymbolGlyphModifier } from '@kit.ArkUI'
 import { RankingTab } from '../comp/RankingTab'
 
@@ -47,7 +43,6 @@ struct HomePage {
   }, '搜索')
 
   @Local private tabLoad:Array<boolean> = [true,false,false,false,false,false]
-  @Local private currentIndex:number = 0
   onPageShow(){
     this.appRequire()
   }
@@ -123,60 +118,6 @@ struct HomePage {
     })
   }
 
-  getIllustRanking():Promise<IllustRankingResponse|null>{
-    return ApiClient.getIllustRanking(IllustRankingModeEnum.DAY).then(res=>{
-      const json = res?.toJSON()
-      if (json) {
-        return json as IllustRankingResponse
-      }else {
-        return null
-      }
-    })
-  }
-
-  getNovelRanking():Promise<NovelRankingResponse|null>{
-    return ApiClient.getNovelRanking(NovelRankingModeEnum.DAY).then(res=>{
-      const json = res?.toJSON()
-      if (json) {
-        return json as NovelRankingResponse
-      }else {
-        return null
-      }
-    })
-  }
-
-  aboutToDisappear(): void {
-  }
-
-  @Builder tabBarTitle(param: TabBarTitleParam){
-    Column(){
-      if (param.icon){
-        SymbolGlyph(param.icon).fontColor(this.currentIndex===param.index?[Color.Blue]:[Color.Black])
-      }
-      Text(param.title)
-        .fontSize(12)
-        .fontColor(this.currentIndex===param.index?Color.Blue:Color.Black)
-    }
-    .gesture(
-      GestureGroup(
-        GestureMode.Parallel,
-        TapGesture({count:2}).onAction((event)=>{
-          if (event) {
-            param.doubleClick?.()
-          }
-        }),
-        TapGesture({count:1}).onAction((event)=>{
-          if (event) {
-            this.tabController.changeIndex(param.index)
-            this.tabLoad[param.index] = true
-            param.click?.()
-          }
-        })
-      )
-    )
-  }
-
-
 
   build() {
     Navigation(this.pathStack){
@@ -210,7 +151,6 @@ struct HomePage {
       .barPosition(BarPosition.End)
       .barBackgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .onChange((index)=>{
-        this.currentIndex = index
         this.tabLoad[index] = true
       })
     }.height('100%')
@@ -218,12 +158,4 @@ struct HomePage {
     .hideToolBar(true)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
-}
-
-interface TabBarTitleParam{
-  index:number
-  title:string
-  icon?:Resource
-  click?:()=>void
-  doubleClick?:()=>void
 }
