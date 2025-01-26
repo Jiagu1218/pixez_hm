@@ -82,7 +82,7 @@ export struct IllustWaterFlow {
             }
             .onClick(()=>{
               this.pathStack?.pushPath({
-                name: 'illustDetailPage',
+                name: 'artWorksPage',
                 param: {illustId: item.id} as IllustRouterParam
               })
             })

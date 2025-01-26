@@ -22,7 +22,7 @@ export struct UserPreviewCard{
               HttpImage({url: item.item.image_urls.square_medium,aRatio:1})
             }.onClick(()=>{
               this.pathStack?.pushPath({
-                name: 'illustDetailPage',
+                name: 'artWorksPage',
                 param: {illustId: item.item.id} as IllustRouterParam
               })
             })

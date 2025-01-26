@@ -19,7 +19,7 @@ import { CommentList } from '../comp/CommentList';
 
 @Entry
 @ComponentV2
-struct IllustDetailPage {
+struct ArtWorksPage {
   private relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
   private illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
   @Local illustId: number = 0
@@ -41,7 +41,7 @@ struct IllustDetailPage {
     }
     if (this.queryNavigationInfo()?.pathStack) {
       this.pathStack = this.queryNavigationInfo()?.pathStack
-      const temp = this.queryNavigationInfo()!.pathStack.getParamByName('illustDetailPage').pop() as IllustRouterParam
+      const temp = this.queryNavigationInfo()!.pathStack.getParamByName('artWorksPage').pop() as IllustRouterParam
       this.illustId = temp.illustId
     }
     ApiClient.getIllustDetail(this.illustId).then(res=>{
@@ -262,7 +262,7 @@ struct IllustDetailPage {
                     }
                     .onClick(()=>{
                       this.pathStack?.pushPath({
-                        name: 'illustDetailPage',
+                        name: 'artWorksPage',
                         param: {illustId:item.id} as IllustRouterParam
                       })
                     })
@@ -308,6 +308,6 @@ struct IllustDetailPage {
   }
 }
 
-@Builder export function IllustDetailPageBuilder(){
-  IllustDetailPage()
+@Builder export function ArtWorksPageBuilder(){
+  ArtWorksPage()
 }

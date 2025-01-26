@@ -30,7 +30,7 @@ export default class EntryAbility extends UIAbility {
           break;
         case 'artworks':
           AppStorage.setOrCreate<NavRouterType>('routerType',{
-            name:'illustDetailPage',
+            name:'artWorksPage',
             id:Number.parseInt(paths[2])
           })
           break;

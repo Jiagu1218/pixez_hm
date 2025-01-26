@@ -59,9 +59,9 @@ struct HomePage {
             param: {userId: routerType.id} as UserRouterParam
           })
           break;
-        case 'illustDetailPage':
+        case 'artWorksPage':
           this.pathStack.pushPath({
-            name: 'illustDetailPage',
+            name: 'artWorksPage',
             param: {illustId: routerType.id} as IllustRouterParam
           })
           break;

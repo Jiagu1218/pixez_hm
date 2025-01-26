@@ -1,9 +1,9 @@
 {
   "routerMap": [
     {
-      "name": "illustDetailPage",
-      "pageSourceFile": "src/main/ets/pages/IllustDetailPage.ets",
-      "buildFunction": "IllustDetailPageBuilder",
+      "name": "artWorksPage",
+      "pageSourceFile": "src/main/ets/pages/ArtWorksPage.ets",
+      "buildFunction": "ArtWorksPageBuilder",
       "data": {
         "description": "插画详情页"
       }
