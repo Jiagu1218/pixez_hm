@@ -8,8 +8,12 @@ import { CommentLabel } from "./CommentLabel"
 export struct CommentList{
   private comments:LazyDataSource<Comment> = new LazyDataSource<Comment>()
   private nextUrl:string|null = null
+  //插画或小说id
+  @Require @Param relateId:number
   @Require @Param firstPage:()=> Promise<CommentsResponse |null>
   @Require @Param getReply:(commentId:number)=> Promise<CommentsResponse |null>
+  @Require @Param postComment:(relateId: number, comment: string,
+    parentCommentId?: number)=> Promise<boolean>
 
   aboutToAppear(): void {
     this.firstPage().then(res=>{
@@ -24,7 +28,8 @@ export struct CommentList{
     List({space:16}){
       LazyForEach(this.comments,(item:Comment)=>{
         ListItem(){
-          CommentLabel({comment:item,getReply:()=>this.getReply(item.id)})
+          CommentLabel({relateId:this.relateId,comment:item,getReply:()=>this.getReply(item.id),
+            postComment:(relateId: number, comment: string, parentCommentId?: number)=>this.postComment(relateId,comment,parentCommentId)})
         }
       })
     }.constraintSize({

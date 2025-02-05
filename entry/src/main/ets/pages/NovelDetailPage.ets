@@ -69,6 +69,15 @@ struct NovelDetailPage {
     })
   }
 
+  postComment(relateId: number, comment: string, parentCommentId?: number):Promise<boolean>{
+    return ApiClient.postNovelComment(relateId,comment,parentCommentId).then(res=>{
+      if (res) {
+        return true
+      }
+      return false
+    })
+  }
+
   getWebViewNovel() {
     ApiClient.webviewNovel(this.novelId).then(res => {
       if (res) {
@@ -206,8 +215,11 @@ struct NovelDetailPage {
 
   @Builder commentSheet(): CustomBuilder {
     CommentList({
+      relateId: this.novelId,
       firstPage: () => this.getComments(),
-      getReply: (commentId: number) => this.getCommentReply(commentId)
+      getReply: (commentId: number) => this.getCommentReply(commentId),
+      postComment: (relateId: number, comment: string, parentCommentId?: number) =>
+        this.postComment(relateId, comment, parentCommentId)
     })
   }
 

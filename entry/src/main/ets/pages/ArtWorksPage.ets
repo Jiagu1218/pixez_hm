@@ -79,6 +79,15 @@ struct ArtWorksPage {
     })
   }
 
+  postComment(relateId: number, comment: string, parentCommentId?: number):Promise<boolean>{
+    return ApiClient.postIllustComment(relateId,comment,parentCommentId).then(res=>{
+      if (res) {
+        return true
+      }
+      return false
+    })
+  }
+
   aboutToDisappear(): void {
     this.relatedIllusts.destroy()
   }
@@ -107,8 +116,10 @@ struct ArtWorksPage {
 
   @Builder commentSheet(){
     CommentList({
+      relateId:this.illustId,
       firstPage:()=>this.getComments(),
-      getReply:(commentId)=>this.getCommentReply(commentId)
+      getReply:(commentId)=>this.getCommentReply(commentId),
+      postComment:(relateId,comment,parentCommentId)=>this.postComment(relateId,comment,parentCommentId)
     })
   }
 
