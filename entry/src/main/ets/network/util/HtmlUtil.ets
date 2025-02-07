@@ -1,4 +1,10 @@
 export class HtmlUtil {
+  /**
+   * 用于匹配HTML中的script标签的正则表达式
+   *
+   * 这个正则表达式用于匹配HTML中的script标签，并提取其中的内容
+   * 它将匹配以<script>开头，后跟任意数量的非<script>字符，直到遇到</script>结束标签
+   */
   private static readonly scriptTagRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
   /**
    * 用于匹配小说信息的正则表达式
@@ -8,6 +14,13 @@ export class HtmlUtil {
    */
   private static readonly novelJsonRegex = /novel: ({.*?}),\n\s*isOwnWork/;
 
+  /**
+   * 从HTML字符串中提取小说信息
+   * 该方法用于解析给定的HTML字符串，并提取其中包含的JSON格式的小说信息
+   *
+   * @param html 待解析的HTML字符串
+   * @returns 返回小说信息的JSON字符串，如果未找到信息则返回空字符串
+   */
   public static getNovelJson(html: string) :string{
     //解析HTML文本，提取出script标签
     const scripts = html.match(HtmlUtil.scriptTagRegex);
@@ -91,15 +104,23 @@ export class HtmlUtil {
  * 该接口用于描述富文本的相关信息，包括文本类型、文本内容、标签属性和标签名称
  */
 export interface RichTextInfo{
-  // 指定文本的类型，可以是纯文本('text')或HTML格式('html')
+  /**
+   * 文本类型，可以是纯文本('text')或HTML格式('html')
+   */
   type:'text'|'html'
 
-  // 文本内容，根据type字段决定是否被解释为HTML
+  /**
+   * 文本内容，根据type字段决定是否被解释为HTML
+   */
   text:string
 
-  // 可选字段，用于指定标签的属性，是一个键值对的形式
+  /**
+   * 可选字段，用于指定标签的属性，是一个键值对的形式
+   */
   tagAttr?:Record<string,string>
 
-  // 可选字段，用于指定标签名称，当需要将文本包装在特定标签内时使用
+  /**
+   * 可选字段，用于指定标签名称，当需要将文本包装在特定标签内时使用
+   */
   tagName?:string
 }

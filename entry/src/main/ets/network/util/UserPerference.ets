@@ -6,11 +6,17 @@ import { BusinessError } from "@kit.BasicServicesKit"
  * UserPreference 类用于管理用户偏好设置，使用单例模式来确保全局只有一个实例
  */
 export class UserPreference {
-  // 用户偏好设置的键名常量
+  /**
+   * 用户偏好设置的键名常量
+   */
   public static readonly USER_PREFERENCE_KEY = 'user_preference'
-  // 用于存储令牌的键名常量
+  /**
+   * 用于存储令牌的键名常量
+   */
   public static readonly TOKEN = 'token'
-  // Preferences 实例，用于存储用户偏好设置
+  /**
+   * Preferences 实例
+   */
   private static instance: preferences.Preferences
 
   /**

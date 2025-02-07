@@ -15,6 +15,9 @@ import { ArkTSUtils } from '@kit.ArkTS'
  */
 export class TokenInterceptor implements rcp.Interceptor {
   private loginPageName: string = 'loginPage'
+  /**
+   * 锁，用于控制并发刷新token操作
+   */
   private lock: ArkTSUtils.locks.AsyncLock = ArkTSUtils.locks.AsyncLock.request('refreshToken_lock')
   /**
    * 拦截请求的执行方法

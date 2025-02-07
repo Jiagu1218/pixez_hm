@@ -2,12 +2,17 @@ import { buffer } from "@kit.ArkTS"
 import { cryptoFramework } from "@kit.CryptoArchitectureKit"
 import { rcp } from "@kit.RemoteCommunicationKit"
 import { SessionManager } from "../pool/SessionManager"
-import { SessionPoolNew } from "../pool/SessionPoolNew"
 
+/**
+ * ApiUtil类提供了一组用于发送HTTP请求和生成哈希值的工具方法
+ */
 export class ApiUtil {
 
   /**
    * 发送POST请求
+   * @param url 请求的URL地址
+   * @param content 请求的内容
+   * @returns {Promise<rcp.Response | null>} 表示异步操作完成的Promise对象，包含响应结果或null
    * */
   public static async post(url: string, content?: rcp.RequestContent): Promise<rcp.Response | null> {
     const session: rcp.Session = await SessionManager.commonSessionPool.acquire()
@@ -19,6 +24,9 @@ export class ApiUtil {
 
   /**
    * 发送GET请求
+   * @param url 请求的URL地址
+   * @param desc 响应体的目标位置
+   * @returns {Promise<rcp.Response | null>} 表示异步操作完成的Promise对象，包含响应结果或null
    * */
   public static async get(url: rcp.URLOrString, desc?: rcp.ResponseBodyDestination): Promise<rcp.Response | null> {
     const session: rcp.Session = await SessionManager.commonSessionPool.acquire()
@@ -33,6 +41,8 @@ export class ApiUtil {
 
   /**
    * 发送请求
+   * @param request 请求对象
+   * @returns {Promise<rcp.Response | null>} 表示异步操作完成的Promise对象，包含响应结果或null
    * */
   public static async fetch(request: rcp.Request): Promise<rcp.Response | null> {
     const session: rcp.Session = await SessionManager.commonSessionPool.acquire()

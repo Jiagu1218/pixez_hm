@@ -5,9 +5,22 @@ import { fileIo, fileUri } from "@kit.CoreFileKit";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { UgoiraMetadata } from "../model/UgoiraMetadata";
 
+/**
+ * 图片工具类
+ */
 export class ImageUtil{
+  /**
+   * 图片保存权限
+   */
   private static photoHelper:photoAccessHelper.PhotoAccessHelper
+  /**
+   * 上下文
+   */
   private static context:common.Context
+  /**
+   * 初始化
+   * @param context 上下文
+   */
   public static init(context:common.Context){
     try {
       ImageUtil.photoHelper = photoAccessHelper.getPhotoAccessHelper(context)
@@ -16,7 +29,9 @@ export class ImageUtil{
       console.error('获取图片保存权限失败',e)
     }
   }
-
+  /**
+   * 释放
+   */
   public static release(){
     ImageUtil.photoHelper?.release()
   }
@@ -58,6 +73,11 @@ export class ImageUtil{
     })
   }
 
+  /**
+   * 从缓存中获取动图信息
+   * @param metadate 动图元数据
+   * @returns 动图帧信息数组
+   */
   public static getUgoiraFormCache(metadate:UgoiraMetadata):Array<ImageFrameInfo>{
     const cacheDir = ImageUtil.context.cacheDir
     const imageFilePath =metadate.zip_urls.medium.split('/').pop()?.split('.').shift()

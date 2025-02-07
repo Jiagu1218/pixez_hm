@@ -6,7 +6,10 @@ import { HashMap } from "@kit.ArkTS"
  * 这有助于快速访问和管理图像的像素数据，避免重复处理相同图像。
  */
 export class PixelCache {
-  // 使用 Map 数据结构存储缓存，键为字符串，值为 PixelMap 对象。
+
+  /**
+   * 使用 Map 数据结构存储缓存，键为字符串，值为 PixelMap 对象。
+   */
   private static readonly cache: HashMap<string, image.PixelMap> = new HashMap()
 
   /**

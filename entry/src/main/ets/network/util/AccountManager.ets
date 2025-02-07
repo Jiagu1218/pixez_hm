@@ -7,14 +7,21 @@ import { UserPreference } from "./UserPerference"
  * 它通过单例模式确保全局只有一个实例，以统一管理账号信息。
  */
 export class AccountManager {
-  // 单例模式实现，确保全局只有一个AccountManager实例
+  /**
+   * 单例模式实现，确保全局只有一个AccountManager实例
+   */
   private static instance: AccountManager
-  // 账号管理器，用于调用底层账号管理接口
+  /**
+   * 账号管理器，用于调用底层账号管理接口
+   */
   private readonly accountManager: appAccount.AppAccountManager
-  // 刷新令牌的键名，用于存储和获取刷新令牌
+  /**
+   * 刷新令牌的键名，用于存储和获取刷新令牌
+   */
   private static readonly REFRESH_TOKEN = 'refresh_token'
-
-  // 私有构造函数，防止外部实例化
+  /**
+   * 私有构造函数，防止外部实例化
+   */
   private constructor() {
     this.accountManager = appAccount.createAppAccountManager()
   }
