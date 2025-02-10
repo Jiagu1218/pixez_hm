@@ -1,100 +1,29 @@
-import { ApiClient } from '../network/ApiClient'
 import { Illust, MetaPage, Tag } from '../network/model/Illust'
-import { BasicPrefetcher, LengthUnit, router } from '@kit.ArkUI'
+import { LengthUnit } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
-import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
-import { IllustRelatedResponse } from '../network/response/IllustRelatedResponse';
 import { SaveImage } from '../comp/SaveImage';
 import { DateTimeUtil } from '../network/util/DateTimeUtil';
 import { UgoiraImage } from '../comp/UgoiraImage';
-import { IllustRouterParam } from '../param/IllustRouterParam';
-import { UserRouterParam } from '../param/UserRouterParam';
-import { SearchRouterParam } from '../param/SearchRouterParam';
-import { IllustSearchTargetEnum } from '../network/enums/IllustSearchTargetEnum';
-import { IllustDataSourcePrefetching } from '../entity/IllustDataSourcePrefetching';
 import { HtmlText } from '../comp/HtmlText';
-import { CommentsResponse } from '../network/response/CommentsResponse';
 import { CommentList } from '../comp/CommentList';
 import { IllustSeriesNav } from '../comp/IllustSeriesNav';
-
+import { ArtWorksViewModel } from '../viewmodel/ArtWorksViewModel';
 
 @Entry
 @ComponentV2
 struct ArtWorksPage {
-  private relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
-  private illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
-  @Local illustId: number = 0
-  @Local illust: Illust|null = null
-  @Local nextUrl:string|null = null
-  @Local followed: boolean = false
-  @Local illustsRawUrl:Array<string> = []
-  @Local showRaw:boolean = false
-  @Local showComments:boolean = false
-  @Local initIndex:number = 0
-  @Local currentRawUrl:string = ''
-  private pathStack:NavPathStack|undefined = undefined
+  private model:ArtWorksViewModel = new ArtWorksViewModel()
   aboutToAppear(): void {
-    this.relatedIllusts.getSession()
-    this.pathStack = this.queryNavigationInfo()?.pathStack
-    const params = router.getParams() as IllustRouterParam
-    if (params?.illustId){
-      this.illustId = params.illustId
-    }
-    if (this.queryNavigationInfo()?.pathStack) {
-      this.pathStack = this.queryNavigationInfo()?.pathStack
-      const temp = this.queryNavigationInfo()!.pathStack.getParamByName('artWorksPage').pop() as IllustRouterParam
-      this.illustId = temp.illustId
-    }
-    ApiClient.getIllustDetail(this.illustId).then(res=>{
-      const resp = res?.toJSON() as IllustDetailResponse
-      this.illustId = resp.illust.id
-      this.illust = resp.illust
-      this.followed = resp.illust.user.is_followed
-      this.illustsRawUrl = resp.illust.meta_single_page.original_image_url?[resp.illust.meta_single_page.original_image_url]:resp.illust.meta_pages.map(item=>item.image_urls.original)
-    })
-    ApiClient.getIllustRelated(this.illustId).then(res=>{
-      const resp = res?.toJSON() as IllustRelatedResponse
-      this.relatedIllusts.push(...resp.illusts)
-      this.nextUrl = resp.next_url
-    })
-  }
-
-  getComments():Promise<CommentsResponse|null>{
-    return ApiClient.getIllustComments(this.illustId).then(res=>{
-      if (res) {
-        return res.toJSON() as CommentsResponse
-      }else {
-        return null
-      }
-    })
-  }
-
-  getCommentReply(commentId:number): Promise<CommentsResponse | null>{
-    return ApiClient.getIllustCommentsReplies(commentId).then(res=>{
-      if (res) {
-        return res.toJSON() as CommentsResponse
-      }else {
-        return null
-      }
-    })
-  }
-
-  postComment(relateId: number, comment: string, parentCommentId?: number):Promise<boolean>{
-    return ApiClient.postIllustComment(relateId,comment,parentCommentId).then(res=>{
-      if (res) {
-        return true
-      }
-      return false
-    })
+    this.model.init(this.queryNavigationInfo())
   }
 
   aboutToDisappear(): void {
-    this.relatedIllusts.destroy()
+    this.model.destroy()
   }
 
   @Builder showRowImage(){
     Row(){
-      SaveImage({urls: this.illustsRawUrl,initIndex: this.initIndex})
+      SaveImage({urls: this.model.illustsRawUrl,initIndex: this.model.initIndex})
     }
     .width('100%')
     .height('100%')
@@ -116,10 +45,10 @@ struct ArtWorksPage {
 
   @Builder commentSheet(){
     CommentList({
-      relateId:this.illustId,
-      firstPage:()=>this.getComments(),
-      getReply:(commentId)=>this.getCommentReply(commentId),
-      postComment:(relateId,comment,parentCommentId)=>this.postComment(relateId,comment,parentCommentId)
+      relateId:this.model.illustId,
+      firstPage:()=>this.model.getComments(),
+      getReply:(commentId)=>this.model.getCommentReply(commentId),
+      postComment:(relateId,comment,parentCommentId)=>this.model.postComment(relateId,comment,parentCommentId)
     })
   }
 
@@ -129,24 +58,24 @@ struct ArtWorksPage {
         Column({space:16}){
           // 插画
           Column(){
-            if (this.illust) {
-              if (this.illust.meta_pages?.length>0) {
-                ForEach(this.illust.meta_pages,(item:MetaPage,index)=>{
+            if (this.model.illust) {
+              if (this.model.illust.meta_pages?.length>0) {
+                ForEach(this.model.illust.meta_pages,(item:MetaPage,index)=>{
                   HttpImage({url: item.image_urls.large})
                     .onClick(()=>{
-                      this.initIndex = index
-                      this.currentRawUrl = item.image_urls.original
-                      this.showRaw = true
+                      this.model.initIndex = index
+                      this.model.currentRawUrl = item.image_urls.original
+                      this.model.showRaw = true
                     })
                 },(item:MetaPage,index)=>index.toString())
               }else {
-                if (this.illust.type === 'ugoira'){
-                  UgoiraImage({illust:this.illust})
+                if (this.model.illust.type === 'ugoira'){
+                  UgoiraImage({illust:this.model.illust})
                 }else {
-                  HttpImage({url: this.illust.image_urls.large})
+                  HttpImage({url: this.model.illust.image_urls.large})
                     .onClick(()=>{
-                      this.currentRawUrl = this.illust!.meta_single_page!.original_image_url!
-                      this.showRaw = true
+                      this.model.currentRawUrl = this.model.illust!.meta_single_page!.original_image_url!
+                      this.model.showRaw = true
                     })
                 }
 
@@ -155,69 +84,51 @@ struct ArtWorksPage {
           }.width('100%')
           // 详细信息
           Column({space:16}){
-            if (this.illust?.series){
+            if (this.model.illust?.series){
               // 系列作品
-              IllustSeriesNav({illustId:this.illust.id,seriesId:this.illust.series.id})
+              IllustSeriesNav({illustId:this.model.illust.id,seriesId:this.model.illust.series.id})
             }
             Column({space:16}){
-              Text(this.illust?.title ?? '').fontSize($r('sys.float.Title_S'))
+              Text(this.model.illust?.title ?? '').fontSize($r('sys.float.Title_S'))
               Row({space:16}){
                 Text(){
                   SymbolSpan($r('sys.symbol.eye')).fontColor([Color.Gray])
-                  Span(this.illust?.total_view?.toString() ?? '0')
+                  Span(this.model.illust?.total_view?.toString() ?? '0')
                 }.fontSize(14)
                 Text(){
                   SymbolSpan($r('sys.symbol.heart_fill')).fontColor([Color.Gray])
-                  Span(this.illust?.total_bookmarks?.toString() ?? '0')
+                  Span(this.model.illust?.total_bookmarks?.toString() ?? '0')
                 }.fontSize(14)
                 Text(){
                   SymbolSpan($r('sys.symbol.calendar_badge_clock')).fontColor([Color.Gray])
-                  Span(this.illust?DateTimeUtil.parseIsoTimeToLocalFormatTime(this.illust.create_date) : '-')
+                  Span(this.model.illust?DateTimeUtil.parseIsoTimeToLocalFormatTime(this.model.illust.create_date) : '-')
                 }.fontSize(14)
               }
               Row({space:16}){
-                Text(`插画ID: ${this.illust?.id ?? '-'}`).fontSize(14)
-                Text(`分辨率: ${this.illust?.width ?? '-'}x${this.illust?.height ?? '-'}`).fontSize(14)
+                Text(`插画ID: ${this.model.illust?.id ?? '-'}`).fontSize(14)
+                Text(`分辨率: ${this.model.illust?.width ?? '-'}x${this.model.illust?.height ?? '-'}`).fontSize(14)
               }
               Row(){
                 Row({space:16}){
-                  if (this.illust?.user?.profile_image_urls?.medium){
-                    HttpImage({url: this.illust.user.profile_image_urls.medium,br:24}).width(48)
+                  if (this.model.illust?.user?.profile_image_urls?.medium){
+                    HttpImage({url: this.model.illust.user.profile_image_urls.medium,br:24}).width(48)
                   }
-                  Text(this.illust?.user?.name ?? '').fontSize($r('sys.float.Subtitle_S')).fontWeight(FontWeight.Bold)
+                  Text(this.model.illust?.user?.name ?? '').fontSize($r('sys.float.Subtitle_S')).fontWeight(FontWeight.Bold)
                 }.onClick(()=>{
-                  if(this.illust?.user.id){
-                    this.pathStack?.pushPath({
-                      name: 'userDetailPage',
-                      param:{
-                        userId: this.illust.user.id
-                      } as UserRouterParam
-                    })
-                  }
+                  this.model.userDetailAction()
                 })
-                Button(this.followed?'已关注':'关注').width(80)
+                Button(this.model.followed?'已关注':'关注').width(80)
                   .onClick(()=>{
-                    if (!this.illust){
-                      return
-                    }
-                    if (this.followed) {
-                      ApiClient.postUnFollowUser(this.illust.user.id).then(()=>{
-                        this.followed = false
-                      })
-                    }else {
-                      ApiClient.postFollowUser(this.illust.user.id,'public').then(()=>{
-                        this.followed = true
-                      })
-                    }
+                    this.model.followAction()
                   })
               }.justifyContent(FlexAlign.SpaceBetween)
               .width('100%')
             }.width('100%')
             .alignItems(HorizontalAlign.Start)
-            if (this.illust?.tags){
+            if (this.model.illust?.tags){
               Row(){
                 Flex({wrap:FlexWrap.Wrap,space:{main:{value: 16,unit:LengthUnit.VP},cross:{value: 8,unit:LengthUnit.VP}}}){
-                  ForEach(this.illust.tags,(item:Tag)=>{
+                  ForEach(this.model.illust.tags,(item:Tag)=>{
                     Text(){
                       Span(`#${item.name}`).fontColor(Color.Blue)
                       if (item.translated_name){
@@ -229,22 +140,15 @@ struct ArtWorksPage {
                     .borderRadius($r('sys.float.ohos_id_corner_radius_panel'))
                     .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
                     .onClick(()=>{
-                      this.pathStack?.pushPath({
-                        name: 'searchPage',
-                        param: {
-                          word: item.name,
-                          type: 'illust',
-                          target: IllustSearchTargetEnum.EXACT_MATCH_FOR_TAGS
-                        } as SearchRouterParam
-                      })
+                      this.model.tagAction(item)
                     })
                   },(item:Tag,index)=>index.toString())
                 }
               }
             }
-            if (this.illust?.caption){
+            if (this.model.illust?.caption){
               Row(){
-                HtmlText({htmlText:this.illust.caption})
+                HtmlText({htmlText:this.model.illust.caption})
               }.margin(16)
               .padding(8)
               .width('90%')
@@ -257,19 +161,19 @@ struct ArtWorksPage {
                 Span("查看评论")
               }.fontColor(Color.Blue)
               .onClick(()=>{
-                this.showComments = true
+                this.model.showComments = true
               })
-            }.bindSheet(this.showComments,this.commentSheet(),{
+            }.bindSheet(this.model.showComments,this.commentSheet(),{
               blurStyle:BlurStyle.Thin,
               title:{title:'相关评论'},
               shouldDismiss:()=>{
-                this.showComments = false
+                this.model.showComments = false
               }
             })
-            if (this.relatedIllusts){
+            if (this.model.relatedIllusts){
               Column(){
                 Grid(){
-                  LazyForEach(this.relatedIllusts,(item:Illust)=>{
+                  LazyForEach(this.model.relatedIllusts,(item:Illust)=>{
                     GridItem(){
                       Stack(){
                         HttpImage({url: item.image_urls.square_medium,aRatio:1})
@@ -277,17 +181,14 @@ struct ArtWorksPage {
                       }.alignContent(Alignment.TopEnd)
                     }
                     .onClick(()=>{
-                      this.pathStack?.pushPath({
-                        name: 'artWorksPage',
-                        param: {illustId:item.id} as IllustRouterParam
-                      })
+                      this.model.relatedAction(item)
                     })
                   })
                 }.columnsTemplate('repeat(auto-fit, 120)')
                 .height('100%')
                 .cachedCount(6)
                 .onScrollIndex((first,last)=>{
-                  this.illustPrefetcher.visibleAreaChanged(first,last)
+                  this.model.illustPrefetcher.visibleAreaChanged(first,last)
                 })
                 //嵌套滚动控制
                 .nestedScroll({
@@ -297,21 +198,15 @@ struct ArtWorksPage {
                   scrollBackward:NestedScrollMode.SELF_FIRST
                 })
                 .onReachEnd(()=>{
-                  if (this.nextUrl){
-                    ApiClient.getNext(this.nextUrl).then(res=>{
-                      const resp = res?.toJSON() as IllustRelatedResponse
-                      this.relatedIllusts.push(...resp.illusts)
-                      this.nextUrl = resp.next_url
-                    })
-                  }
+                  this.model.relatedPageAction()
                 })
               }
             }
           }.width('100%')
         }.justifyContent(FlexAlign.Start)
-        .bindContentCover(this.showRaw,this.showRowImage(),{
+        .bindContentCover(this.model.showRaw,this.showRowImage(),{
           onWillDismiss:()=>{
-            this.showRaw = false
+            this.model.showRaw = false
           },
           modalTransition: ModalTransition.ALPHA
         })
