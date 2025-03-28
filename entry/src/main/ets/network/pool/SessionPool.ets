@@ -76,10 +76,10 @@ export class SessionPool {
       this.sessionConfiguration = config.sessionConfiguration;
     }
     if (config?.maxSessions) {
-      this.maxSessions = config.maxSessions > 16 ? this.maxSessions : config.maxSessions;
+      this.maxSessions = Math.min(16, config.maxSessions);
     }
     if (config?.coreSessions) {
-      this.coreSessions = config.coreSessions;
+      this.coreSessions = Math.min(this.maxSessions, config.coreSessions)
     }
     for (let i = 0; i < this.coreSessions; i++) {
       const session = this.createSession();
