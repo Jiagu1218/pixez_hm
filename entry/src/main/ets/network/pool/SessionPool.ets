@@ -1,10 +1,25 @@
 import { ArkTSUtils, LinkedList } from "@kit.ArkTS";
 import { rcp } from "@kit.RemoteCommunicationKit";
 
+/**
+ * SessionPoolConfig类用于配置SessionPool的参数
+ */
 export interface SessionPoolConfig {
+  /**
+   * 最大会话数，最大为16
+   */
   maxSessions: number;
+  /**
+   * 核心会话数
+   */
   coreSessions: number;
+  /**
+   * 锁前缀
+   */
   lookPrefix: string;
+  /**
+   * 会话配置
+   */
   sessionConfiguration?: rcp.SessionConfiguration;
 }
 
@@ -13,18 +28,33 @@ export interface SessionPoolConfig {
  * 它使用链表来维护会话池和等待队列，并根据需要创建和分配会话
  */
 export class SessionPool {
+  /**
+   * 锁，用于控制并发访问
+   */
   private lock: ArkTSUtils.locks.AsyncLock
-
-  // 会话池，用于存储可用的会话
+  /**
+   * 会话池，用于存储可用的会话
+   */
   private sessionPool: LinkedList<rcp.Session>;
-  // 等待队列，用于存储等待会话的请求
+  /**
+   * 等待队列，用于存储等待会话的请求
+   */
   private waitingQueue: LinkedList<(session: rcp.Session) => void>;
-  // 最大会话数，限制会话池的最大大小
+  /**
+   * 最大会话数，限制会话池的最大大小
+   */
   private maxSessions: number;
-  // 核心会话数，保证始终可用的最小会话数
+  /**
+   * 核心会话数，保证始终可用的最小会话数
+   */
   private coreSessions: number;
-  // 当前活动的会话数
+  /**
+   * 当前活动的会话数
+   */
   private activeSessions: number;
+  /**
+   * 会话配置
+   */
   private sessionConfiguration: rcp.SessionConfiguration;
 
   constructor(config?: SessionPoolConfig) {
@@ -131,6 +161,9 @@ export class SessionPool {
     return rcp.createSession(this.sessionConfiguration);
   }
 
+  /**
+   * 销毁会话池，关闭所有会话并清空等待队列
+   */
   public destroy(){
     this.sessionPool.forEach((session)=>{
       session.close()

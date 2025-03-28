@@ -2,22 +2,38 @@ import { AppConfig } from "../AppConfig";
 import { TokenInterceptor } from "../interceptor/TokenInterceptor";
 import { SessionPool, SessionPoolConfig } from "./SessionPool";
 
+/**
+ * 会话管理器
+ */
 export class SessionManager {
+  /**
+   * 公共会话池
+   */
   private static _commonSessionPool: SessionPool;
-
+  /**
+   * 公共会话池
+   */
   public static get commonSessionPool(): SessionPool {
     return SessionManager._commonSessionPool;
   }
-
+  /**
+   * 文件会话池
+   */
   private static _fileSessionPool: SessionPool;
-
+  /**
+   * 文件会话池
+   */
   public static get fileSessionPool(): SessionPool {
     return SessionManager._fileSessionPool;
   }
+  /**
+   * token拦截器
+   */
   private static tokenInterceptor: TokenInterceptor
 
-
-
+  /**
+   * 初始化
+   */
   public static init(){
     SessionManager.tokenInterceptor = new TokenInterceptor()
     const commonSessionConfig:SessionPoolConfig ={
@@ -102,7 +118,9 @@ export class SessionManager {
     SessionManager._commonSessionPool =  new SessionPool(commonSessionConfig)
     SessionManager._fileSessionPool = new SessionPool(fileSessionConfig)
   }
-
+  /**
+   * 销毁
+   */
   public static destroy(){
     SessionManager._commonSessionPool.destroy()
     SessionManager._fileSessionPool.destroy()

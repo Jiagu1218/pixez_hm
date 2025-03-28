@@ -31,6 +31,10 @@ export class ResponseCache {
     }
   }
 
+  /**
+   * 从缓存中删除指定URL的响应
+   * @param url 请求的URL
+   */
   delCache(url: string): void {
     // 从缓存中移除指定的URL对应的响应
     if (this.cache.has(url)) {
