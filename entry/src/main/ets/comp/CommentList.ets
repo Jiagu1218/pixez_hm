@@ -92,6 +92,7 @@ export struct CommentList {
         this.loadingFooter()
       }
     }
+    .cachedCount(4)
     .constraintSize({
       maxHeight: '100%'
     })

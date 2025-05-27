@@ -86,7 +86,7 @@ struct ArtWorksPage {
                 this.model.currentRawUrl = item.image_urls.original
                 this.model.showRaw = true
               })
-          })
+          },(item: MetaPage)=>item.image_urls.square_medium)
         } else {
           if (this.model.illust.type === 'ugoira') {
             UgoiraImage({ illust: this.model.illust })
@@ -195,7 +195,7 @@ struct ArtWorksPage {
               .onClick(() => {
                 this.model.tagAction(item)
               })
-            })
+            },(item: Tag)=>item.name)
           }
         }
       }

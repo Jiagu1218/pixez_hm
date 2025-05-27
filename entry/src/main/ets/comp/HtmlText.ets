@@ -53,7 +53,7 @@ export struct HtmlText {
               .lineHeight(20)
           }
         }
-      })
+      },(item: RichTextInfo,index)=>index + item.text)
     }
     .copyOption(CopyOptions.LocalDevice)
     .textAlign(TextAlign.Start)

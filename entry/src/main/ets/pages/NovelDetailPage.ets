@@ -71,7 +71,7 @@ struct NovelDetailPage {
               .onClick(() => {
                 this.model.tagAction(item)
               })
-          })
+          }, (item: string,index)=>index + item)
         }
         Text('查看评论')
           .fontSize(16)
@@ -137,7 +137,7 @@ struct NovelDetailPage {
             .lineHeight(24)
             .margin({ top: 8, bottom: 8 })
         }
-      })
+      },(item: string,index)=>index + item)
     }
     .width('100%')
     .padding(16)

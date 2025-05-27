@@ -72,6 +72,7 @@ export class ArtWorksViewModel{
     if (navInfo) {
       this.pathStack = navInfo.pathStack
       const param = navInfo.pathStack.getParamByName('artWorksPage').pop() as IllustRouterParam
+      this.relatedIllusts.getSession()
       this.illustId = param.illustId
       this.getIllustDetail()
       this.getIllustRelated()

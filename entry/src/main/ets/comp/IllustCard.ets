@@ -58,7 +58,7 @@ export struct IllustCard {
             }
             .backgroundColor('#FFFFFF')
             .borderRadius(8)
-          })
+          },(tag: Tag)=>tag.name)
         }
         .nestedScroll({
           scrollForward: NestedScrollMode.PARENT_FIRST,

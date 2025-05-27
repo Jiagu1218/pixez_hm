@@ -72,6 +72,10 @@ export class SessionManager {
               return true;
             }
           }
+        },
+        connectionConfiguration:{
+          maxConnectionsPerHost:256,
+          maxTotalConnections:1024
         }
       }
     }
@@ -112,6 +116,10 @@ export class SessionManager {
               return true;
             }
           }
+        },
+        connectionConfiguration:{
+          maxConnectionsPerHost:256,
+          maxTotalConnections:1024
         }
       }
     }
