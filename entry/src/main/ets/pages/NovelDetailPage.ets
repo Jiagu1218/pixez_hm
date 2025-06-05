@@ -2,6 +2,8 @@ import { LengthUnit } from '@kit.ArkUI';
 import { CommentList } from '../comp/CommentList';
 import { HtmlText } from '../comp/HtmlText';
 import { HttpImage } from '../comp/HttpImage';
+import { NovelContentPart } from '../entity/NovelContent';
+import { getNovelContentParts } from '../util/NovelUtil';
 import { NovelDetailViewModel } from '../viewmodel/NovelDetailViewModel';
 
 @Entry
@@ -20,14 +22,7 @@ struct NovelDetailPage {
       this.model.content = [];
       return;
     }
-    const illusts: Array<string> = []
-    if (Array.isArray(this.model.webViewNovel.illusts) && Array.isArray(this.model.webViewNovel.images)) {
-      illusts.push(this.model.webViewNovel.text);
-    } else {
-      const textParts = this.model.webViewNovel.text.split(/\[(uploadedimage:\d+(?:-\d+)?)\]|\[(pixivimage:\d+(?:-\d+)?)\]/g);
-      illusts.push(...textParts.filter(Boolean));
-    }
-    this.model.content = illusts
+    this.model.content = getNovelContentParts(this.model.webViewNovel)
   }
 
   @Monitor('model.novelId')
@@ -108,36 +103,21 @@ struct NovelDetailPage {
   @Builder
   private NovelContent() {
     Column() {
-      ForEach(this.model.content, (item: string) => {
-        if (/pixivimage:(\d+(?:-\d+)?)/.test(item)) {
-          if (this.model.webViewNovel?.illusts[item.replace(/pixivimage:(\d+(?:-\d+)?)/,
-            '$1').toString()]?.illust?.images?.medium) {
-            HttpImage({
-              url: this.model.webViewNovel.illusts[item.replace(/pixivimage:(\d+(?:-\d+)?)/,
-                '$1').toString()].illust.images.medium
-            })
-              .width('100%')
-              .borderRadius(8)
-              .margin({ top: 16, bottom: 16 })
-          }
-        } else if (/uploadedimage:(\d+(?:-\d+)?)/.test(item)) {
-          if (this.model.webViewNovel?.images[item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
-            '$1').toString()]?.urls?.original) {
-            HttpImage({
-              url: this.model.webViewNovel.images[item.replace(/uploadedimage:(\d+(?:-\d+)?)/,
-                '$1').toString()].urls.original
-            })
-              .width('100%')
-              .borderRadius(8)
-              .margin({ top: 16, bottom: 16 })
-          }
+      ForEach(this.model.content, (item: NovelContentPart) => {
+        if (item.type == 'illust' || item.type == 'image') {
+          HttpImage({
+            url: item.content
+          })
+            .width('100%')
+            .borderRadius(8)
+            .margin({ top: 16, bottom: 16 })
         } else {
-          Text(item)
+          Text(item.content)
             .fontSize(16)
             .lineHeight(24)
             .margin({ top: 8, bottom: 8 })
         }
-      },(item: string,index)=>index + item)
+      },(item: NovelContentPart)=>JSON.stringify(item))
     }
     .width('100%')
     .padding(16)
