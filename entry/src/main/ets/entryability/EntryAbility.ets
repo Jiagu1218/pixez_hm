@@ -9,6 +9,7 @@ import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
 import { AppConfig } from '../network/AppConfig';
 import { UserPreference } from '../network/util/UserPerference';
+import { WindowManager } from '@kit.SpeechKit';
 
 export default class EntryAbility extends UIAbility {
   /**
@@ -68,6 +69,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    WindowManager.setWindowStage(windowStage);
     windowStage.loadContent('pages/LoginPage', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');

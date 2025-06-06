@@ -5,54 +5,106 @@ import { CommentsResponse } from "../network/response/CommentsResponse"
 import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2
-export struct CommentList{
-  private comments:LazyDataSource<Comment> = new LazyDataSource<Comment>()
-  private nextUrl:string|null = null
+export struct CommentList {
+  private comments: LazyDataSource<Comment> = new LazyDataSource<Comment>()
+  private nextUrl: string | null = null
+  @Local private isLoading: boolean = false
+  @Local private hasMore: boolean = true
   //插画或小说id
-  @Require @Param relateId:number
-  @Require @Param firstPage:()=> Promise<CommentsResponse |null>
-  @Require @Param getReply:(commentId:number)=> Promise<CommentsResponse |null>
-  @Require @Param postComment:(relateId: number, comment: string,
-    parentCommentId?: number)=> Promise<boolean>
+  @Require @Param relateId: number
+  @Require @Param firstPage: () => Promise<CommentsResponse | null>
+  @Require @Param getReply: (commentId: number) => Promise<CommentsResponse | null>
+  @Require @Param postComment: (relateId: number, comment: string,
+    parentCommentId?: number) => Promise<boolean>
 
   aboutToAppear(): void {
-    this.firstPage().then(res=>{
-      if (res) {
-        this.comments.push(...res.comments)
-        this.nextUrl = res.next_url
+    this.loadFirstPage()
+  }
+
+  private loadFirstPage(): void {
+    this.isLoading = true
+    this.firstPage()
+      .then(res => {
+        if (res) {
+          this.comments.push(...res.comments)
+          this.nextUrl = res.next_url
+          this.hasMore = !!res.next_url
+        }
+      })
+      .finally(() => {
+        this.isLoading = false
+      })
+  }
+
+  private loadMore(): void {
+    if (this.isLoading || !this.hasMore || !this.nextUrl) {
+      return
+    }
+
+    this.isLoading = true
+    ApiClient.getNext(this.nextUrl)
+      .then(res => {
+        const resp = res?.toJSON() as CommentsResponse
+        if (resp) {
+          this.comments.push(...resp.comments)
+          this.nextUrl = resp.next_url
+          this.hasMore = !!resp.next_url
+        }
+      })
+      .finally(() => {
+        this.isLoading = false
+      })
+  }
+
+  @Builder loadingFooter() {
+    if (this.isLoading) {
+      Row() {
+        LoadingProgress()
+          .width(24)
+          .height(24)
+          .color('#2196F3')
+        Text('加载中...')
+          .fontSize(14)
+          .fontColor('#666666')
+          .margin({ left: 8 })
       }
-    })
+      .width('100%')
+      .height(48)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+    }
   }
 
   build() {
-    List({space:16}){
-      LazyForEach(this.comments,(item:Comment)=>{
-        ListItem(){
-          CommentLabel({relateId:this.relateId,comment:item,getReply:()=>this.getReply(item.id),
-            postComment:(relateId: number, comment: string, parentCommentId?: number)=>this.postComment(relateId,comment,parentCommentId)})
+    List({ space: 16 }) {
+      LazyForEach(this.comments, (item: Comment) => {
+        ListItem() {
+          CommentLabel({
+            relateId: this.relateId,
+            comment: item,
+            getReply: () => this.getReply(item.id),
+            postComment: (relateId: number, comment: string,
+              parentCommentId?: number) => this.postComment(relateId, comment, parentCommentId)
+          })
         }
       })
-    }.constraintSize({
-      maxHeight:'100%'
+      ListItem(){
+        this.loadingFooter()
+      }
+    }
+    .cachedCount(4)
+    .constraintSize({
+      maxHeight: '100%'
     })
-    //嵌套滚动控制
     .nestedScroll({
-      //滚动组件往末尾端滚动时的嵌套滚动选项
-      scrollForward:NestedScrollMode.PARENT_FIRST,
-      //滚动组件往起始端滚动时的嵌套滚动选项
-      scrollBackward:NestedScrollMode.SELF_FIRST
+      scrollForward: NestedScrollMode.PARENT_FIRST,
+      scrollBackward: NestedScrollMode.SELF_FIRST
     })
     .divider({
-      strokeWidth:1
+      strokeWidth: 1
     })
-    .onReachEnd(()=>{
-      if (this.nextUrl){
-        ApiClient.getNext(this.nextUrl).then(res=>{
-          const resp = res?.toJSON() as CommentsResponse
-          this.comments.push(...resp.comments)
-          this.nextUrl = resp.next_url
-        })
-      }
+    .onReachEnd(() => {
+      this.loadMore()
     })
   }
 }

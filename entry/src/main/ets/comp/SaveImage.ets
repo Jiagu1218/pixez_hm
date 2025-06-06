@@ -22,45 +22,66 @@ export struct SaveImage {
     }
   }
 
-  build() {
-    Stack() {
-      Column() {
-        Swiper(this.controller) {
-          ForEach(this.urls, (url: string) => {
-            SwiperImageItem({
-              url: url, callback: (pixelMap: image.PixelMap) => {
-                this.pixelMap.set(url, pixelMap)
-              }
-            })
-          }, (url: string, index) => index.toString())
-        }.onChange((index: number) => {
-          this.currentUrl = this.urls[index]
-        }).index(this.currentIndex)
-        .cachedCount(3)
-      }.height('100%')
-      .width('100%')
+  @Builder
+  private ImageSwiper() {
+    Column() {
+      Swiper(this.controller) {
+        ForEach(this.urls, (url: string) => {
+          SwiperImageItem({
+            url: url, callback: (pixelMap: image.PixelMap) => {
+              this.pixelMap.set(url, pixelMap)
+            }
+          })
+        }, (url: string, index) => index.toString())
+      }
+      .onChange((index: number) => {
+        this.currentUrl = this.urls[index]
+      })
+      .index(this.currentIndex)
+      .cachedCount(3)
+    }
+    .height('100%')
+    .width('100%')
+  }
 
-      Row() {
-        SaveButton({
-          text: SaveDescription.SAVE_IMAGE
-        })
+  @Builder
+  private SaveButtonSection() {
+    Row() {
+      SaveButton({
+        text: SaveDescription.SAVE_IMAGE
+      })
         .onClick((event, result) => {
           const pixelMap = this.pixelMap.get(this.currentUrl)
           const filename = this.currentUrl.split('/').pop()
           if (result == SaveButtonOnClickResult.SUCCESS && pixelMap && filename) {
             ImageUtil.saveImage(pixelMap, filename,
-              (success)=>{
+              (success) => {
                 promptAction.showToast({
                   message: success ? $r('app.string.save_success') : $r('app.string.save_fail'),
-                  duration:3000
+                  duration: 3000
                 })
               })
           }
         })
-      }
-    }.width('100%')
+    }
+    .padding({bottom: 24})
+  }
+
+  build() {
+    Stack() {
+      this.ImageSwiper()
+      this.SaveButtonSection()
+    }
+    .width('100%')
     .height('100%')
     .alignContent(Alignment.Bottom)
     .backgroundColor(Color.White)
+    .borderRadius(12)
+    .shadow({
+      radius: 8,
+      color: '#00000010',
+      offsetX: 0,
+      offsetY: 4
+    })
   }
 }

@@ -40,18 +40,36 @@ struct LoginPage {
   }
 
   build() {
-    Column({space:16}) {
-      Image($r('app.media.app_icon')).width('40%')
-      Row({space:32}){
-        Button('登录').onClick(() => {
-          this.model.loginAction()
-        })
-        Button('注册').onClick(() => {
-          this.model.registerAction()
-        })
-      }
+    Column({space:24}) {
+      Image($r('app.media.app_icon'))
+        .height(240)
+        .width(240)
+        .margin({top:80,bottom:60})
+      Button('登录').onClick(() => {
+        this.model.loginAction()
+      })
+        .width('80%')
+        .height(48)
+        .backgroundColor($r('sys.color.brand'))
+        .fontSize(18)
+      Button('注册').onClick(() => {
+        this.model.registerAction()
+      })
+        .width('80%')
+        .height(48)
+        .backgroundColor(Color.White)
+        .fontColor($r('sys.color.brand'))
+        .borderColor($r('sys.color.brand'))
+        .borderWidth(1)
+        .fontSize(18)
+
+      Text('© 2025 Pixez_HM')
+        .fontSize(12)
+        .fontColor($r('sys.color.ohos_id_color_titlebar_subtitle_text'))
+        .margin({ bottom: 16 })
     }
-    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Start)
     .height('100%')
     .width('100%')
     .onAppear(() => {
@@ -60,6 +78,7 @@ struct LoginPage {
     })
     .bindSheet(this.model.showWeb!!,this.webSheet(),{
       title:{title:this.model.sheetTitle},
+      preferType:SheetType.CENTER,
       shouldDismiss:()=>{
         this.model.showWeb = false
       }

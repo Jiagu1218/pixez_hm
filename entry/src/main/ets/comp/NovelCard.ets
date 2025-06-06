@@ -11,9 +11,7 @@ export struct NovelCard {
   @Param limitLevel:number = 6
   @Local private aRatio:number = 9/16
   @Local private like:boolean = false
-  private pathStack:NavPathStack|undefined = undefined
   aboutToAppear(): void {
-    this.pathStack = this.queryNavigationInfo()?.pathStack
     this.like = this.novel.is_bookmarked
   }
   build() {
@@ -36,7 +34,7 @@ export struct NovelCard {
               .borderWidth(1)
               .borderColor(Color.Gray)
               .borderRadius(4)
-          },(item:Tag,index)=>index.toString())
+          },(item:Tag)=>item.name)
         }.width('100%')
         .alignSelf(ItemAlign.Start)
       }.layoutWeight(1)

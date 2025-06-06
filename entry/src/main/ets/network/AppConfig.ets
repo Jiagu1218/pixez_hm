@@ -48,7 +48,9 @@ export class AppConfig{
   /**
    * DOH
    * 备用 https://doh.dns.sb/dns-query
+   * 备用 https://doh.pub/dns-query
    * @link https://coding.gs/2024/06/09/available-doh/#%E5%9B%BD%E5%86%85
    * */
-  public static readonly DOH:string = 'https://208.67.220.220/dns-query'
+  //curl -H "accept: application/dns-json" "https://1.1.1.1/dns-query?name=pixiv.net&type=AAAA"
+  public static readonly DOH:string = 'https://doh.pub/dns-query'
 }

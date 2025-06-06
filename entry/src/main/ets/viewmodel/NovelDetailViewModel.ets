@@ -1,3 +1,4 @@
+import { NovelContentPart } from "../entity/NovelContent";
 import { ApiClient } from "../network/ApiClient";
 import { NovelSearchTargetEnum } from "../network/enums/NovelSearchTargetEnum";
 import { WebViewNovel } from "../network/model/WebViewNovel";
@@ -26,7 +27,7 @@ export class NovelDetailViewModel{
   /**
    * 富文本内容
    */
-  @Trace content:Array<string> = []
+  @Trace content:Array<NovelContentPart> = []
   /**
    * 路由栈
    */
