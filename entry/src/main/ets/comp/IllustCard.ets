@@ -14,10 +14,8 @@ export struct IllustCard {
   @Local private showSheet: boolean = false
   @Local private bookmarkDetail: BookmarkDetail | null = null
   @Local private isHovered: boolean = false
-  private pathStack: NavPathStack | undefined = undefined
 
   aboutToAppear(): void {
-    this.pathStack = this.queryNavigationInfo()?.pathStack
     this.aRatio = this.illust.width/this.illust.height
     this.like = this.illust.is_bookmarked
     this.setLimitBlur()
@@ -134,6 +132,7 @@ export struct IllustCard {
       .onHover((isHovered: boolean) => {
         this.isHovered = isHovered
       })
+      .scale({ x: this.isHovered ? 1.02 : 1, y: this.isHovered ? 1.02 : 1 })
       .transition({
         type: TransitionType.All
       })
