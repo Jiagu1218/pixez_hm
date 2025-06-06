@@ -5,12 +5,66 @@ import { HttpImage } from '../comp/HttpImage';
 import { NovelContentPart } from '../entity/NovelContent';
 import { getNovelContentParts } from '../util/NovelUtil';
 import { NovelDetailViewModel } from '../viewmodel/NovelDetailViewModel';
+import TextReader, { TextReaderIcon } from '@hms.ai.textReader';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @ComponentV2
 struct NovelDetailPage {
   @Local private model: NovelDetailViewModel = new NovelDetailViewModel()
   @Local private isHovered: boolean = false
+
+  @Local readerState:boolean = false
+  @Local readerInit:boolean = false
+  @Local readInfos:TextReader.ReadInfo[] = []
+
+  // TODO 调试朗读功能，优化界面
+  initReader(){
+		const param:TextReader.ReaderParam = {
+      isVoiceBrandVisible:true,
+      businessBrandInfo: {
+        panelName: '小艺朗读',
+        panelIcon: $r('app.media.app_icon')
+      }
+    }
+    TextReader.init(getContext(this),param).then(()=>{
+      this.readerInit = true
+    }).catch((e:BusinessError) => {
+      console.error(e.message)
+    })
+	}
+
+  startReader(){
+    // 提取文本组装为 readInfo
+    const novel = this.model.webViewNovel
+    let readInfo:TextReader.ReadInfo = {
+      id: this.model.novelId.toString(),
+      title: {
+        text:novel!.title,
+        isClickable : true
+      },
+      bodyInfo: ''
+    }
+    this.model.content.forEach(e=>{
+      if (e.type == 'text') {
+        readInfo.bodyInfo += e.content
+      }
+    })
+    this.readInfos = [readInfo]
+    TextReader.start(this.readInfos).then(()=>{
+      this.readerState = true
+    }).catch((e:BusinessError) => {
+      console.error(e.message)
+    })
+  }
+
+  stopReader(){
+    TextReader.stop().then(()=>{
+      this.readerState = false
+    }).catch((e:BusinessError) => {
+      console.error(e.message)
+    })
+  }
 
   aboutToAppear(): void {
     this.model.init(this.queryNavigationInfo())
@@ -164,27 +218,39 @@ struct NovelDetailPage {
 
   build() {
     NavDestination() {
-      Scroll(this.model.scroller) {
-        Column({ space: 16 }) {
-          if (this.model.webViewNovel) {
-            this.NovelHeader()
-            Divider()
-            this.NovelCaption()
-            this.NovelContent()
-            this.NovelNavigation()
+      Stack({alignContent:Alignment.BottomEnd}){
+        Scroll(this.model.scroller) {
+          Column({ space: 16 }) {
+            if (this.model.webViewNovel) {
+              this.NovelHeader()
+              Divider()
+              this.NovelCaption()
+              this.NovelContent()
+              this.NovelNavigation()
+            }
           }
+          .width('100%')
         }
+        .height('100%')
         .width('100%')
+        .bindSheet(this.model.showComments!!, this.commentSheet(), {
+          blurStyle: BlurStyle.Thin,
+          title: { title: '相关评论' },
+          shouldDismiss: () => {
+            this.model.showComments = false
+          }
+        })
+
+        Button(this.readerState?  '关闭' : '阅读')
+          .type(ButtonType.Circle)
+          .onClick(() => {
+            if (this.readerState) {
+              this.stopReader()
+            } else {
+              this.startReader()
+            }
+          })
       }
-      .height('100%')
-      .width('100%')
-      .bindSheet(this.model.showComments!!, this.commentSheet(), {
-        blurStyle: BlurStyle.Thin,
-        title: { title: '相关评论' },
-        shouldDismiss: () => {
-          this.model.showComments = false
-        }
-      })
     }
     .hideTitleBar(true)
   }
