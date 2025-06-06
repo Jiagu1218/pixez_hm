@@ -60,6 +60,7 @@ struct LoginPage {
     })
     .bindSheet(this.model.showWeb!!,this.webSheet(),{
       title:{title:this.model.sheetTitle},
+      preferType:SheetType.CENTER,
       shouldDismiss:()=>{
         this.model.showWeb = false
       }
