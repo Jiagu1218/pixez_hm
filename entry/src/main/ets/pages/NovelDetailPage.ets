@@ -5,20 +5,18 @@ import { HttpImage } from '../comp/HttpImage';
 import { NovelContentPart } from '../entity/NovelContent';
 import { getNovelContentParts } from '../util/NovelUtil';
 import { NovelDetailViewModel } from '../viewmodel/NovelDetailViewModel';
-import TextReader, { TextReaderIcon } from '@hms.ai.textReader';
+import TextReader from '@hms.ai.textReader';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { DownloadUtil } from '../network/util/DownloadUtil';
 
 @Entry
 @ComponentV2
 struct NovelDetailPage {
   @Local private model: NovelDetailViewModel = new NovelDetailViewModel()
-  @Local private isHovered: boolean = false
 
   @Local readerState:boolean = false
-  @Local readerInit:boolean = false
   @Local readInfos:TextReader.ReadInfo[] = []
 
-  // TODO 调试朗读功能，优化界面
   initReader(){
 		const param:TextReader.ReaderParam = {
       isVoiceBrandVisible:true,
@@ -27,22 +25,24 @@ struct NovelDetailPage {
         panelIcon: $r('app.media.app_icon')
       }
     }
-    TextReader.init(getContext(this),param).then(()=>{
-      this.readerInit = true
-    }).catch((e:BusinessError) => {
+    TextReader.init(getContext(this),param)
+      .catch((e:BusinessError) => {
       console.error(e.message)
     })
 	}
 
-  startReader(){
+  async startReader(){
     // 提取文本组装为 readInfo
     const novel = this.model.webViewNovel
+    let pic = await DownloadUtil.downloadImage(novel!.coverUrl)
     let readInfo:TextReader.ReadInfo = {
       id: this.model.novelId.toString(),
       title: {
         text:novel!.title,
         isClickable : true
       },
+      date:{text:novel!.cdate,isClickable:false},
+      image:pic,
       bodyInfo: ''
     }
     this.model.content.forEach(e=>{
@@ -68,6 +68,7 @@ struct NovelDetailPage {
 
   aboutToAppear(): void {
     this.model.init(this.queryNavigationInfo())
+    this.initReader()
   }
 
   @Monitor('model.webViewNovel')
@@ -77,6 +78,7 @@ struct NovelDetailPage {
       return;
     }
     this.model.content = getNovelContentParts(this.model.webViewNovel)
+
   }
 
   @Monitor('model.novelId')
@@ -241,8 +243,7 @@ struct NovelDetailPage {
           }
         })
 
-        Button(this.readerState?  '关闭' : '阅读')
-          .type(ButtonType.Circle)
+        SymbolGlyph(this.readerState?$r('sys.symbol.pause_round_triangle_fill'):$r('sys.symbol.play_circle_fill'))
           .onClick(() => {
             if (this.readerState) {
               this.stopReader()
@@ -250,6 +251,11 @@ struct NovelDetailPage {
               this.startReader()
             }
           })
+          .fontSize(40)
+          .fontColor([Color.Green])
+          .width(40)
+          .height(40)
+          .offset({x:-40,y:-40})
       }
     }
     .hideTitleBar(true)
