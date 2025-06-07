@@ -50,6 +50,7 @@ struct HomePage {
       .onChange((index)=>{
         this.model.tabLoad[index] = true
       })
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     }.height('100%')
     .width('100%')
     .hideToolBar(true)
