@@ -243,32 +243,34 @@ struct ArtWorksPage {
     if (this.model.relatedIllusts) {
       Column() {
         Grid() {
-          LazyForEach(this.model.relatedIllusts, (item: Illust) => {
-            GridItem() {
-              Stack() {
-                HttpImage({ url: item.image_urls.square_medium, aRatio: 1 })
-                  .borderRadius(12)
-                  .shadow({
-                    radius: 8,
-                    color: '#00000010',
-                    offsetX: 0,
-                    offsetY: 4
-                  })
-                this.overlayNode(item)
+          Repeat(this.model.relatedIllusts)
+            .each(item => {
+              GridItem() {
+                Stack() {
+                  HttpImage({ url: item.item.image_urls.square_medium, aRatio: 1 })
+                    .borderRadius(12)
+                    .shadow({
+                      radius: 8,
+                      color: '#00000010',
+                      offsetX: 0,
+                      offsetY: 4
+                    })
+                  this.overlayNode(item.item)
+                }
+                .alignContent(Alignment.TopEnd)
               }
-              .alignContent(Alignment.TopEnd)
-            }
-            .onClick(() => {
-              this.model.relatedAction(item)
+              .onClick(() => {
+                this.model.relatedAction(item.item)
+              })
             })
-          })
+            .key(item => item.id.toString())
         }
         .columnsTemplate('repeat(auto-fit, 100)')
         .height('100%')
         .cachedCount(6)
-        .onScrollIndex((first, last) => {
-          this.model.illustPrefetcher.visibleAreaChanged(first, last)
-        })
+        // .onScrollIndex((first, last) => {
+        //   this.model.illustPrefetcher.visibleAreaChanged(first, last)
+        // })
         .nestedScroll({
           scrollForward: NestedScrollMode.PARENT_FIRST,
           scrollBackward: NestedScrollMode.SELF_FIRST

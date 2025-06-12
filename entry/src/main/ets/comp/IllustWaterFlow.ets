@@ -11,7 +11,7 @@ import { IllustWaterFlowController } from "../controller/IllustWaterFlowControll
 @ComponentV2
 export struct IllustWaterFlow {
   @Local private showBackToTop: boolean = false;
-  private datasource: IllustDataSourcePrefetching = new IllustDataSourcePrefetching();
+  private datasource: Illust[] = [];
   private prefetcher = new BasicPrefetcher();
   private pathStack: NavPathStack | undefined = undefined;
   private nextUrl: string | null = null;
@@ -26,7 +26,7 @@ export struct IllustWaterFlow {
   }
 
   private clean = () => {
-    this.datasource.clean();
+    this.datasource.length  = 0;
   }
 
   private getFirstPage = () => {
@@ -52,8 +52,6 @@ export struct IllustWaterFlow {
     this.controller.clean = this.clean;
     this.controller.getFirstPage = this.getFirstPage;
     this.pathStack = this.queryNavigationInfo()?.pathStack;
-    this.datasource.getSession();
-    this.prefetcher.setDataSource(this.datasource);
     this.loadInitialData();
   }
 
@@ -69,7 +67,6 @@ export struct IllustWaterFlow {
   }
 
   aboutToDisappear(): void {
-    this.datasource.destroy();
   }
 
   @Builder footer() {
@@ -121,26 +118,29 @@ export struct IllustWaterFlow {
               .width('100%');
           }, (item: number) => item.toString());
         }
-        LazyForEach(this.datasource, (item: Illust) => {
-          if (item.visible) {
-            FlowItem() {
-              IllustCard({ illust: item })
-                .transition({
-                  type: TransitionType.All
+        Repeat(this.datasource)
+          .virtualScroll()
+          .each(item => {
+            if (item.item.visible) {
+              FlowItem() {
+                IllustCard({ illust: item.item })
+                  .transition({
+                    type: TransitionType.All
+                  });
+              }
+              .onClick(() => {
+                this.pathStack?.pushPath({
+                  name: 'artWorksPage',
+                  param: { illustId: item.item.id } as IllustRouterParam
                 });
-            }
-            .onClick(() => {
-              this.pathStack?.pushPath({
-                name: 'artWorksPage',
-                param: { illustId: item.id } as IllustRouterParam
               });
-            });
-          }
-        }, (item: Illust) => item.id.toString());
+            }
+          })
+          .key(item => item.id.toString())
       }
-      .onScrollIndex((first, last) => {
-        this.prefetcher.visibleAreaChanged(first, last);
-      })
+      // .onScrollIndex((first, last) => {
+      //   this.prefetcher.visibleAreaChanged(first, last);
+      // })
       .onDidScroll((xOffset: number, yOffset: number) => {
         this.handleScroll(yOffset);
       })

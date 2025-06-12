@@ -5,6 +5,7 @@ import { ApiClient } from "../network/ApiClient"
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { BusinessError } from "@kit.BasicServicesKit"
 
+@ReusableV2
 @ComponentV2
 export struct NovelCard {
   @Require @Param novel:Novel

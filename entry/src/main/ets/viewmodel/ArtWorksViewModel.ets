@@ -58,11 +58,11 @@ export class ArtWorksViewModel{
   /**
    * 相关作品
    */
-  relatedIllusts: IllustDataSourcePrefetching = new IllustDataSourcePrefetching()
+  relatedIllusts: Illust[] = []
   /**
    * 相关作品预加载器
    */
-  illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
+  // illustPrefetcher = new BasicPrefetcher(this.relatedIllusts)
 
   /**
    * 初始化
@@ -72,7 +72,7 @@ export class ArtWorksViewModel{
     if (navInfo) {
       this.pathStack = navInfo.pathStack
       const param = navInfo.pathStack.getParamByName('artWorksPage').pop() as IllustRouterParam
-      this.relatedIllusts.getSession()
+      // this.relatedIllusts.getSession()
       this.illustId = param.illustId
       this.getIllustDetail()
       this.getIllustRelated()
@@ -206,6 +206,6 @@ export class ArtWorksViewModel{
    * 销毁
    */
   destroy(){
-    this.relatedIllusts.destroy()
+    // this.relatedIllusts.destroy()
   }
 }

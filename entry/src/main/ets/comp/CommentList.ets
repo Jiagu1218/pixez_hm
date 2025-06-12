@@ -6,7 +6,7 @@ import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2
 export struct CommentList {
-  private comments: LazyDataSource<Comment> = new LazyDataSource<Comment>()
+  private comments: Comment[] = []
   private nextUrl: string | null = null
   @Local private isLoading: boolean = false
   @Local private hasMore: boolean = true
@@ -77,17 +77,20 @@ export struct CommentList {
 
   build() {
     List({ space: 16 }) {
-      LazyForEach(this.comments, (item: Comment) => {
-        ListItem() {
-          CommentLabel({
-            relateId: this.relateId,
-            comment: item,
-            getReply: () => this.getReply(item.id),
-            postComment: (relateId: number, comment: string,
-              parentCommentId?: number) => this.postComment(relateId, comment, parentCommentId)
-          })
-        }
-      })
+      Repeat(this.comments)
+        .virtualScroll()
+        .each(item => {
+          ListItem() {
+            CommentLabel({
+              relateId: this.relateId,
+              comment: item.item,
+              getReply: () => this.getReply(item.item.id),
+              postComment: (relateId: number, comment: string,
+                parentCommentId?: number) => this.postComment(relateId, comment, parentCommentId)
+            })
+          }
+        })
+        .key(item => item.id+'')
       ListItem(){
         this.loadingFooter()
       }

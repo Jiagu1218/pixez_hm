@@ -10,14 +10,14 @@ import { NovelListController } from "../controller/NovelListController"
 @ComponentV2
 export struct NovelList{
   private pathStack: NavPathStack|undefined = undefined
-  private datasource: LazyDataSource<Novel> = new LazyDataSource<Novel>()
+  private datasource: Novel[] = []
   private nextUrl:string |null = null
   private listScroller:Scroller = new Scroller()
   private top = ()=> {
     this.listScroller.scrollTo({xOffset:0,yOffset:0})
   }
   private clean = ()=> {
-    this.datasource.clean()
+    this.datasource.length = 0
   }
   private getFirstPage = ()=>{
     this.firstPage().then(res=>{
@@ -61,16 +61,19 @@ export struct NovelList{
           header: this.groupHeader() ,
           footer:this.groupFooter(),
         }){
-          LazyForEach(this.datasource, (item: Novel)=>{
-            ListItem({style:ListItemStyle.CARD}){
-              NovelCard({novel:item})
-            }.onClick(()=>{
-              this.pathStack?.pushPath({
-                name: 'novelDetailPage',
-                param: {novelId: item.id} as NovelRouterParam
-              })
-            }).height(undefined)
-          },(item: Novel)=>item.id.toString())
+          Repeat(this.datasource)
+            .virtualScroll()
+            .each(item=>{
+              ListItem({style:ListItemStyle.CARD}){
+                NovelCard({novel:item.item})
+              }.onClick(()=>{
+                this.pathStack?.pushPath({
+                  name: 'novelDetailPage',
+                  param: {novelId: item.item.id} as NovelRouterParam
+                })
+              }).height(undefined)
+            })
+            .key(item=>item.id.toString())
         }
         .divider({strokeWidth:2,startMargin:16,endMargin:16})
 

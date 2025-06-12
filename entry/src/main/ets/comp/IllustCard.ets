@@ -4,6 +4,7 @@ import { HttpImage } from "./HttpImage"
 import { uiEffect } from "@kit.ArkGraphics2D"
 import { BookmarkDetail, IllustBookmarkDetailResponse, Tag } from "../network/response/IllustBookmarkDetailResponse"
 
+@ReusableV2
 @ComponentV2
 export struct IllustCard {
   @Require @Param illust: Illust

@@ -4,6 +4,7 @@ import { DateTimeUtil } from "../network/util/DateTimeUtil"
 import { CommentList } from "./CommentList"
 import { HttpImage } from "./HttpImage"
 
+@ReusableV2
 @ComponentV2
 export struct CommentLabel {
   @Local private showSheet: boolean = false
