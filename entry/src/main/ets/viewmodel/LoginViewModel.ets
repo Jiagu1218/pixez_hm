@@ -1,10 +1,12 @@
 import { AccountManager } from "../network/util/AccountManager";
 import { webview } from "@kit.ArkWeb";
-import { router } from "@kit.ArkUI";
+import { Router, router } from "@kit.ArkUI";
 import { OauthClient } from "../network/OauthClient";
 import { url } from "@kit.ArkTS";
 import { TokenResponse } from "../network/response/TokenResponse";
 import { AppConfig } from "../network/AppConfig";
+import { common } from "@kit.AbilityKit";
+
 /**
  * 登录视图模型
  */
@@ -55,9 +57,9 @@ export class LoginViewModel{
   /**
    * 初始化
    */
-  init(){
-    this.hasLogin()
-    this.loginCallbackHandler()
+  init(context:UIContext){
+    this.hasLogin(context)
+    this.loginCallbackHandler(context)
   }
   /**
    * 默认的webview
@@ -71,10 +73,10 @@ export class LoginViewModel{
   /**
    * 判断是否登录
    */
-  hasLogin(){
+  hasLogin(context:UIContext){
     this._accountManager.getAccounts().then(res=>{
       if (res.length>0) {
-        router.replaceUrl({
+        context.getRouter().replaceUrl({
           url: 'pages/HomePage'
         })
       }
@@ -119,7 +121,7 @@ export class LoginViewModel{
   /**
    * 处理登录回调
    */
-  loginCallbackHandler(){
+  loginCallbackHandler(context:UIContext){
     // schemeHandler 处理登录回调
     this._schemeHandler.onRequestStart(callbacck=>{
       const parsedUrl = url.URL.parseURL(callbacck.getRequestUrl())
@@ -132,7 +134,7 @@ export class LoginViewModel{
             this._accountManager.saveAccount(resp.user.account, resp.refresh_token)
             AppStorage.setOrCreate('token', resp.access_token)
             this.showWeb = false
-            router.replaceUrl({
+            context.getRouter().replaceUrl({
               url: 'pages/HomePage'
             })
           }

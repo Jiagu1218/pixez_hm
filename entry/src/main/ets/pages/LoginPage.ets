@@ -6,7 +6,7 @@ struct LoginPage {
   @Local private model: LoginViewModel = new LoginViewModel()
 
   aboutToAppear(): void {
-    this.model.init()
+    this.model.init(this.getUIContext())
   }
 
   @Builder webSheet(){
