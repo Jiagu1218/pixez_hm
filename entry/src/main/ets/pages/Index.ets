@@ -20,6 +20,7 @@ import { Illust } from '../network/model/Illust';
 import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum';
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { AppConfig } from '../network/AppConfig';
+import { SniUtil } from '../network/util/SniUtil';
 
 @Entry
 @ComponentV2
@@ -101,26 +102,8 @@ struct Index {
             UgoiraImage({illust:this.illust})
           }
           Button('测试DOH').onClick(()=>{
-            const session = rcp.createSession({baseAddress:'https://208.67.220.220',headers:{
-              'Content-Type': 'application/dns-message',
-              'accept': 'application/dns-json'
-            }})
-            // const params = new url.URLParams({
-            //   name: 'app-api.pixiv.net',
-            //   type: 'A'
-            // })
-            session.post(`/dns-query`,{
-              url: 'app-api.pixiv.net',
-              type: 'A'
-            }).then((res)=>{
-              if (res){
-                const resp = res.toJSON()
-                console.info('DOH', resp)
-              }
-            }).catch((e: BusinessError)=>{
-              console.error('22222', e)
-            }).finally(()=>{
-              session.close()
+            SniUtil.tryIpFormDoH('app-api.pixiv.net').then(e=>{
+              console.info('DOH', e)
             })
           })
           Button("测试getRichTextInfo").onClick(() => {
