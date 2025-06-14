@@ -10,7 +10,7 @@ import { NovelListController } from "../controller/NovelListController"
 @ComponentV2
 export struct NovelList{
   private pathStack: NavPathStack|undefined = undefined
-  private datasource: Novel[] = []
+  @Local private datasource: Novel[] = []
   private nextUrl:string |null = null
   private listScroller:Scroller = new Scroller()
   private top = ()=> {

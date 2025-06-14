@@ -6,7 +6,7 @@ import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2
 export struct CommentList {
-  private comments: Comment[] = []
+  @Local private comments: Comment[] = []
   private nextUrl: string | null = null
   @Local private isLoading: boolean = false
   @Local private hasMore: boolean = true

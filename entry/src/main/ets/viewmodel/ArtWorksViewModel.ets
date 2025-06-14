@@ -58,7 +58,7 @@ export class ArtWorksViewModel{
   /**
    * 相关作品
    */
-  relatedIllusts: Illust[] = []
+  @Trace relatedIllusts: Illust[] = []
   /**
    * 相关作品预加载器
    */
