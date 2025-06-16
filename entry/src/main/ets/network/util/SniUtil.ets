@@ -10,7 +10,7 @@ export class SniUtil {
   /**
    * 定义了一系列可用的DNS-over-HTTPS(DOH)服务器地址
    */
-  private static readonly DOH_URLS:Array<string> = [
+  public static readonly DOH_URLS:Array<string> = [
     "https://1.0.0.1/dns-query",
     "https://1.1.1.1/dns-query",
     "https://doh.dns.sb/dns-query",
@@ -25,6 +25,10 @@ export class SniUtil {
    * @returns 返回解析出的主机名
    */
   public static getHostName(urlStr:string):string{
+    let isUrl = urlStr.startsWith("http://")||urlStr.startsWith("https://")
+    if (!isUrl) {
+      urlStr = `https://${urlStr}`
+    }
     return url.URL.parseURL(urlStr).hostname
   }
 
@@ -96,27 +100,49 @@ export class SniUtil {
       session.close();
     }
 
-
-    // // 遍历DOH_URLS，尝试从每个服务器查询IP
-    // for (const doh of SniUtil.DOH_URLS){
-    //   try {
-    //     let resp = await session.get(`${doh}?${params}`)
-    //     if (resp.statusCode == 200) {
-    //       let json = resp.toJSON()
-    //       if (json) {
-    //         // 获取IP
-    //         let ip: string = json['Answer'][0]["data"]
-    //         // 关闭会话
-    //         session.close()
-    //         return ip
-    //       }
-    //     }
-    //   } catch (e) {
-    //     console.log(e)
-    //   }
-    // }
-    // 关闭会话
-    // session.close()
     return hostName
+  }
+
+  public static async tryIpFormDoHUrl(hostName:string,dohUrl:string):Promise<string>{
+    let session = rcp.createSession({
+      headers: {
+        "accept": "application/dns-json"
+      },
+      requestConfiguration:{
+        transfer: {
+          timeout: {
+            // 设置连接超时时间 单位毫秒
+            connectMs:2000
+          }
+        },
+        security: {
+          // 禁用远程验证
+          remoteValidation: (context) => true
+        }
+      }
+    })
+    // 准备查询参数
+    let params = new url.URLParams()
+    params.set("name", hostName)
+    // 查询A记录（IPv4）
+    params.set("type", "A")
+    // 禁用DNSSEC验证
+    params.set("do","false")
+    // 禁用检查禁用标志
+    params.set("cd","false")
+
+    return session.get(`${dohUrl}?${params}`).then((resp) => {
+      if (resp.statusCode == 200) {
+        let json = resp.toJSON()
+        if (json) {
+          let ip: string | PromiseLike<string> = json['Answer'][0]["data"] as string
+          // 获取IP
+          return ip
+        }
+      }
+      return hostName
+    }).finally(() => {
+      session.close();
+    })
   }
 }

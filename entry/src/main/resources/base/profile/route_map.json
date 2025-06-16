@@ -31,6 +31,14 @@
       "data": {
         "description": "搜索页"
       }
+    },
+    {
+      "name": "dohPage",
+      "pageSourceFile": "src/main/ets/pages/DohPage.ets",
+      "buildFunction": "DohPageBuilder",
+      "data": {
+        "description": "DOH页"
+      }
     }
   ]
 }

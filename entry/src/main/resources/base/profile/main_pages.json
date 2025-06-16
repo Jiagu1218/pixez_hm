@@ -5,6 +5,7 @@
     "pages/ArtWorksPage",
     "pages/NovelDetailPage",
     "pages/UserDetailPage",
-    "pages/LoginPage"
+    "pages/LoginPage",
+    "pages/DohPage"
   ]
 }
