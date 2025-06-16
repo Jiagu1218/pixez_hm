@@ -11,7 +11,7 @@ import { IllustWaterFlowController } from "../controller/IllustWaterFlowControll
 @ComponentV2
 export struct IllustWaterFlow {
   @Local private showBackToTop: boolean = false;
-  private datasource: Illust[] = [];
+  @Local private datasource: Illust[] = [];
   private prefetcher = new BasicPrefetcher();
   private pathStack: NavPathStack | undefined = undefined;
   private nextUrl: string | null = null;
@@ -58,6 +58,7 @@ export struct IllustWaterFlow {
   private loadInitialData(): void {
     this.firstPage().then(res => {
       if (res) {
+        console.error('获取插画列表成功', res.illusts.length);
         this.datasource.push(...res.illusts);
         this.nextUrl = res.next_url;
       }
