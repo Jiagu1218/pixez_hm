@@ -70,6 +70,11 @@ struct DohPage{
       Button('查询').onClick(() => {
         this.query()
       })
+      Button('跳转主页').onClick(() => {
+        this.getUIContext().getRouter().pushUrl({
+          url:'pages/HomePage'
+        })
+      })
     }
     .height('100%')
     .width('100%')
