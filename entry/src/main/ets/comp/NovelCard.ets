@@ -1,9 +1,11 @@
-import { Novel, Tag } from "../network/model/Novel"
+
 import { HttpImage } from "./HttpImage"
-import { LengthUnit, router } from "@kit.ArkUI"
-import { ApiClient } from "../network/ApiClient"
+import { LengthUnit } from "@kit.ArkUI"
+
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { BusinessError } from "@kit.BasicServicesKit"
+import { ApiClient, Novel } from "pixez_network"
+import { Tag } from "pixez_network"
 
 @ReusableV2
 @ComponentV2

@@ -1,12 +1,10 @@
 import { IllustDataSourcePrefetching } from "../entity/IllustDataSourcePrefetching";
 import { BasicPrefetcher } from "@kit.ArkUI";
-import { Illust } from "../network/model/Illust";
 import { IllustRouterParam } from "../param/IllustRouterParam";
 import { IllustCard } from "./IllustCard";
-import { ApiClient } from "../network/ApiClient";
-import { IllustPageResponseBase } from "../network/response/IllustPageResponseBase";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { IllustWaterFlowController } from "../controller/IllustWaterFlowController";
+import { ApiClient, Illust, IllustPageResponseBase } from "pixez_network";
 
 @ComponentV2
 export struct IllustWaterFlow {

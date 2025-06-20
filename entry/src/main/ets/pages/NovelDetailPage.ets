@@ -7,7 +7,7 @@ import { getNovelContentParts } from '../util/NovelUtil';
 import { NovelDetailViewModel } from '../viewmodel/NovelDetailViewModel';
 import TextReader from '@hms.ai.textReader';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { DownloadUtil } from '../network/util/DownloadUtil';
+import { DownloadUtil } from 'pixez_network';
 
 @Entry
 @ComponentV2

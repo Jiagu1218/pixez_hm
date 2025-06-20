@@ -1,8 +1,4 @@
-import { ApiClient } from "../network/ApiClient"
-import { Illust } from "../network/model/Illust"
-import { UgoiraMetadataResponse } from "../network/response/UgoiraMetadataResponse"
-import { DownloadUtil } from "../network/util/DownloadUtil"
-import { ImageUtil } from "../network/util/ImageUtli"
+import { ApiClient, DownloadUtil, Illust, ImageUtil, UgoiraMetadataResponse } from "pixez_network"
 import { HttpImage } from "./HttpImage"
 
 @ComponentV2

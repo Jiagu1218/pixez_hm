@@ -1,13 +1,14 @@
-import { Illust, MetaPage, Tag } from '../network/model/Illust'
+
 import { LengthUnit } from '@kit.ArkUI'
 import { HttpImage } from '../comp/HttpImage';
 import { SaveImage } from '../comp/SaveImage';
-import { DateTimeUtil } from '../network/util/DateTimeUtil';
+
 import { UgoiraImage } from '../comp/UgoiraImage';
 import { HtmlText } from '../comp/HtmlText';
 import { CommentList } from '../comp/CommentList';
 import { IllustSeriesNav } from '../comp/IllustSeriesNav';
 import { ArtWorksViewModel } from '../viewmodel/ArtWorksViewModel';
+import { DateTimeUtil, Illust, MetaPage, Tag } from 'pixez_network';
 
 @Entry
 @ComponentV2

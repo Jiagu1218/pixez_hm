@@ -1,7 +1,4 @@
-import { ApiClient } from "../network/ApiClient";
-import { Illust } from "../network/model/Illust";
-import { IllustSeriesIllustResponse } from "../network/response/IllustSeriesIllustResponse";
-import { IllustSeriesResponse } from "../network/response/IllustSeriesResponse";
+import { ApiClient, Illust, IllustSeriesIllustResponse, IllustSeriesResponse } from "pixez_network";
 import { IllustRouterParam } from "../param/IllustRouterParam";
 import { HttpImage } from "./HttpImage";
 

@@ -1,10 +1,8 @@
 import { SymbolGlyphModifier } from "@kit.ArkUI"
+import { ApiClient, IllustRecommendedResponse, MangaRecommendedResponse, NovelRecommendedResponse } from "pixez_network"
 import { IllustWaterFlowController } from "../controller/IllustWaterFlowController"
 import { NovelListController } from "../controller/NovelListController"
-import { ApiClient } from "../network/ApiClient"
-import { IllustRecommendedResponse } from "../network/response/IllustRecommendedResponse"
-import { MangaRecommendedResponse } from "../network/response/MangaRecommendedResponse"
-import { NovelRecommendedResponse } from "../network/response/NovelRecommendedResponse"
+
 import { IllustRouterParam } from "../param/IllustRouterParam"
 import { NavRouterType } from "../param/NavRouterType"
 import { NovelRouterParam } from "../param/NovelRouterParam"

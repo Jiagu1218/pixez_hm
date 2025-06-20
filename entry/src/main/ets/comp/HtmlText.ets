@@ -1,6 +1,7 @@
-import { HtmlUtil, RichTextInfo } from "../network/util/HtmlUtil"
+
 import { common } from "@kit.AbilityKit"
 import { BusinessError } from "@kit.BasicServicesKit"
+import { HtmlUtil, RichTextInfo } from "pixez_network"
 
 @ComponentV2
 export struct HtmlText {

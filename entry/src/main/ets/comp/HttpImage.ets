@@ -1,6 +1,8 @@
 import { image } from "@kit.ImageKit"
-import { DownloadUtil, LocalCacheInfo } from "../network/util/DownloadUtil"
+
 import { BusinessError } from "@kit.BasicServicesKit"
+import { LocalCacheInfo } from "pixez_network"
+import { DownloadUtil } from "pixez_network"
 
 @ComponentV2
 export struct HttpImage {

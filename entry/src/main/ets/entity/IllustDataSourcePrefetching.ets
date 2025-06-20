@@ -1,11 +1,12 @@
 import { IDataSourcePrefetching } from "@kit.ArkUI";
-import { Illust } from "../network/model/Illust";
+
 import { LazyDataSource } from "./LazyDataSource";
 import { PlainArray } from "@kit.ArkTS";
 import { rcp } from "@kit.RemoteCommunicationKit";
-import { DownloadUtil } from "../network/util/DownloadUtil";
-import { SessionManager } from "../network/pool/SessionManager";
+
 import { BusinessError } from "@kit.BasicServicesKit";
+import { SessionManager } from "pixez_network";
+import { Illust } from "pixez_network";
 
 export class IllustDataSourcePrefetching extends LazyDataSource<Illust> implements IDataSourcePrefetching {
   private preFetchList: PlainArray<rcp.Request>  = new PlainArray<rcp.Request>()

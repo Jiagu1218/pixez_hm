@@ -1,11 +1,11 @@
 import { SymbolGlyphModifier } from '@kit.ArkUI'
-import { DateTimeUtil } from '../network/util/DateTimeUtil'
-import { UserPreview } from '../network/model/UserPreview'
+
 import { UserPreviewCard } from '../comp/UserPreviewCard'
-import { TrendTag } from '../network/response/TrendTagsResponse'
+
 import { IllustWaterFlow } from '../comp/IllustWaterFlow'
 import { NovelList } from '../comp/NovelList'
 import { SearchViewModel } from '../viewmodel/SearchViewModel'
+import { DateTimeUtil, TrendTag, UserPreview } from 'pixez_network'
 
 @ComponentV2
 export struct SearchPage{

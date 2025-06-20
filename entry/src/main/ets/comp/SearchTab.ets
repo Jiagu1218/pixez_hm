@@ -1,8 +1,6 @@
-import { ApiClient } from "../network/ApiClient"
-import { IllustSearchTargetEnum } from "../network/enums/IllustSearchTargetEnum"
-import { NovelSearchTargetEnum } from "../network/enums/NovelSearchTargetEnum"
-import { SearchAutoCompleteResponse } from "../network/response/SearchAutoCompleteResponse"
-import { TrendTag, TrendTagsResponse } from "../network/response/TrendTagsResponse"
+import { ApiClient, IllustSearchTargetEnum, NovelSearchTargetEnum,
+  SearchAutoCompleteResponse,
+  TrendTag, TrendTagsResponse } from "pixez_network"
 import { SearchRouterParam } from "../param/SearchRouterParam"
 import { HttpImage } from "./HttpImage"
 

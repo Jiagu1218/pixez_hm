@@ -3,13 +3,11 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
 import { connection } from '@kit.NetworkKit';
-import { ImageUtil } from '../network/util/ImageUtli';
-import { SessionManager } from '../network/pool/SessionManager';
+
 import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
-import { AppConfig } from '../network/AppConfig';
-import { UserPreference } from '../network/util/UserPerference';
 import { WindowManager } from '@kit.SpeechKit';
+import { AppConfig, ImageUtil, SessionManager, UserPreference } from 'pixez_network';
 
 export default class EntryAbility extends UIAbility {
   /**
@@ -70,7 +68,8 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     WindowManager.setWindowStage(windowStage);
-    windowStage.loadContent('pages/LoginPage', (err) => {
+
+    windowStage.loadContent('pages/DohPage', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;

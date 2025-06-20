@@ -1,26 +1,26 @@
-import { OauthClient } from '../network/OauthClient';
+
 import { BusinessError } from '@kit.BasicServicesKit';
-import { ApiClient } from '../network/ApiClient';
-import { TokenResponse } from '../network/response/TokenResponse';
+
 import { webview } from '@kit.ArkWeb';
-import { url, util } from '@kit.ArkTS';
-import { Novel } from '../network/model/Novel';
-import { NovelRecommendedResponse } from '../network/response/NovelRecommendedResponse';
-import { AccountManager } from '../network/util/AccountManager';
-import { ApiUtil } from '../network/util/ApiUtil';
+import { url } from '@kit.ArkTS';
+
 import { router } from '@kit.ArkUI';
-import { HtmlUtil } from '../network/util/HtmlUtil';
-import { WebViewNovel } from '../network/model/WebViewNovel';
-import { IllustDetailResponse } from '../network/response/IllustDetailResponse';
-import { UgoiraMetadataResponse } from '../network/response/UgoiraMetadataResponse';
-import { DownloadUtil } from '../network/util/DownloadUtil';
-import { ImageUtil } from '../network/util/ImageUtli';
+
 import { UgoiraImage } from '../comp/UgoiraImage';
-import { Illust } from '../network/model/Illust';
-import { NovelRankingModeEnum } from '../network/enums/NovelRankingModeEnum';
-import { rcp } from '@kit.RemoteCommunicationKit';
-import { AppConfig } from '../network/AppConfig';
-import { SniUtil } from '../network/util/SniUtil';
+
+import { AccountManager, ApiClient,
+  AppConfig,
+  DownloadUtil,
+  HtmlUtil, Illust,
+  IllustDetailResponse,
+  ImageUtil,
+  Novel,
+  NovelRankingModeEnum,
+  NovelRecommendedResponse,
+  OauthClient, SniUtil, TokenResponse,
+  UgoiraMetadataResponse,
+  WebViewNovel} from 'pixez_network';
+
 
 @Entry
 @ComponentV2

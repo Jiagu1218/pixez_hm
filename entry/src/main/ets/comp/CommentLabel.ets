@@ -1,6 +1,4 @@
-import { Comment } from "../network/model/Comment"
-import { CommentsResponse } from "../network/response/CommentsResponse"
-import { DateTimeUtil } from "../network/util/DateTimeUtil"
+import { Comment, CommentsResponse, DateTimeUtil } from "pixez_network"
 import { CommentList } from "./CommentList"
 import { HttpImage } from "./HttpImage"
 

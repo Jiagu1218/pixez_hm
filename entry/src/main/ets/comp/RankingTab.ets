@@ -1,13 +1,12 @@
-import { IllustWaterFlowController } from "../controller/IllustWaterFlowController"
-import { NovelListController } from "../controller/NovelListController"
-import { ApiClient } from "../network/ApiClient"
-import { IllustRankingModeEnum } from "../network/enums/IllustRankingModeEnum"
-import { NovelRankingModeEnum } from "../network/enums/NovelRankingModeEnum"
-import { IllustRankingResponse } from "../network/response/IllustRankingResponse"
-import { NovelRankingResponse } from "../network/response/NovelRankingResponse"
-import { IllustWaterFlow } from "./IllustWaterFlow"
-import { NovelList } from "./NovelList"
-import { SymbolGlyphModifier } from "@kit.ArkUI"
+import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
+import { NovelListController } from '../controller/NovelListController'
+
+import { IllustWaterFlow } from './IllustWaterFlow'
+import { NovelList } from './NovelList'
+import { SymbolGlyphModifier } from '@kit.ArkUI'
+import { ApiClient,
+  IllustRankingModeEnum,
+  IllustRankingResponse, NovelRankingModeEnum, NovelRankingResponse } from 'pixez_network'
 
 @ComponentV2
 export struct RankingTab{

@@ -1,11 +1,8 @@
-import { AccountManager } from "../network/util/AccountManager";
-import { webview } from "@kit.ArkWeb";
-import { Router, router } from "@kit.ArkUI";
-import { OauthClient } from "../network/OauthClient";
-import { url } from "@kit.ArkTS";
-import { TokenResponse } from "../network/response/TokenResponse";
-import { AppConfig } from "../network/AppConfig";
-import { common } from "@kit.AbilityKit";
+import { webview } from '@kit.ArkWeb';
+
+import { url } from '@kit.ArkTS';
+
+import { AccountManager, AppConfig, OauthClient, TokenResponse } from 'pixez_network';
 
 /**
  * 登录视图模型

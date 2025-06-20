@@ -38,7 +38,7 @@ export interface Novel {
   /**
    * 小说关联的标签，可以有多个
    * */
-  tags: Tag[]
+  tags: NovelTag[]
   /**
    * 小说的页面数量
    * */
@@ -114,7 +114,7 @@ interface ImageUrls {
 /**
  * Tag接口定义了标签的基本属性，包括标签的名称和可选的翻译名称
  * */
-export interface Tag {
+export interface NovelTag {
   /**
    * 标签的名称
    * */

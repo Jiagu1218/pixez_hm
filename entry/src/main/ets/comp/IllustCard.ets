@@ -1,8 +1,8 @@
-import { ApiClient } from "../network/ApiClient"
-import { Illust } from "../network/model/Illust"
+
 import { HttpImage } from "./HttpImage"
 import { uiEffect } from "@kit.ArkGraphics2D"
-import { BookmarkDetail, IllustBookmarkDetailResponse, Tag } from "../network/response/IllustBookmarkDetailResponse"
+import { ApiClient, BookmarkDetail, IllustBookmarkDetailResponse, IllustBookmarkTag, Tag } from "pixez_network"
+import { Illust } from "pixez_network"
 
 @ReusableV2
 @ComponentV2
@@ -41,7 +41,7 @@ export struct IllustCard {
     Column({ space: 12 }) {
       if (this.bookmarkDetail) {
         List({ space: 8 }) {
-          ForEach(this.bookmarkDetail.tags, (tag: Tag) => {
+          ForEach(this.bookmarkDetail.tags, (tag: IllustBookmarkTag) => {
             ListItem() {
               Row() {
                 Text(tag.name)

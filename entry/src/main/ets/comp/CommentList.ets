@@ -1,7 +1,6 @@
+import { ApiClient, Comment, CommentsResponse } from "pixez_network"
 import { LazyDataSource } from "../entity/LazyDataSource"
-import { ApiClient } from "../network/ApiClient"
-import { Comment } from "../network/model/Comment"
-import { CommentsResponse } from "../network/response/CommentsResponse"
+
 import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2

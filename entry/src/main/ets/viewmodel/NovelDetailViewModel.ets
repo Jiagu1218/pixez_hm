@@ -1,9 +1,6 @@
+import { ApiClient, CommentsResponse, HtmlUtil, NovelSearchTargetEnum, WebViewNovel } from "pixez_network";
 import { NovelContentPart } from "../entity/NovelContent";
-import { ApiClient } from "../network/ApiClient";
-import { NovelSearchTargetEnum } from "../network/enums/NovelSearchTargetEnum";
-import { WebViewNovel } from "../network/model/WebViewNovel";
-import { CommentsResponse } from "../network/response/CommentsResponse";
-import { HtmlUtil } from "../network/util/HtmlUtil";
+
 import { NovelRouterParam } from "../param/NovelRouterParam";
 import { SearchRouterParam } from "../param/SearchRouterParam";
 

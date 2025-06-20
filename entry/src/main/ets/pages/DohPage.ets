@@ -1,6 +1,7 @@
-import { SniUtil } from '../network/util/SniUtil'
+
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SymbolSpanModifier } from '@kit.ArkUI'
+import { SniUtil } from 'pixez_network'
 
 @Entry
 @ComponentV2

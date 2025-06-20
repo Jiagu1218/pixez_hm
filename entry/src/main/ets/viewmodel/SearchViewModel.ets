@@ -1,20 +1,22 @@
-import { IllustWaterFlowController } from "../controller/IllustWaterFlowController"
-import { NovelListController } from "../controller/NovelListController"
-import { LazyDataSource } from "../entity/LazyDataSource"
-import { ApiClient } from "../network/ApiClient"
-import { IllustSearchTargetEnum } from "../network/enums/IllustSearchTargetEnum"
-import { NovelSearchTargetEnum } from "../network/enums/NovelSearchTargetEnum"
-import { SearchSortEnum } from "../network/enums/SearchSortEnum"
-import { UserPreview } from "../network/model/UserPreview"
-import { IllustPageResponseBase } from "../network/response/IllustPageResponseBase"
-import { NovelPageResponseBase } from "../network/response/NovelPageResponseBase"
-import { SearchAutoCompleteResponse } from "../network/response/SearchAutoCompleteResponse"
-import { SearchIllustResponse } from "../network/response/SearchIllustResponse"
-import { SearchNovelResponse } from "../network/response/SearchNovelResponse"
-import { SearchUserResponse } from "../network/response/SearchUserResponse"
-import { DateTimeUtil } from "../network/util/DateTimeUtil"
-import { SearchRouterParam } from "../param/SearchRouterParam"
-import { UserRouterParam } from "../param/UserRouterParam"
+import {
+  ApiClient,
+  DateTimeUtil,
+  IllustPageResponseBase,
+  IllustSearchTargetEnum,
+  NovelPageResponseBase,
+  NovelSearchTargetEnum,
+  SearchAutoCompleteResponse,
+  SearchIllustResponse,
+  SearchNovelResponse,
+  SearchSortEnum,
+  SearchUserResponse,
+  UserPreview } from 'pixez_network'
+import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
+import { NovelListController } from '../controller/NovelListController'
+import { LazyDataSource } from '../entity/LazyDataSource'
+
+import { SearchRouterParam } from '../param/SearchRouterParam'
+import { UserRouterParam } from '../param/UserRouterParam'
 /**
  * 搜索视图模型
  */

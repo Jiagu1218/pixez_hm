@@ -1,14 +1,14 @@
 import { IllustDataSourcePrefetching } from "../entity/IllustDataSourcePrefetching"
-import { Illust, Tag } from "../network/model/Illust"
+
 import { BasicPrefetcher } from "@kit.ArkUI"
-import { CommentsResponse } from "../network/response/CommentsResponse"
-import { ApiClient } from "../network/ApiClient"
-import { IllustDetailResponse } from "../network/response/IllustDetailResponse"
-import { IllustRelatedResponse } from "../network/response/IllustRelatedResponse"
+
 import { IllustRouterParam } from "../param/IllustRouterParam"
 import { UserRouterParam } from "../param/UserRouterParam"
-import { IllustSearchTargetEnum } from "../network/enums/IllustSearchTargetEnum"
 import { SearchRouterParam } from "../param/SearchRouterParam"
+import { ApiClient,
+  CommentsResponse,
+  Illust, IllustDetailResponse, IllustRelatedResponse, IllustSearchTargetEnum } from "pixez_network"
+import { Tag } from "pixez_network"
 
 /**
  * 插画详情页视图模型

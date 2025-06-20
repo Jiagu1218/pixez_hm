@@ -1,7 +1,7 @@
 import { ImageViewTouch } from "@ohos/imageviewzoom"
-import { DownloadUtil } from "../network/util/DownloadUtil"
 import { image } from "@kit.ImageKit"
 import { ImageItemView } from "../img/ImageViewer"
+import { DownloadUtil } from "pixez_network"
 
 @ComponentV2
 export struct SwiperImageItem{

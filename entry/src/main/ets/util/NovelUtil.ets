@@ -1,5 +1,6 @@
+import { WebViewNovel } from "pixez_network";
 import { NovelContentPart } from "../entity/NovelContent";
-import { WebViewNovel } from "../network/model/WebViewNovel";
+
 
 // reg 正则匹配
 const REG = /\[(uploadedimage:\d+(?:-\d+)?)\]|\[(pixivimage:\d+(?:-\d+)?)\]/g

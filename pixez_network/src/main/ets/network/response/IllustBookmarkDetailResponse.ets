@@ -23,7 +23,7 @@ export interface BookmarkDetail {
    * 插画的标签列表
    * 标签用于描述插画的内容或风格
    */
-  tags: Tag[]
+  tags: IllustBookmarkTag[]
   /**
    * 插画的访问限制级别
    * 描述了插画的公开程度，如“公开”或“私密”
@@ -35,7 +35,7 @@ export interface BookmarkDetail {
  * 定义标签的结构
  * 标签是用来标注插画特征的关键字
  */
-export interface Tag {
+export interface IllustBookmarkTag {
   /**
    * 标签的名称
    * 是用来描述插画的一个关键字

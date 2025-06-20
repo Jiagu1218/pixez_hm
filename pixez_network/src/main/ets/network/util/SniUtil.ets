@@ -11,12 +11,13 @@ export class SniUtil {
    * 定义了一系列可用的DNS-over-HTTPS(DOH)服务器地址
    */
   public static readonly DOH_URLS:Array<string> = [
-    "https://1.0.0.1/dns-query",
-    "https://1.1.1.1/dns-query",
+    "https://101.102.103.104/dns-query",
+    "https://sky.rethinkdns.com/dns-query",
     "https://doh.dns.sb/dns-query",
     "https://doh.pub/dns-query",
     "https://208.67.220.220/dns-query",
-    "https://cloudflare-dns.com/dns-query"
+    "https://dns.cloudflare.com/dns-query",
+    "https://dns.decloudus.com/dns-query"
   ]
 
   /**

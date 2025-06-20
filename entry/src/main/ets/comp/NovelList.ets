@@ -1,11 +1,11 @@
 import { LazyDataSource } from "../entity/LazyDataSource"
-import { ApiClient } from "../network/ApiClient"
-import { Novel } from "../network/model/Novel"
-import { NovelPageResponseBase } from "../network/response/NovelPageResponseBase"
+
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { NovelCard } from "./NovelCard"
 import { BusinessError } from "@kit.BasicServicesKit"
 import { NovelListController } from "../controller/NovelListController"
+import { ApiClient, Novel } from "pixez_network"
+import { NovelPageResponseBase } from "pixez_network"
 
 @ComponentV2
 export struct NovelList{

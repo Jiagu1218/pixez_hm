@@ -1,6 +1,4 @@
-import { ApiClient } from "../network/ApiClient"
-import { Illust } from "../network/model/Illust"
-import { UserPreview } from "../network/model/UserPreview"
+import { ApiClient, Illust, UserPreview } from "pixez_network"
 import { IllustRouterParam } from "../param/IllustRouterParam"
 import { HttpImage } from "./HttpImage"
 
