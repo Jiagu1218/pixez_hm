@@ -1,5 +1,5 @@
 import { ApiClient, Comment, CommentsResponse } from "pixez_network"
-import { LazyDataSource } from "../entity/LazyDataSource"
+import { LazyDataSource } from "../base/LazyDataSource"
 
 import { CommentLabel } from "./CommentLabel"
 

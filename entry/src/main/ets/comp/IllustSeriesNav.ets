@@ -1,6 +1,5 @@
-import { ApiClient, Illust, IllustSeriesIllustResponse, IllustSeriesResponse } from "pixez_network";
+import { ApiClient, HttpImage, Illust, IllustSeriesIllustResponse, IllustSeriesResponse } from "common";
 import { IllustRouterParam } from "../param/IllustRouterParam";
-import { HttpImage } from "./HttpImage";
 
 @ComponentV2
 export struct IllustSeriesNav {

@@ -2,7 +2,7 @@
 import { image } from "@kit.ImageKit"
 import { SwiperImageItem } from "./SwiperImageItem"
 import { promptAction } from "@kit.ArkUI"
-import { ImageUtil } from "pixez_network"
+import { ImageUtil } from "common"
 
 @ComponentV2
 export struct SaveImage {

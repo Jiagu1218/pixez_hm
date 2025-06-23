@@ -4,7 +4,7 @@ import { IllustRouterParam } from "../param/IllustRouterParam";
 import { IllustCard } from "./IllustCard";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { IllustWaterFlowController } from "../controller/IllustWaterFlowController";
-import { ApiClient, Illust, IllustPageResponseBase } from "pixez_network";
+import { ApiClient, Illust, IllustPageResponseBase } from "common";
 
 @ComponentV2
 export struct IllustWaterFlow {

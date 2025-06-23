@@ -3,6 +3,7 @@ import {
   DateTimeUtil,
   IllustPageResponseBase,
   IllustSearchTargetEnum,
+  LazyDataSource,
   NovelPageResponseBase,
   NovelSearchTargetEnum,
   SearchAutoCompleteResponse,
@@ -10,10 +11,10 @@ import {
   SearchNovelResponse,
   SearchSortEnum,
   SearchUserResponse,
-  UserPreview } from 'pixez_network'
+  UserPreview } from 'common'
 import { IllustWaterFlowController } from '../controller/IllustWaterFlowController'
 import { NovelListController } from '../controller/NovelListController'
-import { LazyDataSource } from '../entity/LazyDataSource'
+
 
 import { SearchRouterParam } from '../param/SearchRouterParam'
 import { UserRouterParam } from '../param/UserRouterParam'

@@ -1,11 +1,11 @@
 
-import { HttpImage } from "./HttpImage"
+
 import { LengthUnit } from "@kit.ArkUI"
 
 import { NovelRouterParam } from "../param/NovelRouterParam"
 import { BusinessError } from "@kit.BasicServicesKit"
-import { ApiClient, Novel } from "pixez_network"
-import { Tag } from "pixez_network"
+import { ApiClient, HttpImage, Novel,Tag } from "common"
+
 
 @ReusableV2
 @ComponentV2

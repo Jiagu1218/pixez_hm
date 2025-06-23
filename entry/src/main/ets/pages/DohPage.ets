@@ -1,7 +1,7 @@
 
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SymbolSpanModifier } from '@kit.ArkUI'
-import { SniUtil } from 'pixez_network'
+import { SniUtil } from 'common'
 
 @Entry
 @ComponentV2

@@ -7,7 +7,7 @@ import { connection } from '@kit.NetworkKit';
 import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
 import { WindowManager } from '@kit.SpeechKit';
-import { AppConfig, ImageUtil, SessionManager, UserPreference } from 'pixez_network';
+import { AppConfig, ImageUtil, SessionManager, UserPreference } from 'common';
 
 export default class EntryAbility extends UIAbility {
   /**

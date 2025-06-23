@@ -1,8 +1,9 @@
-import { ApiClient, IllustSearchTargetEnum, NovelSearchTargetEnum,
+import { ApiClient,
+  HttpImage,
+  IllustSearchTargetEnum, NovelSearchTargetEnum,
   SearchAutoCompleteResponse,
-  TrendTag, TrendTagsResponse } from "pixez_network"
+  TrendTag, TrendTagsResponse } from "common"
 import { SearchRouterParam } from "../param/SearchRouterParam"
-import { HttpImage } from "./HttpImage"
 
 @ComponentV2
 export struct SearchTab{

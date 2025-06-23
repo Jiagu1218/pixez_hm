@@ -19,7 +19,7 @@ import { AccountManager, ApiClient,
   NovelRecommendedResponse,
   OauthClient, SniUtil, TokenResponse,
   UgoiraMetadataResponse,
-  WebViewNovel} from 'pixez_network';
+  WebViewNovel} from 'common';
 
 
 @Entry

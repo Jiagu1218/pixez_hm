@@ -1,10 +1,10 @@
 import { IllustDataSourcePrefetching } from "../../entity/IllustDataSourcePrefetching"
 import { BasicPrefetcher } from "@kit.ArkUI"
 import { BusinessError } from "@kit.BasicServicesKit"
-import { IllustPageResponseBase } from "../../network/response/IllustPageResponseBase"
 import { IllustWaterFlowController } from "../../controller/IllustWaterFlowController"
-import { ApiClient } from "../../network/ApiClient"
+
 import { IllustRouterParam } from "../../param/IllustRouterParam"
+import { ApiClient, IllustPageResponseBase } from "common"
 
 @ObservedV2
 export class IllustWaterFlowViewModel{

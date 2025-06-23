@@ -1,6 +1,6 @@
 import { ApiClient, BookmarksIllustResponse,
   UserBookmarkTagsIllustResponse,
-  UserDetailResponse, UserIllustResponse } from "pixez_network"
+  UserDetailResponse, UserIllustResponse } from "common"
 import { UserRouterParam } from "../param/UserRouterParam"
 /**
  * 用户详情页视图模型

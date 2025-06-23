@@ -1,5 +1,8 @@
 import { SymbolGlyphModifier } from "@kit.ArkUI"
-import { ApiClient, IllustRecommendedResponse, MangaRecommendedResponse, NovelRecommendedResponse } from "pixez_network"
+import { ApiClient,
+  IllustRankingModeEnum,
+  IllustRankingResponse,
+  IllustRecommendedResponse, MangaRecommendedResponse, NovelRecommendedResponse } from "common"
 import { IllustWaterFlowController } from "../controller/IllustWaterFlowController"
 import { NovelListController } from "../controller/NovelListController"
 
@@ -12,7 +15,13 @@ import { UserRouterParam } from "../param/UserRouterParam"
  */
 @ObservedV2
 export class HomeViewModel{
-  @Trace tabLoad:Array<boolean> = [true,false,false,false,false,false]
+  @Trace tabLoad:Array<boolean> = [true,false,false,false]
+
+  private _illustRankingController:IllustWaterFlowController = new IllustWaterFlowController()
+
+  public get illustRankingController(): IllustWaterFlowController {
+    return this._illustRankingController
+  }
   /**
    * 路径栈
    */
@@ -29,16 +38,7 @@ export class HomeViewModel{
   public get tabController(): TabsController {
     return this._tabController
   }
-  /**
-   * 小说列表控制器
-   */
-  private _novelController: NovelListController = new NovelListController()
-  /**
-   * 小说列表控制器
-   */
-  public get novelController(): NovelListController {
-    return this._novelController
-  }
+
   /**
    * 插画列表控制器
    */
@@ -190,18 +190,16 @@ export class HomeViewModel{
       }
     })
   }
-  /**
-   * 获取小说推荐
-   * @returns
-   */
-  getNovelRecommended():Promise<NovelRecommendedResponse|null>{
-    return ApiClient.getNovelRecommended().then(res=>{
+
+  getIllustRanking():Promise<IllustRankingResponse|null>{
+    return ApiClient.getIllustRanking(IllustRankingModeEnum.DAY).then(res=>{
       const json = res?.toJSON()
       if (json) {
-        return json as NovelRecommendedResponse
+        return json as IllustRankingResponse
       }else {
         return null
       }
     })
   }
+
 }

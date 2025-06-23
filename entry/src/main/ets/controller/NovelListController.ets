@@ -1,4 +1,5 @@
-import { ListControllerBase } from "./ListControllerBase"
+import { ListControllerBase } from "common";
+
 
 export class NovelListController extends ListControllerBase{
 

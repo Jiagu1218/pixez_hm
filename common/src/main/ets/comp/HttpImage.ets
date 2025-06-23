@@ -84,7 +84,6 @@ export struct HttpImage {
         Image(this.pic)
           .aspectRatio(this.aRatio ?? this.defaultRatio)
           .width('100%')
-          .alt($r('app.media.picture_damage'))
           .objectFit(ImageFit.Contain)
           .borderRadius(this.br)
           .transition({

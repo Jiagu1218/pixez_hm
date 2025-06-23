@@ -2,7 +2,7 @@ import { webview } from '@kit.ArkWeb';
 
 import { url } from '@kit.ArkTS';
 
-import { AccountManager, AppConfig, OauthClient, TokenResponse } from 'pixez_network';
+import { AccountManager, AppConfig, OauthClient, TokenResponse } from 'common';
 
 /**
  * 登录视图模型

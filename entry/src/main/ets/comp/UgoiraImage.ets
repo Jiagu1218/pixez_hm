@@ -1,5 +1,5 @@
-import { ApiClient, DownloadUtil, Illust, ImageUtil, UgoiraMetadataResponse } from "pixez_network"
-import { HttpImage } from "./HttpImage"
+import { ApiClient, DownloadUtil, HttpImage, Illust, ImageUtil, UgoiraMetadataResponse } from "common"
+
 
 @ComponentV2
 export struct UgoiraImage{

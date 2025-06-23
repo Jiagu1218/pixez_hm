@@ -1,8 +1,7 @@
 
-import { HttpImage } from "./HttpImage"
 import { uiEffect } from "@kit.ArkGraphics2D"
-import { ApiClient, BookmarkDetail, IllustBookmarkDetailResponse, IllustBookmarkTag, Tag } from "pixez_network"
-import { Illust } from "pixez_network"
+import { ApiClient, BookmarkDetail, HttpImage, IllustBookmarkDetailResponse, IllustBookmarkTag, Tag } from "common"
+import { Illust } from "common"
 
 @ReusableV2
 @ComponentV2

@@ -7,8 +7,7 @@ import { UserRouterParam } from "../param/UserRouterParam"
 import { SearchRouterParam } from "../param/SearchRouterParam"
 import { ApiClient,
   CommentsResponse,
-  Illust, IllustDetailResponse, IllustRelatedResponse, IllustSearchTargetEnum } from "pixez_network"
-import { Tag } from "pixez_network"
+  Illust, IllustDetailResponse, IllustRelatedResponse, IllustSearchTargetEnum,Tag } from "common"
 
 /**
  * 插画详情页视图模型

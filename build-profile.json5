@@ -40,6 +40,30 @@
     {
       "name": "pixez_network",
       "srcPath": "./pixez_network"
+    },
+    {
+      "name": "novel",
+      "srcPath": "./novel",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "common",
+      "srcPath": "./common",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }

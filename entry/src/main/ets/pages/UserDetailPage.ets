@@ -1,4 +1,4 @@
-import { HttpImage } from '../comp/HttpImage'
+import { HttpImage } from 'common'
 import { IllustWaterFlow } from '../comp/IllustWaterFlow'
 import { UserDetailViewModel } from '../viewmodel/UserDetailViewModel'
 

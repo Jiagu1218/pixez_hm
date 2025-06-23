@@ -1,6 +1,5 @@
-import { ApiClient, Illust, UserPreview } from "pixez_network"
+import { ApiClient, HttpImage, Illust, UserPreview } from "common"
 import { IllustRouterParam } from "../param/IllustRouterParam"
-import { HttpImage } from "./HttpImage"
 
 @ComponentV2
 export struct UserPreviewCard{

@@ -5,7 +5,7 @@ import { UserPreviewCard } from '../comp/UserPreviewCard'
 import { IllustWaterFlow } from '../comp/IllustWaterFlow'
 import { NovelList } from '../comp/NovelList'
 import { SearchViewModel } from '../viewmodel/SearchViewModel'
-import { DateTimeUtil, TrendTag, UserPreview } from 'pixez_network'
+import { DateTimeUtil, TrendTag, UserPreview } from 'common'
 
 @ComponentV2
 export struct SearchPage{

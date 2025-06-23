@@ -1,7 +1,5 @@
 import { IllustWaterFlow } from '../comp/IllustWaterFlow'
-import { NovelList } from '../comp/NovelList'
 import { SearchTab } from '../comp/SearchTab'
-import { RankingTab } from '../comp/RankingTab'
 import { HomeViewModel } from '../viewmodel/HomeViewModel'
 
 @Entry
@@ -24,21 +22,16 @@ struct HomePage {
         }.tabBar(this.model.illustBar)
         TabContent(){
           if (this.model.tabLoad[1]){
-            NovelList({controller:this.model.novelController,marginBottom:56,firstPage:()=>this.model.getNovelRecommended()})
-          }
-        }.tabBar(this.model.novelBar)
-        TabContent(){
-          if (this.model.tabLoad[2]){
             IllustWaterFlow({controller:this.model.mangaController,marginBottom:56,firstPage:()=>this.model.getMangaRecommend()})
           }
         }.tabBar(this.model.mangaBar)
         TabContent(){
-          if (this.model.tabLoad[3]){
-            RankingTab()
+          if (this.model.tabLoad[2]){
+            IllustWaterFlow({controller:this.model.illustRankingController,marginBottom:56,firstPage:()=>this.model.getIllustRanking()})
           }
         }.tabBar(this.model.rankingBar)
         TabContent(){
-          if (this.model.tabLoad[4]){
+          if (this.model.tabLoad[3]){
             SearchTab({marginTop:56,marginBottom:56})
           }
         }.tabBar(this.model.searchBar)

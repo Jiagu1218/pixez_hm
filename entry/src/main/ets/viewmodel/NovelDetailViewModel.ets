@@ -1,4 +1,4 @@
-import { ApiClient, CommentsResponse, HtmlUtil, NovelSearchTargetEnum, WebViewNovel } from "pixez_network";
+import { ApiClient, CommentsResponse, HtmlUtil, NovelSearchTargetEnum, WebViewNovel } from "common";
 import { NovelContentPart } from "../entity/NovelContent";
 
 import { NovelRouterParam } from "../param/NovelRouterParam";

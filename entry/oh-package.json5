@@ -6,7 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "pixez_network": "file:../pixez_network"
+    "common": "file:../common"
   }
 }
 

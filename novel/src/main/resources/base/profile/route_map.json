@@ -1,0 +1,21 @@
+{
+  "routerMap": [
+    {
+      "name": "index",
+      "pageSourceFile": "src/main/ets/pages/Index.ets",
+      "buildFunction": "IndexBuilder",
+      "data": {
+        "description": "首页"
+      }
+    },
+    {
+      "name": "novelDetailPage",
+      "pageSourceFile": "src/main/ets/pages/NovelDetailPage.ets",
+      "buildFunction": "NovelDetailPageBuilder",
+      "data": {
+        "description": "小说详情页"
+      }
+    }
+
+  ]
+}

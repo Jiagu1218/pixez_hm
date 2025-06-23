@@ -1,13 +1,11 @@
 import { LengthUnit } from '@kit.ArkUI';
-import { CommentList } from '../comp/CommentList';
-import { HtmlText } from '../comp/HtmlText';
-import { HttpImage } from '../comp/HttpImage';
+
 import { NovelContentPart } from '../entity/NovelContent';
 import { getNovelContentParts } from '../util/NovelUtil';
 import { NovelDetailViewModel } from '../viewmodel/NovelDetailViewModel';
 import TextReader from '@hms.ai.textReader';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { DownloadUtil } from 'pixez_network';
+import { CommentList, DownloadUtil, HtmlText, HttpImage } from 'common';
 
 @Entry
 @ComponentV2

@@ -1,4 +1,4 @@
-import { WebViewNovel } from "pixez_network";
+import { WebViewNovel } from "common";
 import { NovelContentPart } from "../entity/NovelContent";
 
 
