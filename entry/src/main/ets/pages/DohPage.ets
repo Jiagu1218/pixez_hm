@@ -2,6 +2,7 @@
 import { BusinessError } from '@kit.BasicServicesKit'
 import { SymbolSpanModifier } from '@kit.ArkUI'
 import { SniUtil } from 'common'
+import { common } from '@kit.AbilityKit'
 
 @Entry
 @ComponentV2
@@ -74,6 +75,21 @@ struct DohPage{
       Button('跳转主页').onClick(() => {
         this.getUIContext().getRouter().pushUrl({
           url:'pages/HomePage'
+        })
+      })
+      Button('跳转小说').onClick(() => {
+        const content = this.getUIContext().getHostContext() as common.UIAbilityContext
+        content.startAbility({
+          bundleName: 'com.xjg.pixez',
+          moduleName: 'novel',
+          abilityName: 'NovelAbility',
+          parameters:{
+            "novelId":1
+          }
+        }).then((res) => {
+          console.info( 'testTag', 'startAbility success')
+        }).catch((err:BusinessError) => {
+          console.error( 'testTag', err)
         })
       })
     }
