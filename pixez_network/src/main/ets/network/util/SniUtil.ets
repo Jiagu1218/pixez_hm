@@ -17,7 +17,8 @@ export class SniUtil {
     "https://doh.pub/dns-query",
     "https://208.67.220.220/dns-query",
     "https://dns.cloudflare.com/dns-query",
-    "https://dns.decloudus.com/dns-query"
+    "https://dns.decloudus.com/dns-query",
+    "https://v.recipes/dns/dns.google/dns-query"
   ]
 
   /**

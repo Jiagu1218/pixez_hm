@@ -1,6 +1,4 @@
 import { ApiClient, Comment, CommentsResponse } from "pixez_network"
-import { LazyDataSource } from "../base/LazyDataSource"
-
 import { CommentLabel } from "./CommentLabel"
 
 @ComponentV2
@@ -61,21 +59,22 @@ export struct CommentList {
         LoadingProgress()
           .width(24)
           .height(24)
-          .color('#2196F3')
+          .color('#2563EB')
         Text('加载中...')
           .fontSize(14)
-          .fontColor('#666666')
-          .margin({ left: 8 })
+          .fontColor('#64748B')
+          .fontWeight(FontWeight.Medium)
+          .margin({ left: 10 })
       }
       .width('100%')
-      .height(48)
+      .height(56)
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
     }
   }
 
   build() {
-    List({ space: 16 }) {
+    List({ space: 12 }) {
       Repeat(this.comments)
         .virtualScroll()
         .each(item => {
@@ -94,6 +93,8 @@ export struct CommentList {
         this.loadingFooter()
       }
     }
+    .width('100%')
+    .height('100%')
     .cachedCount(4)
     .constraintSize({
       maxHeight: '100%'
@@ -103,7 +104,8 @@ export struct CommentList {
       scrollBackward: NestedScrollMode.SELF_FIRST
     })
     .divider({
-      strokeWidth: 1
+      strokeWidth: 1,
+      color: '#EEF2F7'
     })
     .onReachEnd(() => {
       this.loadMore()

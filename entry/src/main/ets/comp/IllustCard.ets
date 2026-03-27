@@ -21,6 +21,16 @@ export struct IllustCard {
     this.setLimitBlur()
   }
 
+  aboutToReuse(): void {
+    this.aRatio = this.illust.width/this.illust.height
+    this.like = this.illust.is_bookmarked
+    this.setLimitBlur()
+  }
+
+  aboutToRecycle(): void {
+    // console.debug("")
+  }
+
   @Monitor('limitLevel')
   watchLimitLevel() {
     this.setLimitBlur()
@@ -45,24 +55,24 @@ export struct IllustCard {
               Row() {
                 Text(tag.name)
                   .fontSize(14)
-                  .fontColor('#333333')
+                  .fontColor('#1E293B')
                 Checkbox()
                   .select(tag.is_registered)
-                  .selectedColor('#FF4081')
+                  .selectedColor('#EC4899')
               }
               .justifyContent(FlexAlign.SpaceBetween)
               .width('100%')
               .padding({ left: 16, right: 16 })
             }
-            .backgroundColor('#FFFFFF')
-            .borderRadius(8)
+            .backgroundColor('#FAFBFC')
+            .borderRadius(10)
           },(tag: Tag)=>tag.name)
         }
         .nestedScroll({
           scrollForward: NestedScrollMode.PARENT_FIRST,
           scrollBackward: NestedScrollMode.SELF_FIRST,
         })
-        .divider({ strokeWidth: 1, color: '#F0F0F0' })
+        .divider({ strokeWidth: 1, color: '#EEF2F7' })
       }
     }
     .width('100%')
@@ -142,13 +152,13 @@ export struct IllustCard {
           Text(this.illust.title)
             .maxLines(1)
             .fontSize(16)
-            .fontWeight(500)
-            .fontColor('#333333')
+            .fontWeight(FontWeight.Medium)
+            .fontColor('#1E293B')
           Text(this.illust.user.name)
             .maxLines(1)
             .fontSize(14)
             .fontWeight(400)
-            .fontColor('#666666')
+            .fontColor('#64748B')
         }
         .justifyContent(FlexAlign.SpaceAround)
         .padding({ left: 12 })
@@ -157,7 +167,7 @@ export struct IllustCard {
 
         SymbolGlyph(this.like ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
           .fontSize(24)
-          .fontColor(this.like ? ['#FF4081'] : ['#999999'])
+          .fontColor(this.like ? ['#EC4899'] : ['#94A3B8'])
           .bindSheet(this.showSheet, this.sheet(), {
             height: SheetSize.MEDIUM,
             blurStyle: BlurStyle.Thin,
@@ -198,10 +208,10 @@ export struct IllustCard {
     .borderRadius($r('sys.float.ohos_id_card_border_radius'))
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
     .shadow({
-      radius: 8,
-      color: '#000000',
+      radius: 12,
+      color: '#00000012',
       offsetX: 0,
-      offsetY: 2
+      offsetY: 4
     })
     .transition({
       type: TransitionType.All

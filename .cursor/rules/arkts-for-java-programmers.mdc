@@ -1,0 +1,90 @@
+---
+description: 面向 Java 开发者的 ArkTS 使用要点（参考 Getting Started with ArkTS for Java Programmers）
+globs: **/*.ets
+alwaysApply: false
+---
+
+# Java 程序员使用 ArkTS 的规则与对照
+
+本规则面向有 Java 背景的开发者，帮助在 ArkTS 中避免“按 Java 写法思考”，统一一些容易混淆的点。
+
+## 1. 类型与对象模型差异
+
+- ArkTS 是静态类型的 TypeScript 方言，不是 Java：
+  - 没有 `class Foo extends Object` 这一说，任何类型默认继承自基础对象模型。
+  - 不使用 `new Integer(...)`、`new Boolean(...)` 之类包装类型，统一使用原始类型 `number`、`boolean`、`string`。
+
+- 接口 vs 类：
+  - 复用“结构定义”优先使用 `interface`，仅在需要状态和方法时使用 `class`。
+  - ❌ 把所有数据对象都写成 Java 风格的 `POJO class`。
+  - ✅ 使用 `interface UserInfoData` 表达数据结构。
+
+## 2. 空值与判空
+
+- ArkTS 中推荐使用 `undefined` / `null` 受控联合，而不是 Java 的 `null` 到处乱飞：
+  - 类型中显式标注可选：`field?: string;` 或 `field: string | null;`。
+  - 判空统一使用严格比较：`if (value === null)` 或 `if (value === undefined)`。
+
+- 不允许无类型保护直接调用：
+  - ❌ `value.length`（当 value 可能为 `null/undefined` 时）。
+  - ✅
+    ```ts
+    if (value !== undefined && value !== null) {
+      let len: number = value.length;
+    }
+    ```
+
+## 3. 集合与数组
+
+- 没有 Java 的 `List<T>` / `Map<K, V>` 标准库，推荐：
+  - 顺序集合使用 `Array<T>`。
+  - 简单键值对使用索引签名或自定义 Map 接口。
+
+- 避免习惯性写 Java 风格的集合 API 名称：
+  - ❌ `list.size()` / `map.put(key, value)`。
+  - ✅ `list.length` / 显式字段赋值或 `push`。
+
+## 4. 异步模型：Promise/async vs 线程
+
+- ArkTS 不建议用 Java 风格的“线程思维”（Thread、Runnable 等）：
+  - 所有 IO / 网络 / 异步工作统一使用 `Promise` + `async/await`。
+
+- 统一写法示例：
+  ```ts
+  export async function loadData(): Promise<UserInfoByUidResp> {
+    let resp: UserInfoByUidResp = await getUserInfoByUid({ uid: 100 });
+    return resp;
+  }
+  ```
+
+## 5. 异常处理风格
+
+- 不使用 Java 风格的“checked exception”：
+  - ArkTS 中没有 `throws` 关键字，不需要在函数签名中声明可抛出的异常类型。
+  - 仍然推荐对网络、IO 等进行 `try/catch`，并在 catch 中封装为业务错误或日志记录。
+
+## 6. 面向对象与封装
+
+- 类设计更轻量：
+  - 避免 Java 那样的大量 `getX()/setX()` 方法，直接使用公开只读/可写属性或必要的封装方法。
+  - ❌
+    ```ts
+    class User {
+      private uid: number;
+      getUid(): number { return this.uid; }
+      setUid(uid: number): void { this.uid = uid; }
+    }
+    ```
+  - ✅
+    ```ts
+    class User {
+      uid: number;
+    }
+    ```
+
+## 7. 包与命名空间
+
+- 不使用 Java 风格包名：
+  - ArkTS 中不需要 `com.example.xxx` 这样的包结构。
+  - 使用工程目录 + ES Module 相对路径来组织代码（如 `api/ApiClient.ets`、`model/User.ets`）。
+

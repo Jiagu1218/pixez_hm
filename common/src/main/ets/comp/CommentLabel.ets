@@ -16,6 +16,34 @@ export struct CommentLabel {
   @Require @Param postComment: (relateId: number, comment: string,
     parentCommentId?: number) => Promise<boolean>
 
+  private hasValidStamp(): boolean {
+    const stamp = this.comment.stamp
+    if (stamp === undefined || stamp === null) {
+      return false
+    }
+    const url = stamp.stamp_url
+    if (url === undefined || url === null || url.length === 0) {
+      return false
+    }
+    return true
+  }
+
+  private stampUrlForRender(): string {
+    const stamp = this.comment.stamp
+    if (stamp === undefined || stamp === null) {
+      return ''
+    }
+    return stamp.stamp_url
+  }
+
+  private stampIdForRender(): number {
+    const stamp = this.comment.stamp
+    if (stamp === undefined || stamp === null) {
+      return 0
+    }
+    return stamp.stamp_id
+  }
+
   build() {
     Row({ space: 16 }) {
       HttpImage({
@@ -28,22 +56,24 @@ export struct CommentLabel {
 
       Column({ space: 8 }) {
         Text(this.comment.user.name)
-          .fontSize(14)
+          .fontSize(15)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#333333')
+          .fontColor('#1F2937')
 
-        Row() {
+        Row({ space: 8 }) {
           Text(this.comment.comment)
             .fontSize(14)
-            .fontColor('#666666')
-          if (this.comment.stamp) {
+            .lineHeight(22)
+            .fontColor('#374151')
+            .layoutWeight(1)
+          if (this.hasValidStamp()) {
             HttpImage({
-              url: this.comment.stamp.stamp_url,
+              url: this.stampUrlForRender(),
               aRatio: 1,
               cacheInfo: {
                 dir: 'stamp',
                 cacheType: 'cache',
-                filename: this.comment.stamp.stamp_id + '.png'
+                filename: this.stampIdForRender() + '.png'
               }
             })
               .width(40)
@@ -54,11 +84,12 @@ export struct CommentLabel {
         Row({ space: 32 }) {
           Text(DateTimeUtil.parseIsoTimeToLocalFormatTime(this.comment.date))
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor('#94A3B8')
 
           Text('回复')
             .fontSize(12)
-            .fontColor('#2196F3')
+            .fontColor('#2563EB')
+            .fontWeight(FontWeight.Medium)
             .bindSheet(this.showSheet!!, this.reply(), {
               title: {
                 title: '回复'
@@ -78,11 +109,12 @@ export struct CommentLabel {
             })
           } else {
             Button("查看回复")
-              .backgroundColor('#F5F5F5')
-              .fontColor('#666666')
+              .backgroundColor('#EEF2FF')
+              .fontColor('#374151')
               .fontSize(12)
-              .borderRadius(4)
-              .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+              .fontWeight(FontWeight.Medium)
+              .borderRadius(10)
+              .padding({ left: 10, right: 10, top: 4, bottom: 4 })
               .onClick(() => this.showReply = true)
           }
         }
@@ -91,14 +123,18 @@ export struct CommentLabel {
       .layoutWeight(1)
     }
     .alignItems(VerticalAlign.Top)
-    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-    .backgroundColor('#FFFFFF')
-    .borderRadius(8)
+    .padding({ left: 16, right: 16, top: 14, bottom: 14 })
+    .backgroundColor(this.isHovered ? '#F8FAFF' : '#FFFFFF')
+    .borderRadius(12)
+    .border({
+      width: 1,
+      color: this.isHovered ? '#DBEAFE' : '#EEF2F6'
+    })
     .shadow({
-      radius: 4,
-      color: '#00000005',
+      radius: this.isHovered ? 12 : 8,
+      color: this.isHovered ? '#2563EB18' : '#00000008',
       offsetX: 0,
-      offsetY: 2
+      offsetY: this.isHovered ? 6 : 3
     })
     .transition({
       type: TransitionType.All
@@ -114,9 +150,9 @@ export struct CommentLabel {
         .width('100%')
         .height(100)
         .fontSize(14)
-        .backgroundColor('#F5F5F5')
-        .borderRadius(8)
-        .padding(8)
+        .backgroundColor('#F8FAFC')
+        .borderRadius(10)
+        .padding(10)
         .onChange(e => {
           this.replyText = e
         })
@@ -124,16 +160,17 @@ export struct CommentLabel {
       Row({ space: 16 }) {
         Button('😊')
           .type(ButtonType.Circle)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor('#F1F5F9')
           .width(40)
           .height(40)
 
         Button("回复")
-          .backgroundColor('#2196F3')
-          .fontColor('#FFFFFF')
+          .backgroundColor('#2563EB')
+          .fontColor(Color.White)
           .fontSize(14)
-          .borderRadius(4)
-          .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(10)
+          .padding({ left: 18, right: 18, top: 8, bottom: 8 })
           .onClick(() => {
             if (this.replyText.trim()) {
               this.postComment(this.relateId, this.replyText, this.comment.id)

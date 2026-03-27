@@ -19,28 +19,53 @@ struct UserDetailPage {
           Stack(){
             if (this.model.userDetail?.profile.background_image_url){
               HttpImage({url:this.model.userDetail.profile.background_image_url})
-              // .blur(20)
+                .width('100%')
+                .height(200)
+                .borderRadius({ bottomLeft: 16, bottomRight: 16 })
             }
+            Column()
+              .width('100%')
+              .height(200)
+              .linearGradient({
+                direction: GradientDirection.Bottom,
+                colors: [['#00000000', 0.0], ['#00000055', 0.65], ['#00000088', 1.0]]
+              })
+              .align(Alignment.Bottom)
             if (this.model.userDetail){
-              Column(){
-                HttpImage({url:this.model.userDetail.user.profile_image_urls.medium,aRatio:1,br:30}).width(60)
-                Text(this.model.userDetail.user.name).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-                  .borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
-                  .padding(4)
+              Column({ space: 10 }){
+                HttpImage({url:this.model.userDetail.user.profile_image_urls.medium,aRatio:1,br:30})
+                  .width(64)
+                  .height(64)
+                  .border({
+                    width: 2,
+                    color: '#FFFFFFAA'
+                  })
+                Text(this.model.userDetail.user.name)
+                  .fontSize($r('sys.float.Subtitle_L'))
+                  .fontWeight(FontWeight.Bold)
+                  .fontColor(Color.White)
+                  .borderRadius(10)
+                  .padding({ left: 10, right: 10, top: 6, bottom: 6 })
                   .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
                 Text(){
                   Span('粉丝：')
                   Span(this.model.userDetail?.profile.total_follow_users.toString())
-                  Span('\t\t\t\t')
+                  Span('    ')
                   Span('关注：')
                   Span(this.model.userDetail?.profile.total_mypixiv_users.toString())
-                }.borderRadius($r('sys.float.ohos_id_blur_style_thin_radius'))
+                }
+                .borderRadius(10)
                 .fontSize($r('sys.float.Subtitle_S'))
-                .padding(4)
+                .fontColor('#F1F5F9')
+                .padding({ left: 10, right: 10, top: 6, bottom: 6 })
                 .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
-              }.alignItems(HorizontalAlign.Start)
+              }
+              .alignItems(HorizontalAlign.Start)
+              .padding({ left: 16, bottom: 16, right: 16 })
             }
           }.width('100%')
+          .height(200)
+          .clip(true)
           .alignContent(Alignment.BottomStart)
         }
         ListItemGroup(){
@@ -61,23 +86,36 @@ struct UserDetailPage {
                   if(this.model.userDetail?.user.comment && this.model.userDetail?.user.comment.length > 0){
                     Row(){
                       Text(this.model.userDetail.user.comment)
+                        .fontSize(14)
+                        .fontColor('#334155')
+                        .lineHeight(22)
                     }.width('100%')
-                    .backgroundColor(Color.Gray)
+                    .padding(14)
+                    .backgroundColor('#F1F5F9')
+                    .borderRadius(12)
                     .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
-                    Divider()
+                    Divider().color('#EEF2F7').margin({ top: 12, bottom: 8 })
                   }
                   Row(){
                     Text('昵称：')
+                      .fontColor('#64748B')
+                      .fontSize(14)
                     Blank()
                     Text(this.model.userDetail?.user.name)
+                      .fontSize(14)
+                      .fontColor('#1E293B')
                   }.width('100%')
-                  Divider()
+                  Divider().color('#EEF2F7')
                   Row(){
                     Text('ID:')
+                      .fontColor('#64748B')
+                      .fontSize(14)
                     Blank()
                     Text(this.model.userDetail?.user.id.toString())
+                      .fontSize(14)
+                      .fontColor('#1E293B')
                   }.width('100%')
-                  Divider()
+                  Divider().color('#EEF2F7')
 
                   if ((this.model.userDetail?.profile.birth && this.model.userDetail.profile.birth.length>0) ||
                       (this.model.userDetail?.profile.birth_day && this.model.userDetail.profile.birth_day.length > 0)

@@ -22,17 +22,21 @@ export struct SearchPage{
   }
 
   @Builder searchSetting(){
-    Column({space:16}){
+    Column({ space: 16 }){
       Row(){
         Text('AI生成')
+          .fontSize(15)
+          .fontColor('#334155')
         Blank()
         Toggle({type:ToggleType.Switch,isOn:this.model.showAI}).onChange(isOn=>{
           this.model.showAI = isOn
         })
       }.width('100%')
-      Divider()
+      Divider().color('#EEF2F7')
       Row(){
         Text('搜索类型')
+          .fontSize(15)
+          .fontColor('#334155')
         Blank()
         Repeat(this.model.searchTypeOpts).each(item=>{
           Row(){
@@ -45,9 +49,11 @@ export struct SearchPage{
           }
         }).key(item=>item.value)
       }.width('100%')
-      Divider()
+      Divider().color('#EEF2F7')
       Row(){
         Text('排序')
+          .fontSize(15)
+          .fontColor('#334155')
         Blank()
         Row({space:6}){
           Repeat(this.model.sortOpts).each(item=>{
@@ -62,9 +68,11 @@ export struct SearchPage{
           }).key(item=>item.value)
         }
       }.width('100%')
-      Divider()
+      Divider().color('#EEF2F7')
       Row(){
         Text('搜索条件')
+          .fontSize(15)
+          .fontColor('#334155')
         Blank()
         Select(this.model.targetSelectOpt)
           .selected(this.model.searchTargets.indexOf(this.model.searchTarget))
@@ -73,9 +81,11 @@ export struct SearchPage{
             this.model.searchTarget = value
           })
       }.width('100%')
-      Divider()
+      Divider().color('#EEF2F7')
       Row(){
         Text('日期范围')
+          .fontSize(15)
+          .fontColor('#334155')
         Blank()
         Row({space:6}){
           Text(this.model.startDate? DateTimeUtil.parseDateToLocalFormatTime(this.model.startDate,'YYYY-MM-DD') : '选择日期')
@@ -103,6 +113,8 @@ export struct SearchPage{
         }
       }.width('100%')
     }
+    .width('100%')
+    .padding({ left: 14, right: 14, top: 8, bottom: 8 })
   }
 
   @Builder searchTitle(){
@@ -116,14 +128,27 @@ export struct SearchPage{
 
   }
   @Builder tagTitle(tag:TrendTag){
-    Column(){
-      Text(tag.tag).fontSize(12).maxLines(1)
+    Column({ space: 2 }){
+      Text(tag.tag)
+        .fontSize(11)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(Color.White)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
       if (tag.translated_name){
-        Text(tag.translated_name).fontSize(10).maxLines(1)
+        Text(tag.translated_name)
+          .fontSize(10)
+          .fontColor('#E2E8F0')
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
-    }.width('100%')
-    .height(30)
-    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+    }
+    .width('100%')
+    .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+    .linearGradient({
+      direction: GradientDirection.Bottom,
+      colors: [['#00000000', 0.0], ['#000000AA', 0.55], ['#000000CC', 1.0]]
+    })
   }
 
   build() {
@@ -145,7 +170,7 @@ export struct SearchPage{
                 this.model.userDetailAction(item)
               }).height(undefined)
             },(item:UserPreview)=>item.user.id.toString())
-          }.divider({strokeWidth:2,startMargin:16,endMargin:16})
+          }.divider({ strokeWidth: 1, color: '#EEF2F7', startMargin: 16, endMargin: 16 })
         }.cachedCount(4)
         .onReachEnd(()=>{
           this.model.nextPageUserAction()
@@ -163,7 +188,8 @@ export struct SearchPage{
         this.model.showSheet = true
       }
     }])
-    .padding({top:32})
+    .padding({ top: 16 })
+    .backgroundColor('#F8FAFC')
     .bindSheet(this.model.showSheet,this.searchSetting(),{
       title: { title:'搜索设置' },
       height:SheetSize.MEDIUM,

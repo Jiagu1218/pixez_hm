@@ -1,5 +1,5 @@
 {
-  "modelVersion": "5.1.0",
+  "modelVersion": "6.0.2",
   "description": "Please describe the basic information.",
   "dependencies": {
     "@ohos/imageviewzoom": "^2.1.0"

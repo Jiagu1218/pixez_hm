@@ -1,3 +1,4 @@
+import { LengthUnit } from "@kit.ArkUI"
 import { ApiClient,
   HttpImage,
   IllustSearchTargetEnum, NovelSearchTargetEnum,
@@ -64,14 +65,23 @@ export struct SearchTab{
   }
 
   @Builder popup(){
-    Column({space:8}){
+    Column({ space: 0 }){
       Repeat<string>(this.autoComplete).each(item=>{
-        Text(item.item).maxLines(1).onClick(()=>{
-          this.showAutoComplete = false
-          this.submit(item.item)
-        })
+        Text(item.item)
+          .maxLines(1)
+          .fontSize(14)
+          .fontColor('#334155')
+          .padding({ left: 12, right: 12, top: 10, bottom: 10 })
+          .width('100%')
+          .backgroundColor('#F8FAFC')
+          .onClick(()=>{
+            this.showAutoComplete = false
+            this.submit(item.item)
+          })
       }).key(item=>item)
     }.width('100%')
+    .borderRadius(10)
+    .clip(true)
   }
 
   submit(value:string){
@@ -109,18 +119,31 @@ export struct SearchTab{
   }
 
   @Builder tagTitle(tag:TrendTag){
-    Column(){
-      Text(tag.tag).fontSize(12).maxLines(1)
+    Column({ space: 2 }){
+      Text(tag.tag)
+        .fontSize(11)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(Color.White)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
       if (tag.translated_name){
-        Text(tag.translated_name).fontSize(10).maxLines(1)
+        Text(tag.translated_name)
+          .fontSize(10)
+          .fontColor('#E2E8F0')
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
-    }.width('100%')
-    .height(30)
-    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+    }
+    .width('100%')
+    .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+    .linearGradient({
+      direction: GradientDirection.Bottom,
+      colors: [['#00000000', 0.0], ['#000000AA', 0.55], ['#000000CC', 1.0]]
+    })
   }
 
   build() {
-    Column({space:16}){
+    Column({ space: 16 }){
       if (this.marginTop>0){
         Row().width('100%').height(this.marginTop-16)
       }
@@ -147,27 +170,51 @@ export struct SearchTab{
             builder: this.popup()
           })
         if (this.historyWord.length>0){
-          Flex({wrap:FlexWrap.Wrap}){
+          Flex({ wrap: FlexWrap.Wrap, space: { main: { value: 8, unit: LengthUnit.VP } } }){
             Repeat<string>(this.historyWord).each(item=>{
-              Text(item.item).fontSize(12).maxLines(1).onClick(()=>{
-                this.submit(item.item)
-              })
+              Text(item.item)
+                .fontSize(12)
+                .maxLines(1)
+                .fontColor('#475569')
+                .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+                .backgroundColor('#F1F5F9')
+                .borderRadius(16)
+                .onClick(()=>{
+                  this.submit(item.item)
+                })
             }).key(item=>item)
           }
+          .margin({ top: 10 })
         }
       }
+      .padding({ left: 4, right: 4 })
       Divider()
-      Row({space:32}){
+        .color('#EEF2F7')
+        .strokeWidth(1)
+      Row({ space: 28 }){
         Repeat<string>(this.searchTypes).each(item=>{
-          Text(item.item).fontSize(16).maxLines(1).onClick(()=>{
-            this.searchType = item.item
-          })
+          Text(item.item)
+            .fontSize(15)
+            .fontWeight(this.searchType === item.item ? FontWeight.Medium : FontWeight.Regular)
+            .fontColor(this.searchType === item.item ? '#2563EB' : '#64748B')
+            .padding({ bottom: 6 })
+            .maxLines(1)
+            .onClick(()=>{
+              this.searchType = item.item
+            })
         }).key(item=>item)
       }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
       Grid(){
         Repeat<TrendTag>(this.trendTags).each(item=>{
           GridItem(){
-            HttpImage({url: item.item.illust.image_urls.square_medium,aRatio:1})
+            HttpImage({
+              url: item.item.illust.image_urls.square_medium,
+              aRatio: 1,
+              br: 12
+            })
+              .clip(true)
               .overlay(this.tagTitle(item.item),{
                 align:Alignment.Bottom
               })
@@ -178,8 +225,8 @@ export struct SearchTab{
       }.width('100%')
       .layoutWeight(1)
       .columnsTemplate('repeat(auto-fit, 120)')
-      .columnsGap(8)
-      .rowsGap(8)
+      .columnsGap(10)
+      .rowsGap(10)
 
       if (this.marginBottom>0){
         Row().width('100%').height(this.marginBottom - 16)

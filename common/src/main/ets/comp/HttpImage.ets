@@ -4,6 +4,7 @@ import { BusinessError } from "@kit.BasicServicesKit"
 import { LocalCacheInfo } from "pixez_network"
 import { DownloadUtil } from "pixez_network"
 
+@ReusableV2
 @ComponentV2
 export struct HttpImage {
   @Require @Param url: string
@@ -18,6 +19,14 @@ export struct HttpImage {
 
   aboutToAppear(): void {
     this.loadImage()
+  }
+
+  aboutToReuse(): void {
+    this.loadImage()
+  }
+
+  aboutToRecycle(): void {
+    // console.debug("")
   }
 
   private loadImage(): void {
@@ -48,30 +57,30 @@ export struct HttpImage {
       LoadingProgress()
         .width(40)
         .height(40)
-        .color('#FF4081')
+        .color('#2563EB')
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor('#F5F5F5')
+    .backgroundColor('#F8FAFC')
   }
 
   @Builder errorPlaceholder() {
     Column() {
       SymbolGlyph($r('sys.symbol.picture_damage'))
         .fontSize(40)
-        .fontColor(['#999999'])
+        .fontColor(['#94A3B8'])
       Text('图片加载失败')
         .fontSize(14)
-        .fontColor('#999999')
+        .fontColor('#94A3B8')
         .margin({ top: 8 })
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor('#F5F5F5')
+    .backgroundColor('#F8FAFC')
   }
 
   build() {

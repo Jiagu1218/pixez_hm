@@ -30,7 +30,17 @@ export struct SwiperImageItem{
       //   ImageItemView({imageData:this.pic})
       // }
       if (this.loading){
-        LoadingProgress().width(80)
+        Column() {
+          LoadingProgress()
+            .width(48)
+            .height(48)
+            .color('#2563EB')
+        }
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+        .backgroundColor('#0F172A22')
       }
     }.width('100%')
     .height('100%')

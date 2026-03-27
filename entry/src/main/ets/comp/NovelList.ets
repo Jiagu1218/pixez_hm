@@ -74,7 +74,7 @@ export struct NovelList{
             })
             .key(item=>item.id.toString())
         }
-        .divider({strokeWidth:2,startMargin:16,endMargin:16})
+        .divider({ strokeWidth: 1, color: '#EEF2F7', startMargin: 16, endMargin: 16 })
 
       }.cachedCount(4)
       .width('100%')
@@ -96,9 +96,10 @@ export struct NovelList{
 
       SymbolGlyph($r('sys.symbol.arrow_up_circle'))
         .fontSize(40)
-        .width(40)
-        .height(40)
-        .borderRadius(20)
+        .fontColor(['#2563EB'])
+        .width(44)
+        .height(44)
+        .borderRadius(22)
         .onClick(()=>{
           this.controller.top()
         })
@@ -107,6 +108,13 @@ export struct NovelList{
           y: -80
         })
         .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+        .backgroundColor('#FFFFFFEE')
+        .shadow({
+          radius: 12,
+          color: '#2563EB22',
+          offsetX: 0,
+          offsetY: 4
+        })
     }.width('100%')
     .height('100%')
     .alignContent(Alignment.BottomEnd)

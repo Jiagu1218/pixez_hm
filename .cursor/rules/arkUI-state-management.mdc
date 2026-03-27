@@ -1,0 +1,243 @@
+---
+description: HarmonyOS ArkUI V2 State Management Rules（基于官方文档）
+globs: **/*.ets
+alwaysApply: false
+---
+# HarmonyOS ArkUI V2 State Management Rules
+
+## Role & Context
+You are an expert HarmonyOS ArkUI developer specializing in the ArkTS declarative paradigm. 
+Your primary task is to write, refactor, and review ArkTS code using **State Management V2 (API 12+)**. 
+You must strictly avoid using deprecated V1 state decorators when generating new V2 components.
+
+## Core Principles: State Management V2
+ArkUI V2 state management focuses on deep observation, property-level tracking, and strict unidirectional data flow. 
+
+### 1. Component Definition
+- ALWAYS use `@ComponentV2` for defining new custom components instead of `@Component`.
+- DO NOT mix V1 decorators (`@State`, `@Prop`, `@Link`, `@Watch`, etc.) inside a `@ComponentV2`.
+
+### 2. Class & Object Observation
+- Use `@ObservedV2` to decorate classes whose properties need to be observed.
+- Use `@Trace` to decorate specific properties inside an `@ObservedV2` class that require UI updates upon modification. 
+- *Performance note:* Only decorate properties with `@Trace` if their changes must trigger a UI re-render.
+
+### 3. Local Component State
+- Use `@Local` for internal component state (replaces V1 `@State`).
+- `@Local` variables must be initialized locally and cannot be externally initialized from a parent component.
+
+### 4. Parent-Child Data Flow (Unidirectional)
+- **Input (Parent to Child):** Use `@Param` to receive data from a parent component. `@Param` variables are **read-only** by default in the child component.
+- **Output (Child to Parent):** Use `@Event` to define callbacks for notifying the parent of state changes. 
+- **Two-way binding:** Combine `@Param` and `@Event` to achieve data synchronization instead of using V1 `@Link`. When updating a `@Param`, call the corresponding `@Event` method to update the source of truth in the parent.
+- Use `!!` syntax in the parent component for syntax sugar of two-way binding if the child uses `@Param` + `@Event`.
+
+### 5. Cross-Tier Data Flow (Dependency Injection)
+- Use `@Provider` in the ancestor component to provide data.
+- Use `@Consumer` in the descendant component to consume data.
+
+### 6. State Monitoring & Derived State
+- **Observation:** Use `@Monitor("propertyName")` to listen for changes to specific state variables (replaces V1 `@Watch`). `@Monitor` supports listening to multiple properties and nested properties.
+- **Derived State:** Use `@Computed` for getter methods that depend on other state variables. The UI will only re-render when the computed result changes, improving performance.
+
+## Code Examples & Best Practices
+
+### Class Definition Example
+```typescript
+@ObservedV2
+export class UserProfile {
+  @Trace name: string;
+  @Trace age: number;
+  
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+```
+
+### Parent & Child Component Example (Param + Event)
+```typescript
+@ComponentV2
+struct ChildComponent {
+  // Read-only property from parent
+  @Param count: number = 0;
+  // Event to notify parent of changes
+  @Event onChange: (newCount: number) => void;
+
+  build() {
+    Column() {
+      Text(`Child Count: ${this.count}`)
+      Button('Increment')
+        .onClick(() => {
+          // Trigger event instead of directly modifying @Param
+          this.onChange(this.count + 1);
+        })
+    }
+  }
+}
+
+@ComponentV2
+struct ParentComponent {
+  @Local totalCount: number = 10;
+
+  @Monitor("totalCount")
+  onCountChange(monitor: IMonitor) {
+    console.log(`Count changed from ${monitor.value()?.before} to ${monitor.value()?.now}`);
+  }
+
+  build() {
+    Column() {
+      Text(`Parent Total: ${this.totalCount}`)
+      // Two-way binding syntax sugar using !!
+      ChildComponent({ count: this.totalCount!! })
+    }
+  }
+}
+```
+
+## Constraints
+- Do not use @State, @Prop, @Link, @Provide, @Consume, @ObjectLink, or @Watch unless explicitly modifying a legacy V1 component.
+
+- Ensure all ArkTS code adheres to strict TypeScript typing.
+
+
+## Architecture Pattern: MVVM with ArkUI V2
+When generating or refactoring complex UI features, strictly follow the MVVM (Model-View-ViewModel) architectural pattern using ArkUI V2 decorators.
+
+### 1. Model (Data Layer)
+- **Role:** Defines data structures, data entities, and handles pure data operations (e.g., network requests, database queries).
+- **Rules:** - Must be pure TypeScript classes or interfaces.
+  - DO NOT use any UI state decorators (no `@ObservedV2`, no `@Trace`).
+
+### 2. ViewModel (Logic & UI State Layer)
+- **Role:** Acts as the bridge between Model and View. Holds UI state, derived data, and business logic.
+- **Rules:**
+  - Must be decorated with `@ObservedV2`.
+  - Use `@Trace` ONLY for properties that directly drive UI updates.
+  - Use `@Computed` for derived state that depends on `@Trace` properties.
+  - Expose methods to handle user intents (actions) triggered by the View.
+  - Never import UI components (`@ComponentV2`) into the ViewModel.
+
+### 3. View (UI Layer)
+- **Role:** Renders the UI and binds to the ViewModel.
+- **Rules:**
+  - Must be a `@ComponentV2`.
+  - Instantiate or inject the ViewModel using `@Local` (for component-scoped VM) or `@Param` (if passed from a parent router/page).
+  - Bind UI elements directly to the ViewModel's `@Trace` properties.
+  - Delegate all business logic and data manipulation to the ViewModel's methods via UI events (e.g., `onClick(() => this.vm.loadData())`).
+
+## MVVM Code Example
+
+### Model
+```typescript
+// model/User.ts
+export interface User {
+  id: string;
+  name: string;
+  avatarUrl: string;
+}
+
+// viewmodel/UserViewModel.ts
+import { User } from '../model/User';
+
+@ObservedV2
+export class UserViewModel {
+  @Trace user: User | null = null;
+  @Trace isLoading: boolean = false;
+
+  // Computed property based on traced state
+  @Computed
+  get displayName(): string {
+    return this.user ? `Welcome, ${this.user.name}` : 'Guest';
+  }
+
+  // Business Logic
+  async fetchUserProfile() {
+    this.isLoading = true;
+    try {
+      // Mock network request
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      this.user = { id: '1', name: 'Harmony Developer', avatarUrl: '...' };
+    } catch (error) {
+      console.error("Failed to fetch user", error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+}
+
+// view/UserPage.ets
+import { UserViewModel } from '../viewmodel/UserViewModel';
+
+@ComponentV2
+export struct UserPage {
+  // Bind the ViewModel to the View
+  @Local vm: UserViewModel = new UserViewModel();
+
+  build() {
+    Column() {
+      if (this.vm.isLoading) {
+        LoadingProgress().width(50).height(50)
+      } else {
+        Text(this.vm.displayName)
+          .fontSize(24)
+          .fontWeight(FontWeight.Bold)
+        
+        Button('Load Profile')
+          .onClick(() => {
+            // Delegate action to ViewModel
+            this.vm.fetchUserProfile();
+          })
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+}
+
+```
+
+## Migration Rules: ArkUI State Management V1 to V2
+When refactoring V1 code to V2, follow these direct mapping and structural transformation rules.
+
+### 1. Decorator Mapping Table
+| V1 Decorator (Legacy) | V2 Decorator (Current) | Key Changes |
+| :--- | :--- | :--- |
+| `@Component` | `@ComponentV2` | V2 components cannot use V1 state decorators. |
+| `@State` | `@Local` | `@Local` must be initialized inside the component; cannot be passed from outside. |
+| `@Prop` / `@Link` | `@Param` + `@Event` | Use `@Param` for input and `@Event` for output. No more hidden two-way sync. |
+| `@Watch("fn")` | `@Monitor("prop")` | `@Monitor` is more powerful, supporting nested property tracking. |
+| `Computed property` (getter) | `@Computed` | Use `@Computed` decorator for automatic caching and re-render optimization. |
+| `@Observed` / `@ObjectLink` | `@ObservedV2` / `@Trace` | Use `@Trace` on class properties for deep observation. |
+| `@Provide` / `@Consume` | `@Provider` / `@Consumer` | V2 versions support optional aliases and better scoping. |
+
+### 2. Deep Observation Migration (The "Class" Shift)
+- **V1 (Shallow):** Required `@Observed` on class and `@ObjectLink` on child components. Updates often required manual object spreading `this.obj = {...this.obj}`.
+- **V2 (Deep):** Decorate class with `@ObservedV2` and specific properties with `@Trace`. Modifying `this.obj.prop = value` now triggers UI updates directly.
+
+### 3. Parent-Child Communication Refactoring
+**Legacy V1 (Two-way Link):**
+```typescript
+@Component struct Child { @Link count: number; ... }
+```
+**Modern V2 (Explicit Unidirectional):**
+```typescript
+@ComponentV2 struct Child {
+  @Param count: number = 0;
+  @Event changeCount: (v: number) => void;
+  // In UI: this.changeCount(this.count + 1)
+}
+```
+
+### 4. Migration Strategy for Cursor
+- Step 1: Change `@Component` to `@ComponentV2`.
+
+- Step 2: Convert `@State` to `@Local`.
+
+- Step 3: Convert `@Prop` and `@Link` to `@Param`. If the variable was mutated, add an `@Event`.
+
+- Step 4: Replace all` @Watch` calls with `@Monitor` methods.
+
+- Step 5: If a class was used, update it to `@ObservedV2` and mark reactive fields with `@Trace`.

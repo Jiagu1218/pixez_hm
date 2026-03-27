@@ -1,0 +1,84 @@
+---
+description: HarmonyOS ArkTS 高性能编程实践（参考官方 High Performance Programming 指南）
+globs: **/*.ets
+alwaysApply: false
+---
+
+# ArkTS 高性能编程规则
+
+本规则参考华为官方 ArkTS 高性能编程指南，对 `.ets` 文件中的热点代码给出约束，优先保证运行时性能和内存表现。
+
+## 1. 避免频繁创建对象与闭包
+
+- 在循环、频繁调用的函数中不要反复创建临时对象或闭包。
+- ❌
+  ```ts
+  for (let i: number = 0; i < list.length; i++) {
+    let obj = { index: i }; // 每次循环都新建
+  }
+  ```
+- ✅
+  ```ts
+  let obj: { index: number } = { index: 0 };
+  for (let i: number = 0; i < list.length; i++) {
+    obj.index = i;
+    // 使用 obj
+  }
+  ```
+
+## 2. 减少不必要的装箱与类型转换
+
+- 避免频繁在 `string`/`number`/`boolean` 之间来回转换。
+- 在热点路径中，尽量保持变量类型稳定，不做多余的 `String(...)` / `Number(...)`。
+
+## 3. 循环与数据结构选择
+
+- 对大数组/列表使用普通 `for` 循环优先于 `forEach`/`map` 等高阶函数。
+- ❌
+  ```ts
+  list.forEach((item: number) => {
+    heavyWork(item);
+  });
+  ```
+- ✅
+  ```ts
+  for (let i: number = 0; i < list.length; i++) {
+    heavyWork(list[i]);
+  }
+  ```
+
+## 4. 避免在渲染/回调中做重活
+
+- 与 UI 更新紧密相关的回调（如组件渲染、定时器回调）中：
+  - 禁止进行重型计算、IO 操作；
+  - 将重型逻辑下沉到后台任务或预处理阶段。
+
+## 5. 字符串拼接与日志
+
+- 对于日志等调试字符串，避免在非调试环境中过度拼接或格式化。
+- 热点逻辑中避免在循环里频繁构造长字符串。
+
+## 6. 异步与网络调用
+
+- 网络请求必须进行统一封装与复用（如 `requestJson<T>()`），避免在业务代码中重复配置相同的 HTTP 选项。
+- 避免多次并发访问同一资源却没有缓存策略的情况，可根据业务增加简单缓存层。
+
+## 7. 避免多余的中间数组与复制
+
+- 在对数组做过滤、映射时，如果结果只使用一次，评估是否可以用单次遍历代替多次创建中间数组。
+- ❌
+  ```ts
+  let filtered = list.filter((x: number) => x > 0);
+  let doubled = filtered.map((x: number) => x * 2);
+  ```
+- ✅
+  ```ts
+  let result: Array<number> = [];
+  for (let i: number = 0; i < list.length; i++) {
+    let value: number = list[i];
+    if (value > 0) {
+      result.push(value * 2);
+    }
+  }
+  ```
+

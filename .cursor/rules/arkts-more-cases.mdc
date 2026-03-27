@@ -1,0 +1,99 @@
+---
+description: ArkTS 更多用例与常见陷阱实践规则（基于官方文档）
+globs: **/*.ets
+alwaysApply: false
+---
+
+# ArkTS 更多用例与常见陷阱（实战规则）
+
+> 参考华为官方文档 “ArkTS 更多用例与常见陷阱” 编写，帮助在 .ets 文件中规避不兼容 TS 的写法，减少编译/运行时问题。
+
+## 1. 避免复杂类型体操
+
+- **不要使用**：交叉类型（`A & B`）、条件类型、`Required` / `Partial` / `Pick` / `Omit` / `Record` / `ReturnType` 等 TS 工具类型。
+- **推荐做法**：为 ArkTS 单独定义清晰的接口或内部类型。
+
+```ts
+// ❌ BAD：交叉 + 工具类型
+type FullConfig = Required<Omit<HttpPoolConfig, 'defaultHeader'>>;
+
+// ✅ GOOD：直接定义 ArkTS 内部结构
+interface HttpPoolConfigInternal {
+  maxConcurrent: number;
+  connectTimeout: number;
+  readTimeout: number;
+  retryCount: number;
+  retryDelayMs: number;
+  keepAlive: boolean;
+}
+```
+
+## 2. 不使用索引签名与宽泛 Map
+
+- **不要使用**：`[key: string]: XXX`、`Record<string, XXX>` 这类索引签名。
+- **推荐做法**：改为 **数组 + 显式字段** 的形式。
+
+```ts
+// ❌ BAD
+interface StringStringMap {
+  [key: string]: string;
+}
+
+// ✅ GOOD
+export interface HeaderEntry {
+  key: string;
+  value: string;
+}
+
+export interface HttpPoolConfig {
+  defaultHeader?: Array<HeaderEntry>;
+}
+```
+
+## 3. HTTP 访问的 ArkTS 写法约束
+
+- **每个请求使用新的 `http.createHttp()` 实例**，并在结束后调用 `destroy()`。
+- **必须设置超时**：`connectTimeout`、`readTimeout` 使用毫秒值。
+- 尽量统一在一个工具层封装（如 `HttpConnectionPool` / `requestJson<T>()`），业务代码只写强类型函数。
+
+```ts
+// ✅ 推荐模式（封装在工具类中）
+let httpRequest = http.createHttp();
+try {
+  let resp = await httpRequest.request(url, {
+    method: http.RequestMethod.GET,
+    connectTimeout: 15000,
+    readTimeout: 15000
+  });
+  // 使用 resp.result ...
+} finally {
+  httpRequest.destroy();
+}
+```
+
+## 4. ArkTS 兼容子集的语法注意点
+
+- 不使用：对象/数组解构、展开运算符 `...`、剩余参数、`any` / `unknown` / `object` 宽泛类型。
+- 函数参数、返回值、类属性 **必须显式写类型**。
+
+```ts
+// ❌ BAD
+function bad(x) {
+  return x;
+}
+
+// ✅ GOOD
+function good(x: number): number {
+  return x;
+}
+```
+
+## 5. 容易踩坑的写法统一替换
+
+在 ArkTS 代码中，一旦看到下面这些模式，请优先替换：
+
+- `type X = A & B` → 拆成新的 `interface X { ... }`
+- `Record<string, T>` / `[k: string]: T` → `Array<{ key: string; value: T }>`
+- `Partial<T>` / `Omit<T, K>` → 单独定义 ArkTS 版接口
+- 未调用 `destroy()` 的 `http.createHttp()` → 在 `try/finally` 中调用
+

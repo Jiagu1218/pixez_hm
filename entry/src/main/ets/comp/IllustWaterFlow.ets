@@ -9,7 +9,7 @@ import { ApiClient, Illust, IllustPageResponseBase } from "common";
 @ComponentV2
 export struct IllustWaterFlow {
   @Local private showBackToTop: boolean = false;
-  @Local private datasource: Illust[] = [];
+  @Local private datasource: IllustDataSourcePrefetching = new IllustDataSourcePrefetching();
   private prefetcher = new BasicPrefetcher();
   private pathStack: NavPathStack | undefined = undefined;
   private nextUrl: string | null = null;
@@ -24,7 +24,7 @@ export struct IllustWaterFlow {
   }
 
   private clean = () => {
-    this.datasource.length  = 0;
+    this.datasource.clean();
   }
 
   private getFirstPage = () => {
@@ -50,6 +50,8 @@ export struct IllustWaterFlow {
     this.controller.clean = this.clean;
     this.controller.getFirstPage = this.getFirstPage;
     this.pathStack = this.queryNavigationInfo()?.pathStack;
+    this.datasource.getSession();
+    this.prefetcher.setDataSource(this.datasource);
     this.loadInitialData();
   }
 
@@ -66,6 +68,7 @@ export struct IllustWaterFlow {
   }
 
   aboutToDisappear(): void {
+    this.datasource.destroy();
   }
 
   @Builder footer() {
@@ -77,9 +80,10 @@ export struct IllustWaterFlow {
     if (this.showBackToTop) {
       SymbolGlyph($r('sys.symbol.arrow_up_circle'))
         .fontSize(40)
-        .width(40)
-        .height(40)
-        .borderRadius(20)
+        .fontColor(['#2563EB'])
+        .width(44)
+        .height(44)
+        .borderRadius(22)
         .onClick(() => {
           this.controller.top();
         })
@@ -89,7 +93,13 @@ export struct IllustWaterFlow {
         })
         .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
         .backgroundColor('#FFFFFF')
-        .opacity(0.9)
+        .opacity(0.96)
+        .shadow({
+          radius: 12,
+          color: '#2563EB22',
+          offsetX: 0,
+          offsetY: 4
+        })
         .transition({
           type: TransitionType.All
         });
@@ -117,26 +127,26 @@ export struct IllustWaterFlow {
               .width('100%');
           }, (item: number) => item.toString());
         }
-        Repeat(this.datasource)
-          .virtualScroll()
-          .each(item => {
-            if (item.item.visible) {
-              FlowItem() {
-                IllustCard({ illust: item.item })
-                  .transition({
-                    type: TransitionType.All
-                  });
-              }
-              .onClick(() => {
-                this.pathStack?.pushPath({
-                  name: 'artWorksPage',
-                  param: { illustId: item.item.id } as IllustRouterParam
+        LazyForEach(this.datasource, (item: Illust) => {
+          if (item.visible) {
+            FlowItem() {
+              IllustCard({ illust: item })
+                .transition({
+                  type: TransitionType.All
                 });
-              });
             }
-          })
-          .key(item => item.id.toString())
+            .onClick(() => {
+              this.pathStack?.pushPath({
+                name: 'artWorksPage',
+                param: { illustId: item.id } as IllustRouterParam
+              });
+            });
+          }
+        }, (item: Illust) => item.id.toString());
       }
+      .onScrollIndex((first, last) => {
+        this.prefetcher.visibleAreaChanged(first, last);
+      })
       // .onScrollIndex((first, last) => {
       //   this.prefetcher.visibleAreaChanged(first, last);
       // })

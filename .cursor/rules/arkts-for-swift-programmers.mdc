@@ -1,0 +1,70 @@
+---
+description: 面向 Swift 开发者的 ArkTS 使用要点（参考 Getting Started with ArkTS for Swift Programmers）
+globs: **/*.ets
+alwaysApply: false
+---
+
+# Swift 程序员使用 ArkTS 的规则与对照
+
+本规则面向有 Swift 背景的开发者，帮助在 ArkTS 中避免“按 Swift 写法思考”，统一一些容易混淆的点。
+
+## 1. 类型系统差异
+
+- ArkTS 没有可选类型语法标记 `?` 和 `!`，通过联合类型与可选字段表达：
+  - Swift：`var name: String?`
+  - ArkTS：`name?: string;` 或 `name: string | null;`
+
+- 没有 `struct` 与值语义：
+  - ArkTS 中 `interface` 和 `class` 都是引用语义，复制变量不会像 Swift struct 那样产生独立拷贝。
+
+## 2. 可选与空值处理
+
+- 不存在可选链语法 `?.` 与强制解包 `!`：
+  - ❌ `user?.name` / `user!.name`
+  - ✅
+    ```ts
+    if (user !== undefined && user !== null) {
+      let name: string = user.name;
+    }
+    ```
+
+- 类型必须显式包含空值情况：
+  - Swift：`String?` 对应 ArkTS 的 `string | null` 或 `string | undefined`。
+
+## 3. 集合与下标
+
+- 没有 Swift 的 `Array` / `Dictionary` 语法糖：
+  - ArkTS 使用 `Array<T>` 和索引签名：
+    ```ts
+    let list: Array<number> = [1, 2, 3];
+    let dict: { [key: string]: string } = { key: 'value' };
+    ```
+
+- 下标访问语法相似，但没有 Swift 的越界安全：
+  - 使用下标前注意 `index` 合法性。
+
+## 4. 异步模型：async/await 相似但语义不同
+
+- Swift Concurrency 的 `async`/`await` 与 ArkTS 形式上类似，但 ArkTS 基于 `Promise`：
+  - Swift：`func load() async throws -> User`
+  - ArkTS：
+    ```ts
+    async function load(): Promise<UserInfoByUidResp> {
+      let resp: UserInfoByUidResp = await getUserInfoByUid({ uid: 1 });
+      return resp;
+    }
+    ```
+
+- ArkTS 中没有 Task/Actor 概念，避免直接迁移 Swift 并发模型。
+
+## 5. 值传递与引用传递
+
+- Swift struct 默认值语义，ArkTS 接口/对象默认引用语义：
+  - 从 Swift 迁移时，注意共享引用导致的“无意间修改原对象”问题。
+  - 推荐对需要防止修改的数据手工执行浅拷贝或深拷贝，而不是假设值语义。
+
+## 6. 语法习惯对照
+
+- 不使用 Swift 风格命名（如 `userName` 可以保留 camelCase，但不要 `UserInfo` 里塞太多计算属性）。
+- ArkTS 中没有属性观察者 `didSet/willSet`，如需监听变化，使用显式函数调用或框架提供的响应式能力。
+

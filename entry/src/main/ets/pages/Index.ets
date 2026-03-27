@@ -34,7 +34,17 @@ struct Index {
   @Local aRatio:number = 1;
   @Local ani:Array<ImageFrameInfo> = []
   @Local illust:Illust|null = null
+  private handleCookies(url: string) {
 
+    console.log(url);
+
+    webview.WebCookieManager.fetchCookie(url, (err, cookies) => {
+      console.info('cookies',cookies)
+      if (cookies?.includes('cf_clearance')) {
+        // 触发回调逻辑
+      }
+    });
+  }
   aboutToAppear(): void {
     // schemeHandler 处理登录回调 todo 移植到登录页面
     this.schemeHandler.onRequestStart(callbacck=>{
@@ -62,7 +72,7 @@ struct Index {
 
   build() {
     Column(){
-      Web({controller:this.controller,src:'https://www.youtube.com'})
+      Web({controller:this.controller,src:'https://hanime1.me/'})
         .onControllerAttached(()=>{
           this.controller.enableSafeBrowsing(false)
           this.controller.setCustomUserAgent('Mozilla/5.0 (Phone Android; OpenHarmony 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 ArkWeb/4.1.6.1 Mobile')
@@ -82,7 +92,20 @@ struct Index {
         .onSslErrorEventReceive(e => {
           e.handler.handleConfirm()
           console.error('加载webview失败', e)
-        })
+        }).onPageEnd(event => {
+        if (event) {
+          this.controller.runJavaScript(
+            "document.head.innerHTML",
+            (error, html) => {
+              if (!html?.includes('#challenge-form') &&
+                !html?.includes('#challenge-success-text') &&
+                !html?.includes('#challenge-error-text')) {
+                this.handleCookies(event.url);
+              }
+            }
+          );
+        }
+      })
         .javaScriptAccess(true)
         .domStorageAccess(true)
         .fileAccess(true)
@@ -324,6 +347,10 @@ struct Index {
       }
       .layoutWeight(1)
       .width('100%')
-    }.width('100%').height('100%')
+    }
+    .width('100%')
+    .height('100%')
+    .padding({ left: 8, right: 8 })
+    .backgroundColor('#F1F5F9')
   }
 }

@@ -37,22 +37,23 @@ export struct IllustSeriesNav {
   private NextIllustButton() {
     Row() {
       if (this.nextIllust) {
-        HttpImage({ url: this.nextIllust.image_urls.square_medium, aRatio: 1 })
+        HttpImage({ url: this.nextIllust.image_urls.square_medium, aRatio: 1, br: 12 })
           .width(48)
-          .borderRadius(12)
           .shadow({
             radius: 8,
-            color: '#00000010',
+            color: '#00000014',
             offsetX: 0,
-            offsetY: 4
+            offsetY: 3
           })
         Column() {
           Text('下一话')
             .fontSize(16)
-            .fontWeight(FontWeight.Bold)
+            .fontWeight(FontWeight.Medium)
+            .fontColor('#1E293B')
             .layoutWeight(1)
           Text(this.nextIllust.title)
             .fontSize(14)
+            .fontColor('#64748B')
             .layoutWeight(1)
             .maxLines(1)
         }
@@ -62,8 +63,9 @@ export struct IllustSeriesNav {
         Button('没有下一话')
           .layoutWeight(1)
           .enabled(false)
-          .backgroundColor('#E0E0E0')
-          .fontColor('#666666')
+          .backgroundColor('#F1F5F9')
+          .fontColor('#94A3B8')
+          .borderRadius(10)
       }
     }
     .width('100%')
@@ -80,12 +82,15 @@ export struct IllustSeriesNav {
 
   @Builder
   private PrevIllustButton() {
-    Row() {
+    Row({ space: 10 }) {
       if (this.prevIllust) {
         Button('上一话')
           .layoutWeight(1)
-          .backgroundColor('#2196F3')
-          .fontColor('#FFFFFF')
+          .height(44)
+          .backgroundColor('#2563EB')
+          .fontColor(Color.White)
+          .fontWeight(FontWeight.Medium)
+          .borderRadius(12)
           .onClick(() => {
             if (this.prevIllust) {
               this.pathStack?.replacePath({
@@ -97,12 +102,16 @@ export struct IllustSeriesNav {
       } else {
         Text('没有上一话')
           .layoutWeight(1)
-          .fontColor('#666666')
+          .fontColor('#94A3B8')
+          .fontSize(14)
       }
       Button('系列作品预览')
         .layoutWeight(1)
-        .backgroundColor('#2196F3')
-        .fontColor('#FFFFFF')
+        .height(44)
+        .backgroundColor('#EEF2FF')
+        .fontColor('#2563EB')
+        .fontWeight(FontWeight.Medium)
+        .borderRadius(12)
         .onClick(() => {
           this.getIllustSeries(this.seriesId)
         })
@@ -112,16 +121,21 @@ export struct IllustSeriesNav {
   }
 
   build() {
-    Column() {
+    Column({ space: 10 }) {
       this.NextIllustButton()
       this.PrevIllustButton()
     }
-    .height(96)
+    .width('100%')
+    .padding({ left: 12, right: 12, top: 10, bottom: 10 })
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
-    .borderRadius(12)
+    .borderRadius(14)
+    .border({
+      width: 1,
+      color: '#EEF2F6'
+    })
     .shadow({
-      radius: 8,
-      color: '#00000010',
+      radius: 12,
+      color: '#00000012',
       offsetX: 0,
       offsetY: 4
     })

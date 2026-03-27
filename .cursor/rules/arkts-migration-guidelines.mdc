@@ -1,0 +1,148 @@
+---
+description: HarmonyOS ArkTS 安全子集与迁移约定（参考官方 TS→ArkTS 迁移指南）
+globs: **/*.ets
+alwaysApply: false
+---
+
+# ArkTS 编码与迁移规则
+
+本规则参考华为官方 ArkTS 迁移指南（TS → ArkTS），约束本项目中 `.ets` 文件的写法，确保代码能稳定通过 ArkTS 编译，并便于从 TypeScript 迁移。
+
+## 1. 类型系统约束
+
+- **禁止 `any` / `unknown` / `object` 宽泛类型**
+  - 所有变量、参数、返回值必须使用明确的接口或基础类型。
+  - ❌ `let data: any;`
+  - ✅ `let data: CurrentUserData;`
+
+- **禁止隐式 `any`**
+  - 所有函数参数和返回值必须显式标注类型。
+  - ❌ `function foo(x) { return x; }`
+  - ✅ `function foo(x: string): string { return x; }`
+
+- **索引签名需使用受限联合类型**
+  - 仅允许字符串 → 具体联合类型，而不是任意值。
+  - ❌ `interface Dict { [k: string]: any; }`
+  - ✅
+    ```ts
+    export type QueryValue = string | number | boolean;
+    export interface QueryParams {
+      [key: string]: QueryValue;
+    }
+    ```
+
+## 2. 语法特性约束
+
+- **避免解构赋值**
+  - 为了兼容 ArkTS 子集，不使用对象/数组解构。
+  - ❌ `const { data } = resp;`
+  - ✅
+    ```ts
+    let resp: CurrentUserInfoResp = await getCurrentUserInfo();
+    let data: CurrentUserData = resp.data;
+    ```
+
+- **禁止展开运算符 `...`（对象和数组）**
+  - ❌
+    ```ts
+    let options = { ...baseOptions, expectDataType: http.HttpDataType.JSON };
+    ```
+  - ✅
+    ```ts
+    let options: http.HttpRequestOptions = {
+      method: baseOptions.method,
+      header: baseOptions.header,
+      extraData: baseOptions.extraData,
+      expectDataType: http.HttpDataType.JSON
+    };
+    ```
+
+- **避免可变参数 / 剩余参数**
+  - ❌ `function sum(...args: number[]) { }`
+  - ✅ `function sum(args: Array<number>): number { /* 遍历计算 */ }`
+
+- **使用严格相等**
+  - 统一使用 `===` / `!==`，避免 `==` / `!=`。
+
+## 3. 模块与导入
+
+- **仅使用 ES Module 语法**
+  - 允许：`import http from '@ohos.net.http';`、`export interface X {}`。
+  - 禁止：`require()`、`module.exports` 等 CommonJS 写法。
+
+- **导入路径清晰**
+  - 推荐使用相对路径或工程配置的别名，不混用同一个模块的多种写法。
+
+## 4. ArkTS 与框架 API 的使用
+
+- **统一通过强类型封装访问系统能力**
+  - HarmonyOS 网络等系统能力应通过封装好的 ArkTS API 调用，不直接用动态 JS 写法。
+  - 示例（网络请求）：
+    ```ts
+    async function requestJson<T>(url: string, options: http.HttpRequestOptions): Promise<T> {
+      let httpRequest = http.createHttp();
+      try {
+        let realOptions: http.HttpRequestOptions = {
+          method: options.method,
+          header: options.header,
+          extraData: options.extraData,
+          expectDataType: http.HttpDataType.JSON
+        };
+        let response = await httpRequest.request(url, realOptions);
+        // @ts-ignore ArkTS HttpResponse.result 由框架提供
+        let result: T = response.result as T;
+        return result;
+      } finally {
+        httpRequest.destroy();
+      }
+    }
+    ```
+
+- **禁止使用 `eval` 等动态执行**
+  - 不允许 `eval`、`new Function` 等动态代码执行方式。
+
+## 5. 面向对象与函数写法
+
+- **类成员必须显式声明类型**
+  - ❌
+    ```ts
+    class User {
+      uid;
+      name;
+      constructor(uid, name) {
+        this.uid = uid;
+        this.name = name;
+      }
+    }
+    ```
+  - ✅
+    ```ts
+    class User {
+      uid: number;
+      name: string;
+      constructor(uid: number, name: string) {
+        this.uid = uid;
+        this.name = name;
+      }
+    }
+    ```
+
+- **导出函数需显式返回类型**
+  - ❌ `export async function getUser(uid: number) { ... }`
+  - ✅ `export async function getUser(uid: number): Promise<UserInfoByUidResp> { ... }`
+
+## 6. 项目内 ArkTS 实践约定
+
+- **所有 HTTP 调用统一走 `requestJson<T>()` 封装**
+  - 每个接口函数都必须指定泛型 `T`，禁止返回 `Promise<any>`。
+
+- **所有接口类型集中定义在 `ApiTypes.ets`**
+  - 新增接口时，先在 `ApiTypes.ets` 定义：
+    - `XXXQuery`（请求 Query/Body）
+    - `XXXData`（业务数据结构）
+    - `XXXResp = ApiResponse<XXXData>`（通用响应壳）
+  - 再在 `ApiClient.ets` 中添加对应的强类型请求函数。
+
+- **禁止在 ArkTS 业务代码中使用解构、展开、any/unknown**
+  - 若从 TypeScript 迁移，遇到这些语法时，优先按本规则进行重写，而不是强行关闭编译检查。
+

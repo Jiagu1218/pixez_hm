@@ -3,6 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { url } from '@kit.ArkTS';
 import { NavRouterType } from '../param/NavRouterType';
+import { ImageUtil, SessionManager, UserPreference } from 'common';
 
 const DOMAIN = 0x0000;
 
@@ -30,6 +31,9 @@ export default class NovelAbility extends UIAbility {
   }
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    UserPreference.init(this.context)
+    SessionManager.init()
+    ImageUtil.init(this.context)
     this.handleParam(want)
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }

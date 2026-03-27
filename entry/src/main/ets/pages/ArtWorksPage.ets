@@ -119,36 +119,38 @@ struct ArtWorksPage {
       }
       Column({ space: 16 }) {
         Text(this.model.illust?.title ?? '')
-          .fontSize(40)
+          .fontSize(26)
           .fontWeight(FontWeight.Bold)
-          .margin({ top: 20 })
+          .fontColor('#1E293B')
+          .lineHeight(34)
+          .margin({ top: 16 })
         Row({ space: 16 }) {
           Text() {
             SymbolSpan($r('sys.symbol.eye'))
             Span(this.model.illust?.total_view?.toString() ?? '0')
           }
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor('#64748B')
           Text() {
             SymbolSpan($r('sys.symbol.heart_fill'))
             Span(this.model.illust?.total_bookmarks?.toString() ?? '0')
           }
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor('#64748B')
           Text() {
             SymbolSpan($r('sys.symbol.calendar_badge_clock'))
             Span(this.model.illust ? DateTimeUtil.parseIsoTimeToLocalFormatTime(this.model.illust.create_date) : '-')
           }
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor('#64748B')
         }
         Row({ space: 16 }) {
           Text(`插画ID: ${this.model.illust?.id ?? '-'}`)
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor('#64748B')
           Text(`分辨率: ${this.model.illust?.width ?? '-'}x${this.model.illust?.height ?? '-'}`)
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor('#64748B')
         }
         Row() {
           Row({ space: 16 }) {
@@ -159,15 +161,20 @@ struct ArtWorksPage {
             }
             Text(this.model.illust?.user?.name ?? '')
               .fontSize(16)
-              .fontWeight(FontWeight.Bold)
+              .fontWeight(FontWeight.Medium)
+              .fontColor('#1E293B')
           }
           .onClick(() => {
             this.model.userDetailAction()
           })
           Button(this.model.followed ? '已关注' : '关注')
-            .width(80)
-            .backgroundColor(this.model.followed ? '#E0E0E0' : '#2196F3')
-            .fontColor(this.model.followed ? '#666666' : '#FFFFFF')
+            .width(88)
+            .height(36)
+            .fontSize(14)
+            .fontWeight(FontWeight.Medium)
+            .borderRadius(10)
+            .backgroundColor(this.model.followed ? '#F1F5F9' : '#2563EB')
+            .fontColor(this.model.followed ? '#475569' : Color.White)
             .onClick(() => {
               this.model.followAction()
             })
@@ -183,14 +190,15 @@ struct ArtWorksPage {
             ForEach(this.model.illust.tags, (item: Tag) => {
               Text() {
                 Span(`#${item.name}`)
-                  .fontColor('#2196F3')
+                  .fontColor('#2563EB')
                 if (item.translated_name) {
                   Span(`  (${item.translated_name})`)
                 }
               }
-              .fontSize(14)
-              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-              .borderRadius(20)
+              .fontSize(13)
+              .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+              .backgroundColor('#EEF2FF')
+              .borderRadius(8)
               .onClick(() => {
                 this.model.tagAction(item)
               })
@@ -207,9 +215,13 @@ struct ArtWorksPage {
         .width('90%')
         .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
         .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
+        .border({
+          width: 1,
+          color: '#EEF2F6'
+        })
         .shadow({
-          radius: 8,
-          color: '#00000010',
+          radius: 12,
+          color: '#00000012',
           offsetX: 0,
           offsetY: 4
         })
@@ -220,7 +232,8 @@ struct ArtWorksPage {
           Span("查看评论")
         }
         .fontSize(16)
-        .fontColor('#2196F3')
+        .fontWeight(FontWeight.Medium)
+        .fontColor('#2563EB')
         .onClick(() => {
           this.model.showComments = true
         })

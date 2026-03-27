@@ -88,35 +88,36 @@ struct NovelDetailPage {
   private NovelHeader() {
     if (this.model.webViewNovel){
       Column() {
-        HttpImage({ url: this.model.webViewNovel.coverUrl })
+        HttpImage({ url: this.model.webViewNovel.coverUrl, br: 14 })
           .width('100%')
           .height(200)
-          .borderRadius(8)
           .shadow({
-            radius: 8,
-            color: '#00000010',
+            radius: 12,
+            color: '#00000014',
             offsetX: 0,
             offsetY: 4
           })
         Row() {
           Text(this.model.webViewNovel.title)
-            .fontSize(36)
+            .fontSize(24)
             .fontWeight(FontWeight.Bold)
+            .fontColor('#1E293B')
+            .lineHeight(32)
             .margin({ top: 16 })
         }.width('100%')
         Row() {
           Text(this.model.webViewNovel.cdate)
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor('#64748B')
         }.width('100%')
         Flex({ wrap: FlexWrap.Wrap, space: { main: { value: 8, unit: LengthUnit.VP } } }) {
           ForEach(this.model.webViewNovel.tags, (item: string) => {
             Text(item)
-              .fontSize(14)
-              .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-              .borderColor('#E0E0E0')
-              .borderWidth(1)
-              .borderRadius(16)
+              .fontSize(13)
+              .fontColor('#475569')
+              .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+              .backgroundColor('#F1F5F9')
+              .borderRadius(10)
               .onClick(() => {
                 this.model.tagAction(item)
               })
@@ -124,7 +125,8 @@ struct NovelDetailPage {
         }
         Text('查看评论')
           .fontSize(16)
-          .fontColor('#2196F3')
+          .fontWeight(FontWeight.Medium)
+          .fontColor('#2563EB')
           .margin({ top: 16 })
           .onClick(() => this.model.showComments = true)
       }
@@ -145,11 +147,15 @@ struct NovelDetailPage {
       .width('90%')
       .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .borderRadius($r('sys.float.ohos_id_corner_radius_card'))
+      .border({
+        width: 1,
+        color: '#EEF2F6'
+      })
       .shadow({
-        radius: 4,
-        color: '#00000005',
+        radius: 12,
+        color: '#00000012',
         offsetX: 0,
-        offsetY: 2
+        offsetY: 4
       })
     }
   }
@@ -190,7 +196,7 @@ struct NovelDetailPage {
         .maxLines(2)
         .width('40%')
         .fontSize(14)
-        .fontColor('#2196F3')
+        .fontColor('#2563EB')
         .visibility(this.model.webViewNovel.seriesNavigation.prevNovel ? Visibility.Visible : Visibility.Hidden)
         .onClick(() => {
           this.model.prevNovelAction()
@@ -204,7 +210,7 @@ struct NovelDetailPage {
         .maxLines(2)
         .width('40%')
         .fontSize(14)
-        .fontColor('#2196F3')
+        .fontColor('#2563EB')
         .visibility(this.model.webViewNovel.seriesNavigation.nextNovel ? Visibility.Visible : Visibility.Hidden)
         .onClick(() => {
           this.model.nextNovelAction()
@@ -249,11 +255,19 @@ struct NovelDetailPage {
               this.startReader()
             }
           })
-          .fontSize(40)
-          .fontColor([Color.Green])
-          .width(40)
-          .height(40)
-          .offset({x:-40,y:-40})
+          .fontSize(44)
+          .fontColor(['#2563EB'])
+          .width(52)
+          .height(52)
+          .offset({ x: -28, y: -28 })
+          .backgroundColor('#FFFFFFEE')
+          .borderRadius(26)
+          .shadow({
+            radius: 12,
+            color: '#2563EB33',
+            offsetX: 0,
+            offsetY: 4
+          })
       }
     }
     .hideTitleBar(true)

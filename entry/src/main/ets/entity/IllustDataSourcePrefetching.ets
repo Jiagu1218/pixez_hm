@@ -4,7 +4,7 @@ import { PlainArray } from "@kit.ArkTS";
 import { rcp } from "@kit.RemoteCommunicationKit";
 
 import { BusinessError } from "@kit.BasicServicesKit";
-import { SessionManager,Illust, LazyDataSource } from "common";
+import { SessionManager,Illust, LazyDataSource, DownloadUtil } from "common";
 
 export class IllustDataSourcePrefetching extends LazyDataSource<Illust> implements IDataSourcePrefetching {
   private preFetchList: PlainArray<rcp.Request>  = new PlainArray<rcp.Request>()

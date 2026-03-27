@@ -20,15 +20,16 @@ export struct HtmlText {
         if (item.type === 'text') {
           Span(item.text)
             .fontSize(14)
-            .lineHeight(20)
+            .lineHeight(22)
+            .fontColor('#334155')
         } else {
           if (item.tagName === 'a') {
             Span(item.text)
               .fontSize(14)
-              .fontColor(this.linkHovered === item.text ? '#1976D2' : '#2196F3')
+              .fontColor(this.linkHovered === item.text ? '#1D4ED8' : '#2563EB')
               .decoration({
                 type: TextDecorationType.Underline,
-                color: this.linkHovered === item.text ? '#1976D2' : '#2196F3'
+                color: this.linkHovered === item.text ? '#1D4ED8' : '#2563EB'
               })
               .onClick(() => {
                 if (item.tagAttr?.['href']) {
@@ -51,7 +52,8 @@ export struct HtmlText {
           } else {
             Span(item.text)
               .fontSize(14)
-              .lineHeight(20)
+              .lineHeight(22)
+              .fontColor('#334155')
           }
         }
       },(item: RichTextInfo,index)=>index + item.text)
@@ -60,12 +62,17 @@ export struct HtmlText {
     .textAlign(TextAlign.Start)
     .width('100%')
     .padding(16)
-    .borderRadius(8)
+    .backgroundColor(this.isHovered ? '#F8FAFF' : '#FFFFFF')
+    .borderRadius(12)
+    .border({
+      width: 1,
+      color: this.isHovered ? '#DBEAFE' : '#EEF2F6'
+    })
     .shadow({
-      radius: 4,
-      color: '#00000005',
+      radius: this.isHovered ? 12 : 8,
+      color: this.isHovered ? '#2563EB18' : '#00000008',
       offsetX: 0,
-      offsetY: 2
+      offsetY: this.isHovered ? 6 : 3
     })
     .transition({
       type: TransitionType.All

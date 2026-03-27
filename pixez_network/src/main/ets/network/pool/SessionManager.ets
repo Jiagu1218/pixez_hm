@@ -1,6 +1,7 @@
 import { AppConfig } from "../AppConfig";
 import { TokenInterceptor } from "../interceptor/TokenInterceptor";
 import { SessionPool, SessionPoolConfig } from "./SessionPool";
+import { rcp } from "@kit.RemoteCommunicationKit";
 
 /**
  * 会话管理器
@@ -30,6 +31,20 @@ export class SessionManager {
    * token拦截器
    */
   private static tokenInterceptor: TokenInterceptor
+
+  private static cache:rcp.ResponseCache = new rcp.ResponseCache({
+    persistent: {
+      kind: 'file-system',
+      pathToFolder: "/file/cache" // 请根据自身业务选择合适的路径
+    },
+    defaultExpirationPolicy:{
+      kind: 'sliding',
+      time: {
+        units: 'hours',
+        value: 1,
+      }
+    }
+  })
 
   /**
    * 初始化
@@ -102,6 +117,7 @@ export class SessionManager {
         },
         interceptors: [SessionManager.tokenInterceptor],
         requestConfiguration: {
+          cache:SessionManager.cache,
           processing: {
             validateResponse: (response): boolean => {
               if (response.statusCode == 200) {

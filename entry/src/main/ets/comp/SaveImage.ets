@@ -77,12 +77,16 @@ export struct SaveImage {
     .height('100%')
     .alignContent(Alignment.Bottom)
     .backgroundColor(Color.White)
-    .borderRadius(12)
+    .borderRadius(16)
+    .border({
+      width: 1,
+      color: '#EEF2F6'
+    })
     .shadow({
-      radius: 8,
-      color: '#00000010',
+      radius: 16,
+      color: '#00000014',
       offsetX: 0,
-      offsetY: 4
+      offsetY: 6
     })
   }
 }

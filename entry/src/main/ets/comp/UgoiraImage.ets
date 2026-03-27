@@ -25,7 +25,11 @@ export struct UgoiraImage{
 
   build() {
     Stack(){
-      HttpImage({url: this.illust.meta_single_page.original_image_url,aRatio:this.aRatio})
+      HttpImage({
+        url: this.illust.meta_single_page.original_image_url,
+        aRatio: this.aRatio,
+        br: 12
+      })
       .onClick(()=>{
         this.getUgoiraImage()
       })
@@ -36,8 +40,17 @@ export struct UgoiraImage{
           .state(AnimationStatus.Running)
           .aspectRatio(this.aRatio)
           .iterations(-1)
+          .borderRadius(12)
       }
-    }.width('100%')
-
+    }
+    .width('100%')
+    .borderRadius(12)
+    .clip(true)
+    .shadow({
+      radius: 10,
+      color: '#0000000C',
+      offsetX: 0,
+      offsetY: 3
+    })
   }
 }

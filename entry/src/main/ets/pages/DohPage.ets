@@ -45,56 +45,122 @@ struct DohPage{
       Text(){
         Span(item.item + ' ')
         SymbolSpan(undefined).attributeModifier(this.checked[item.index] ? this.ok : this.error)
-      }.fontSize(16)
+      }.fontSize(15)
+      .fontColor('#1E293B')
       .maxLines(2)
       Text(this.ips[item.index])
-    }.borderWidth(1)
-    .borderColor(Color.Gray)
+        .fontSize(13)
+        .fontColor('#64748B')
+    }
+    .padding(14)
+    .borderWidth(1)
+    .borderColor('#E2E8F0')
+    .backgroundColor('#FFFFFF')
     .constraintSize({minWidth:300})
-    .borderRadius(16)
+    .borderRadius(14)
+    .shadow({
+      radius: 10,
+      color: '#0000000C',
+      offsetX: 0,
+      offsetY: 3
+    })
   }
 
   build() {
-    Column({space:16}){
-      Row(){
-        Text('测试地址')
-        Blank()
-        TextInput({placeholder: '请输入网址',text: this.testUrl}).onChange((value) => {
-          this.testUrl = value
-        }).width(300).height(50).margin({ top: 10, bottom: 10 }).placeholderColor(Color.Gray).fontSize(20)
-      }
-
-      Repeat(this.dohUrl)
-        .each((url) => {
-          this.dohCard(url)
+    Stack() {
+      Column()
+        .width('100%')
+        .height('100%')
+        .linearGradient({
+          direction: GradientDirection.Bottom,
+          colors: [['#EEF2FF', 0.0], ['#F8FAFC', 0.55], ['#FFFFFF', 1.0]]
         })
-        .key((url) => url)
-      Button('查询').onClick(() => {
-        this.query()
-      })
-      Button('跳转主页').onClick(() => {
-        this.getUIContext().getRouter().pushUrl({
-          url:'pages/HomePage'
-        })
-      })
-      Button('跳转小说').onClick(() => {
-        const content = this.getUIContext().getHostContext() as common.UIAbilityContext
-        content.startAbility({
-          bundleName: 'com.xjg.pixez',
-          moduleName: 'novel',
-          abilityName: 'NovelAbility',
-          parameters:{
-            "novelId":1
+      Scroll() {
+        Column({ space: 16 }) {
+          Row() {
+            Text('测试地址')
+              .fontSize(15)
+              .fontColor('#334155')
+            Blank()
+            TextInput({ placeholder: '请输入网址', text: this.testUrl }).onChange((value) => {
+              this.testUrl = value
+            }).width(300).height(48).margin({ top: 10, bottom: 10 })
+              .placeholderColor('#94A3B8')
+              .fontSize(16)
+              .backgroundColor('#F8FAFC')
+              .borderRadius(12)
           }
-        }).then((res) => {
-          console.info( 'testTag', 'startAbility success')
-        }).catch((err:BusinessError) => {
-          console.error( 'testTag', err)
-        })
-      })
+
+          Repeat(this.dohUrl)
+            .each((url) => {
+              this.dohCard(url)
+            })
+            .key((url) => url)
+          Button('查询')
+            .width('100%')
+            .height(46)
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+            .borderRadius(12)
+            .backgroundColor('#2563EB')
+            .fontColor(Color.White)
+            .onClick(() => {
+              this.query()
+            })
+          Button('跳转主页')
+            .width('100%')
+            .height(44)
+            .fontSize(15)
+            .borderRadius(12)
+            .backgroundColor('#F1F5F9')
+            .fontColor('#334155')
+            .onClick(() => {
+              this.getUIContext().getRouter().pushUrl({
+                url: 'pages/HomePage'
+              })
+            })
+          Button('跳转测试页')
+            .width('100%')
+            .height(44)
+            .fontSize(15)
+            .borderRadius(12)
+            .backgroundColor('#F1F5F9')
+            .fontColor('#334155')
+            .onClick(() => {
+              this.getUIContext().getRouter().pushUrl({
+                url: 'pages/Index'
+              })
+            })
+          Button('跳转小说')
+            .width('100%')
+            .height(44)
+            .fontSize(15)
+            .borderRadius(12)
+            .backgroundColor('#EEF2FF')
+            .fontColor('#2563EB')
+            .onClick(() => {
+              const content = this.getUIContext().getHostContext() as common.UIAbilityContext
+              content.startAbility({
+                bundleName: 'com.xjg.pixez',
+                moduleName: 'novel',
+                abilityName: 'NovelAbility',
+              }).then((res) => {
+                console.info('testTag', 'startAbility success')
+              }).catch((err: BusinessError) => {
+                console.error('testTag', err)
+              })
+            })
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 16, bottom: 32 })
+      }
+      .width('100%')
+      .height('100%')
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring)
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
   }
 
 
